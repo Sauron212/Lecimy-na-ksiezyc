@@ -6,7 +6,6 @@ int main()
     int odleglosc = 6370;
     sf::Event zdarzenie;
     sf::RenderWindow okno( sf::VideoMode( 800, 600 ), "Lecimy w kosmos" );
-    sf::Clock czas;
     while( okno.isOpen() )
     {
         while(odleglosc <= 206370)
