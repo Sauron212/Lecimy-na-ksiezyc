@@ -1,28 +1,27 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
-
+using namespace sf;
 int main()
 {
-    sf::RenderWindow okno( sf::VideoMode( 320, 240 ), "Kurs SFML 2.0 - http://cpp0x.pl" );
-    sf::Clock stoper;
+    int odleglosc = 6370;
+    sf::Event zdarzenie;
+    sf::RenderWindow okno( sf::VideoMode( 800, 600 ), "Lecimy w kosmos" );
     while( okno.isOpen() )
     {
-        sf::Event event;
-        while( okno.pollEvent( event ) )
+        while(odleglosc <= 206370)
         {
-            if( event.type == sf::Event::Closed )
-                 okno.close();
+            while( okno.pollEvent( zdarzenie ) )
+            {
+                if( zdarzenie.type == sf::Event::Closed )
+                     okno.close();
+            }
+            okno.clear(sf::Color(255,225,255));
+            okno.display();
+        }
+        while(odleglosc > 206370)
+        {
 
-        } //while
-        okno.clear();
-
-        sf::CircleShape ksztalt( std::sin( stoper.getElapsedTime().asSeconds() ) * okno.getSize().y / 8 + okno.getSize().y / 4 );
-        ksztalt.setOrigin( sf::Vector2f( ksztalt.getRadius(), ksztalt.getRadius() ) );
-        ksztalt.setPosition( okno.getSize().x / 2.0f, okno.getSize().y / 2.0f );
-        ksztalt.setFillColor( sf::Color::Yellow );
-        okno.draw( ksztalt );
-
-        okno.display();
-    } //while
+        }
+    }
     return 0;
 }
