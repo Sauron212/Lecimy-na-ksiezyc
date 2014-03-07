@@ -76,7 +76,7 @@ int main()
             czas_podrozy(czas_pod);
             okno.display();
         }
-        while(odleglosc < 106370)
+        while(odleglosc > 106370)
         {
              while(okno.pollEvent(zdarzenie))
             {
