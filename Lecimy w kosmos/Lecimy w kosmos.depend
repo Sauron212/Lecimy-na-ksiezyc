@@ -1,7 +1,9 @@
 # depslib dependency file v1.0
-1393966090 source:c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
+1394202242 source:c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
 	<SFML/Graphics.hpp>
 	<cmath>
+	<sstream>
+	<iostream>
 
 1393963291 c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\biblioteki\sfml-2.1\include\sfml\graphics.hpp
 	<SFML/Window.hpp>

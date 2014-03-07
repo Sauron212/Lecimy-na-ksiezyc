@@ -1,6 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <sstream>
+#include <iostream>
 using namespace sf;
+using namespace std;
+
+void czas_podrozy(sf::Clock czas);
+
+sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
+
 int main()
 {
     int odleglosc{6370},x{375},y{400};
@@ -8,8 +16,7 @@ int main()
     bool start=false;
     // ustawienie startu rakiety na klikniecie spacja.
     sf::Event zdarzenie;
-    sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
-    sf::Clock czas;
+    sf::Clock czas,czas_pod;
     sf::Font font;
     font.loadFromFile("arial.ttf");
     sf::Texture tlo_tekstura;                       /*    Stworzenie tekstury  tlo_tekstura   */
@@ -32,6 +39,8 @@ int main()
                  start=true;
 
             }
+            if(start==false)
+                czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 5 && start)
             {
                 if(rakieta.getPosition().y>=300 )
@@ -39,6 +48,7 @@ int main()
                 else
                     tlo.move(0,1);
                     odleglosc+=14;
+
                 czas.restart();
             }
 
@@ -59,6 +69,7 @@ int main()
                 okno.draw(mezosfera);
             }
             okno.draw(rakieta);
+            czas_podrozy(czas_pod);
             okno.display();
         }
         while(odleglosc < 106370)
@@ -75,4 +86,21 @@ int main()
         }
     }
     return 0;
+}
+void czas_podrozy(sf::Clock czas)
+{
+    ostringstream ss;
+    sf::Font font;
+    font.loadFromFile("arial.ttf");
+    sf::Time czas2 = czas.getElapsedTime();
+    int a = czas2.asSeconds();
+            int godziny = a/3600;
+            int minuty = (a-godziny*3600)/60;
+            int sekundy = a-godziny*3600-minuty*60;
+    ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
+    string czas3 = ss.str();
+    sf::Text czas_wys(czas3, font, 20);
+    czas_wys.setColor((sf::Color::Black));
+    czas_wys.setPosition(600, 500);
+    okno.draw(czas_wys);
 }
