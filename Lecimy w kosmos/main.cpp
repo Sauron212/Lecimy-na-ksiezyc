@@ -5,7 +5,7 @@
 using namespace sf;
 using namespace std;
 
-void czas_podrozy(sf::Clock czas);
+void czas_podrozy(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc);
 inline void czcionka(void);
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
@@ -16,6 +16,16 @@ int main()
     int odleglosc{6370},x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
+
+    long double m=2902991.17;      // masa rakiety (kg) na starcie
+
+    const long double G=0.0000000000667; // Stala grawitacji 6,67*10^-11
+    const long double Mz=5.9736;          // Masa ziemi (kg), trzeba mnozyc razy 10^24
+    long double g=G*Mz/odleglosc*odleglosc;  // przyspieszenie grawitacyjne
+    long double przyspieszenie=0;
+    long double predkosc=0;
+
+    long double F1 = 33850966.49;    // Sila silnikow pierwszego stopnia w N
 
     sf::Event zdarzenie;
     sf::Clock czas,czas_pod;             // czas - okres ruchu, czas_pod - czas podró¿y
@@ -48,12 +58,16 @@ int main()
                 czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
-                if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
-                    rakieta.move(0,-1);
-                else
-                    tlo.move(0,1);   // poruszanie sie tla
+                g=G*Mz/odleglosc*odleglosc;
+                przyspieszenie =((F1 - m*g)/m)/1000;
+                predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
 
-                odleglosc+=14;
+
+                if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
+                    rakieta.move(0,-predkosc);
+                else
+                    tlo.move(0,predkosc);   // poruszanie sie tla
+                odleglosc+=predkosc;
                 czas.restart();
             }
             okno.clear(sf::Color(255,255,255));
@@ -73,7 +87,7 @@ int main()
                 okno.draw(mezosfera);
             }
             okno.draw(rakieta);
-            czas_podrozy(czas_pod);
+            czas_podrozy(czas_pod,przyspieszenie,predkosc,odleglosc);
             okno.display();
         }
         while(odleglosc > 106370)
@@ -91,7 +105,7 @@ int main()
     }
     return 0;
 }
-void czas_podrozy(sf::Clock czas)
+void czas_podrozy(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc)
 {
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
     sf::Time czas2 = czas.getElapsedTime();
@@ -106,5 +120,27 @@ void czas_podrozy(sf::Clock czas)
     sf::Text czas_wys(czas3, font, 20);
     czas_wys.setColor((sf::Color::Black));
     czas_wys.setPosition(600, 500);
+    ss.str("");
+    ss<<"Przyspieszenie "<<przyspieszenie*1000<<"m/s^2";
+    string przyspieszenie_w = ss.str();
+    sf::Text przyspieszenie_wys(przyspieszenie_w, font,20);
+    przyspieszenie_wys.setColor((sf::Color::Black));
+    przyspieszenie_wys.setPosition(600,520);
+    ss.str("");
+    ss<<"Predkosc "<<predkosc*1000<<"m/s";
+    string predkosc_w = ss.str();
+    sf::Text predkosc_wys(predkosc_w, font,20);
+    predkosc_wys.setColor((sf::Color::Black));
+    predkosc_wys.setPosition(600,540);
+    ss.str("");
+    ss<<"Wysokosc nad poziomem morza "<<odleglosc-6370<<"m";
+    string wysokosc_w = ss.str();
+    sf::Text wysokosc_wys(wysokosc_w, font,20);
+    wysokosc_wys.setColor((sf::Color::Black));
+    wysokosc_wys.setPosition(400,560);
+
+    okno.draw(wysokosc_wys);
+    okno.draw(predkosc_wys);
+    okno.draw(przyspieszenie_wys);
     okno.draw(czas_wys);                        // wyswietlenie czasu
 }
