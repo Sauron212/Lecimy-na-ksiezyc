@@ -141,8 +141,8 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     wysokosc_wys.setColor((sf::Color::Black));
     wysokosc_wys.setPosition(400,560);
 
-    okno.draw(wysokosc_wys);
-    okno.draw(predkosc_wys);
-    okno.draw(przyspieszenie_wys);
+    okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
+    okno.draw(predkosc_wys);                    // wyswietlenie predkosci
+    okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
     okno.draw(czas_wys);                        // wyswietlenie czasu
 }
