@@ -5,7 +5,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc);
+void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna);
 inline void czcionka(void);
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
@@ -26,6 +26,7 @@ int main()
     long double g=G*Mz/(odleglosc*odleglosc);  // przyspieszenie grawitacyjne
     long double przyspieszenie=0;
     long double predkosc=0;
+    long double kinetyczna=0;
 
     long double F1 = 33850966.49;    // Sila silnikow pierwszego stopnia w N
 
@@ -63,7 +64,7 @@ int main()
                 g=G*Mz/(odleglosc*odleglosc);
                 przyspieszenie =((F1 - m*g)/m)/1000000;
                 predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
-
+                kinetyczna=0.5*m*predkosc*predkosc;
 
                 if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
                     rakieta.move(0,-predkosc);
@@ -89,7 +90,7 @@ int main()
                 okno.draw(mezosfera);
             }
             okno.draw(rakieta);
-            wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc);
+            wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
             okno.display();
         }
         while(odleglosc > 106370)
@@ -107,7 +108,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc)
+void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna)
 {
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
     sf::Time czas2 = czas.getElapsedTime();
@@ -121,28 +122,39 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
     sf::Text czas_wys(czas3, font, 20);
     czas_wys.setColor((sf::Color::Black));
-    czas_wys.setPosition(600, 500);
+    czas_wys.setPosition(400, 480);
     ss.str("");
     ss<<"Przyspieszenie "<<przyspieszenie*1000000<<"m/s^2";
     string przyspieszenie_w = ss.str();
     sf::Text przyspieszenie_wys(przyspieszenie_w, font,20);
     przyspieszenie_wys.setColor((sf::Color::Black));
-    przyspieszenie_wys.setPosition(600,520);
+    przyspieszenie_wys.setPosition(400,500);
     ss.str("");
     ss<<"Predkosc "<<predkosc*1000<<"m/s";
     string predkosc_w = ss.str();
     sf::Text predkosc_wys(predkosc_w, font,20);
     predkosc_wys.setColor((sf::Color::Black));
-    predkosc_wys.setPosition(600,540);
+    predkosc_wys.setPosition(400,520);
     ss.str("");
     ss<<"Wysokosc nad poziomem morza "<<odleglosc-6370<<"m";
     string wysokosc_w = ss.str();
     sf::Text wysokosc_wys(wysokosc_w, font,20);
     wysokosc_wys.setColor((sf::Color::Black));
-    wysokosc_wys.setPosition(400,560);
+    wysokosc_wys.setPosition(400,540);
+    ss.str("");
+    if(kinetyczna<=1000000)
+        ss<<"Energia kinetyczna "<<kinetyczna<<"J";
+    else
+        ss<<"Energia kinetyczna "<<kinetyczna/1000000<<"MJ";
+    string kinetyczna_w = ss.str();
+    sf::Text kinetyczna_wys(kinetyczna_w, font,20);
+    kinetyczna_wys.setColor((sf::Color::Black));
+    kinetyczna_wys.setPosition(400,560);
+
 
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
     okno.draw(czas_wys);                        // wyswietlenie czasu
-}
+    okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
+    }
