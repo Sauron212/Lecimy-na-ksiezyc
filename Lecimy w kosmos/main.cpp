@@ -28,14 +28,14 @@ int main()
     long double predkosc=0;                     // predkosc z jaka porusza sie rakieta
     long double kinetyczna=0;                   // Energia kinetyczna
     double pole = 112.97;                       // pole jakie jest brane pod uwage w oporze
-    double Cx = 0.521;                          // wsp�czynnik si�y oporu
+    double Cx = 0.521;                          // wspó³czynnik si³y oporu
 
 
     long double F1 = 33850966.49;                    // Sila silnikow pierwszego stopnia w N
     long double opor = Cx*1.1717*predkosc*predkosc*pole/2;      // opor powietrza
 
     sf::Event zdarzenie;
-    sf::Clock czas,czas_pod;             // czas - okres ruchu, czas_pod - czas podr�y
+    sf::Clock czas,czas_pod, czas_rotacja;             // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
 
     font.loadFromFile("arial.ttf");                 // ustawienie czcionki
 
@@ -49,7 +49,6 @@ int main()
     sf::RectangleShape rakieta(sf::Vector2f(10,110)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
     rakieta.setFillColor(sf::Color(0,0,0));
-
     while(okno.isOpen())
     {
         while(odleglosc <= 106370000)
@@ -70,6 +69,19 @@ int main()
                     m-=5876.59/1000;
                 if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70 )
                     m-=13169.063/1000;
+
+            if(czas_rotacja.getElapsedTime().asSeconds() >= 1) // Co sekundę...
+            {
+                if(czas_pod.getElapsedTime().asSeconds()>=36 && czas_pod.getElapsedTime().asSeconds()<=86) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
+                rakieta.rotate(0.7280000);//...obrót rakiety o tyle stopni
+
+                if(czas_pod.getElapsedTime().asSeconds()>=86 && czas_pod.getElapsedTime().asSeconds()<=141)
+                rakieta.rotate(0.4696364);
+
+                if(czas_pod.getElapsedTime().asSeconds()>=141 && czas_pod.getElapsedTime().asSeconds()<=171)
+                rakieta.rotate(0.2970000);
+                czas_rotacja.restart();
+            }
 
                 opor = Cx*1.1717*predkosc*predkosc*pole/2*1000000;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
