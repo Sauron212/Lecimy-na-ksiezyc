@@ -24,11 +24,15 @@ int main()
     const long double G=0.0000000000667; // Stala grawitacji 6,67*10^-11
     const long double Mz=5.9736;          // Masa ziemi (kg), trzeba mnozyc razy 10^24
     long double g=G*Mz*pow(10,24)/(odleglosc*odleglosc);  // przyspieszenie grawitacyjne
-    long double przyspieszenie=0;
-    long double predkosc=0;
-    long double kinetyczna=0;
+    long double przyspieszenie=0;               // przyspieszenie rakiety (ciag silnikow - grawitacja - opor powietrza)
+    long double predkosc=0;                     // predkosc z jaka porusza sie rakieta
+    long double kinetyczna=0;                   // Energia kinetyczna
+    double pole = 112.97;                       // pole jakie jest brane pod uwage w oporze
+    double Cx = 0.521;                          // wspó³czynnik si³y oporu
 
-    long double F1 = 33850966.49;    // Sila silnikow pierwszego stopnia w N
+
+    long double F1 = 33850966.49;                    // Sila silnikow pierwszego stopnia w N
+    long double opor = Cx*1.1717*predkosc*predkosc*pole/2;      // opor powietrza
 
     sf::Event zdarzenie;
     sf::Clock czas,czas_pod;             // czas - okres ruchu, czas_pod - czas podró¿y
@@ -61,14 +65,15 @@ int main()
                 czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
-                g=G*Mz*pow(10,24)/(odleglosc*odleglosc);
-                m-=15;
-                przyspieszenie =((F1 - m*g)/m)/1000000;
-
+                g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
+                m-=15;                                                      // uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                opor = Cx*1.1717*predkosc*predkosc*pole/2*1000000;          // uatkualnienie oporu powietrza
+                przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
-                    predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
-                    kinetyczna=0.5*m*predkosc*predkosc;
+                    predkosc = przyspieszenie*(czas_pod.getElapsedTime().asMilliseconds()-6000); // obliczanie predkosci
+                    kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
+
                     if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
                         rakieta.move(0,-predkosc);
                     else
