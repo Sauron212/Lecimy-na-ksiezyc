@@ -66,7 +66,11 @@ int main()
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
-                m-=15;                                                      // uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                if(czas_pod.getElapsedTime().asSeconds()-6<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                    m-=5876.59/1000;
+                if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70 )
+                    m-=13169.063/1000;
+
                 opor = Cx*1.1717*predkosc*predkosc*pole/2*1000000;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
