@@ -15,7 +15,7 @@ int main()
 {
     int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
-    long double odleglosc{6370};
+    long double odleglosc = 6371000;
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
 
@@ -23,7 +23,7 @@ int main()
 
     const long double G=0.0000000000667; // Stala grawitacji 6,67*10^-11
     const long double Mz=5.9736;          // Masa ziemi (kg), trzeba mnozyc razy 10^24
-    long double g=G*Mz/(odleglosc*odleglosc);  // przyspieszenie grawitacyjne
+    long double g=G*Mz*pow(10,24)/(odleglosc*odleglosc);  // przyspieszenie grawitacyjne
     long double przyspieszenie=0;
     long double predkosc=0;
     long double kinetyczna=0;
@@ -48,7 +48,7 @@ int main()
 
     while(okno.isOpen())
     {
-        while(odleglosc <= 106370)
+        while(odleglosc <= 106370000)
         {
             while(okno.pollEvent(zdarzenie))
             {
@@ -61,10 +61,18 @@ int main()
                 czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
-                g=G*Mz/(odleglosc*odleglosc);
+                g=G*Mz*pow(10,24)/(odleglosc*odleglosc);
+                m-=15;
                 przyspieszenie =((F1 - m*g)/m)/1000000;
                 predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
                 kinetyczna=0.5*m*predkosc*predkosc;
+>>>>>>> 447c08303c91427f97c05fe775af7d68b6e4ed52
+=======
+                kinetyczna=0.5*m*predkosc*predkosc;
+>>>>>>> 447c08303c91427f97c05fe775af7d68b6e4ed52
 
                 if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
                     rakieta.move(0,-predkosc);
@@ -93,7 +101,7 @@ int main()
             wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
             okno.display();
         }
-        while(odleglosc > 106370)
+        while(odleglosc > 106370000)
         {
              while(okno.pollEvent(zdarzenie))
             {
@@ -117,7 +125,6 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
             int godziny = a/3600;
             int minuty = (a-godziny*3600)/60;
             int sekundy = a-godziny*3600-minuty*60;
-
     ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
     sf::Text czas_wys(czas3, font, 20);
@@ -136,7 +143,7 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     predkosc_wys.setColor((sf::Color::Black));
     predkosc_wys.setPosition(400,520);
     ss.str("");
-    ss<<"Wysokosc nad poziomem morza "<<odleglosc-6370<<"m";
+    ss<<"Wysokosc nad poziomem morza "<<odleglosc-6371000<<"m";
     string wysokosc_w = ss.str();
     sf::Text wysokosc_wys(wysokosc_w, font,20);
     wysokosc_wys.setColor((sf::Color::Black));
