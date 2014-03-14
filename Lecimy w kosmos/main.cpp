@@ -64,21 +64,17 @@ int main()
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);
                 m-=15;
                 przyspieszenie =((F1 - m*g)/m)/1000000;
-                predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-                kinetyczna=0.5*m*predkosc*predkosc;
->>>>>>> 447c08303c91427f97c05fe775af7d68b6e4ed52
-=======
-                kinetyczna=0.5*m*predkosc*predkosc;
->>>>>>> 447c08303c91427f97c05fe775af7d68b6e4ed52
 
-                if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
-                    rakieta.move(0,-predkosc);
-                else
-                    tlo.move(0,predkosc);   // poruszanie sie tla
-                odleglosc+=predkosc;
+                if(czas_pod.getElapsedTime().asSeconds()-6>=0)
+                {
+                    predkosc = przyspieszenie*czas_pod.getElapsedTime().asMilliseconds();
+                    kinetyczna=0.5*m*predkosc*predkosc;
+                    if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
+                        rakieta.move(0,-predkosc);
+                    else
+                        tlo.move(0,predkosc);   // poruszanie sie tla
+                    odleglosc+=predkosc;
+                }
                 czas.restart();
             }
             okno.clear(sf::Color(255,255,255));
@@ -121,7 +117,7 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
     sf::Time czas2 = czas.getElapsedTime();
     int a = czas2.asSeconds();
-
+            a-=6;
             int godziny = a/3600;
             int minuty = (a-godziny*3600)/60;
             int sekundy = a-godziny*3600-minuty*60;
