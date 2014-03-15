@@ -70,18 +70,18 @@ int main()
                 if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70 )
                     m-=13169.063/1000;
 
-            if(czas_rotacja.getElapsedTime().asSeconds() >= 1) // Co sekundę...
-            {
-                if(czas_pod.getElapsedTime().asSeconds()>=36 && czas_pod.getElapsedTime().asSeconds()<=86) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
-                rakieta.rotate(0.7280000);//...obrót rakiety o tyle stopni
+                if(czas_rotacja.getElapsedTime().asSeconds() >= 1) // Co sekundę...
+                {
+                    if(czas_pod.getElapsedTime().asSeconds()+6>=30 && czas_pod.getElapsedTime().asSeconds()+6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
+                    rakieta.rotate(0.7280000);//...obrót rakiety o tyle stopni
 
-                if(czas_pod.getElapsedTime().asSeconds()>=86 && czas_pod.getElapsedTime().asSeconds()<=141)
-                rakieta.rotate(0.4696364);
+                    else if(czas_pod.getElapsedTime().asSeconds()+6>=80 && czas_pod.getElapsedTime().asSeconds()+6<135)
+                    rakieta.rotate(0.4696364);
 
-                if(czas_pod.getElapsedTime().asSeconds()>=141 && czas_pod.getElapsedTime().asSeconds()<=171)
-                rakieta.rotate(0.2970000);
-                czas_rotacja.restart();
-            }
+                    else if(czas_pod.getElapsedTime().asSeconds()+6>=135 && czas_pod.getElapsedTime().asSeconds()+6<165)
+                    rakieta.rotate(0.2970000);
+                    czas_rotacja.restart();
+                }
 
                 opor = Cx*1.1717*predkosc*predkosc*pole/2*1000000;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
