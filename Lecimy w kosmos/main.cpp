@@ -16,7 +16,7 @@ int main()
     /* ZMIENNE GRUPY GRZESIA : */
     int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
-    long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
+    long double odleglosc = 106370001; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
 
@@ -66,9 +66,13 @@ int main()
     double Ktangens = ( Kx2 - Kx1 ) / ( Ky2 - Ky1 );
 
     double Kkatrakiety;
-    Kkatrakiety = atan ( Ktangens ) * 180 / M_PI;
+    Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
 
     bool Kstart = false;
+
+    sf::View klip;
+    klip.reset (sf::FloatRect (0, 0, 800, 600));
+    klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
     Krakieta.setPosition( Kx, Ky );
@@ -159,6 +163,8 @@ int main()
                  okno.close();
                 if( sf::Keyboard::isKeyPressed ( sf::Keyboard::Space ) )
                  Kstart = true;
+                if( sf::Keyboard::isKeyPressed ( sf::Keyboard::Escape ) )
+                 okno.close();
             }
 
             if ( Kstart == true )
@@ -175,6 +181,8 @@ int main()
             Kplaneta1.setPosition( Kx1, Ky1 );
             Kplaneta2.setPosition( Kx2, Ky2 );
 
+            klip.setCenter (Kx, Ky);
+            okno.setView (klip);
             okno.clear( sf::Color::Black );
             okno.draw( Krakieta );
             okno.draw( Kplaneta1 );
