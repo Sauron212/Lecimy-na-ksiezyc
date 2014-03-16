@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
+#include "Faza_Kosmosu.h"
 using namespace sf;
 using namespace std;
 
@@ -53,17 +54,12 @@ int main()
 
     /* ZMIENNE GRUPY JARKA : */
 
-    double Kx = 300, Ky = 300;
+    Rakieta KRakieta (300, 300, 100);
+    Laduj_Uklad ();
+    sf::Clock timer;
+    sf::Time t_1;
 
-    double Kx1 = 100, Ky1 = 100, Kpx1 = Kx1;
-
-    int Kpromien1 = 100;
-
-    double Kx2 = 2000, Ky2 = 2000;
-
-    int Kpromien2 = 100;
-
-    double Ktangens = ( Kx2 - Kx1 ) / ( Ky2 - Ky1 );
+    double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
 
     double Kkatrakiety;
     Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
@@ -71,23 +67,17 @@ int main()
     bool Kstart = false;
 
     sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 800, 600));
+    klip.reset (sf::FloatRect (0, 0, 2400, 1800));
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
-    Krakieta.setPosition( Kx, Ky );
+    Krakieta.setPosition(KRakieta.koordynata_x, KRakieta.koordynata_y);
     Krakieta.setFillColor( sf::Color::Yellow );
     Krakieta.setRotation( Kkatrakiety + 90 );
 
-    sf::CircleShape Kplaneta1( Kpromien1 );
-    Kplaneta1.setPosition( Kx1, Ky1 );
-
-    sf::CircleShape Kplaneta2( Kpromien2 );
-    Kplaneta2.setPosition( Kx2, Ky2 );
-
     while(okno.isOpen())
     {
-        while(odleglosc <= 6471000)
+        while(odleglosc <= 6471000 && okno.isOpen ())
         {
             while(okno.pollEvent(zdarzenie))
             {
@@ -154,41 +144,31 @@ int main()
             wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
             okno.display();
         }
-        while(odleglosc > 6471000)
+        while(odleglosc > 6471000 && okno.isOpen ())
         {
-
             while( okno.pollEvent ( zdarzenie ) )
             {
-                if( zdarzenie.type == sf::Event::Closed )
-                 okno.close();
-                if( sf::Keyboard::isKeyPressed ( sf::Keyboard::Space ) )
-                 Kstart = true;
-                if( sf::Keyboard::isKeyPressed ( sf::Keyboard::Escape ) )
-                 okno.close();
+                if (zdarzenie.type == sf::Event::Closed) okno.close ();
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Kstart = true;
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) okno.close ();
             }
-
-            if ( Kstart == true )
+            t_1 = timer.getElapsedTime ();
+            if (Kstart == true && t_1.asSeconds () > 0.1)
             {
-                Kx1 -= 1;
-                Ky1 -= 1 * Ktangens;
-                Kx2 -= 1;
-                Ky2 -= 1 * Ktangens;
+                KRakieta.Aktualizacja ();
+                timer.restart ();
             }
-
-            if ( Kx2 <= Kpx1 + 200 )
-                Kstart = false;
-
-            Kplaneta1.setPosition( Kx1, Ky1 );
-            Kplaneta2.setPosition( Kx2, Ky2 );
-
-            klip.setCenter (Kx, Ky);
+            Krakieta.setPosition (KRakieta.koordynata_x, KRakieta.koordynata_y);
+            klip.setCenter (KRakieta.koordynata_x, KRakieta.koordynata_y);
             okno.setView (klip);
-            okno.clear( sf::Color::Black );
-            okno.draw( Krakieta );
-            okno.draw( Kplaneta1 );
-            okno.draw( Kplaneta2 );
-            okno.display();
-
+            okno.clear (sf::Color::Black);
+            for (int i = 0; i < planety.size (); i++)
+            {
+                okno.draw (planety [i].grafika);
+                if (sqrt (pow ((KRakieta.koordynata_x - planety [i].koordynata_x), 2) + pow ((KRakieta.koordynata_y - planety [i].koordynata_y), 2)) < planety [i].promien) Kstart = false;
+            }
+            okno.draw (Krakieta);
+            okno.display ();
         }
     }
     return 0;
