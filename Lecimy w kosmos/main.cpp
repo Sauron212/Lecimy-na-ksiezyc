@@ -16,7 +16,7 @@ int main()
     /* ZMIENNE GRUPY GRZESIA : */
     int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
-    long double odleglosc = 106370001; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
+    long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
 
