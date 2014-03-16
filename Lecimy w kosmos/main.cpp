@@ -13,9 +13,10 @@ sf::Font font;
 
 int main()
 {
+    /* ZMIENNE GRUPY GRZESIA : */
     int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
-    long double odleglosc = 6371000;
+    long double odleglosc = 106370001; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
 
@@ -49,6 +50,37 @@ int main()
     sf::RectangleShape rakieta(sf::Vector2f(10,110)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
     rakieta.setFillColor(sf::Color(0,0,0));
+
+    /* ZMIENNE GRUPY JARKA : */
+
+    double Kx = 300, Ky = 300;
+
+    double Kx1 = 100, Ky1 = 100, Kpx1 = Kx1;
+
+    int Kpromien1 = 100;
+
+    double Kx2 = 2000, Ky2 = 2000;
+
+    int Kpromien2 = 100;
+
+    double Ktangens = ( Kx2 - Kx1 ) / ( Ky2 - Ky1 );
+
+    double Kkatrakiety;
+    Kkatrakiety = atan ( Ktangens ) * 180 / M_PI;
+
+    bool Kstart = false;
+
+    sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
+    Krakieta.setPosition( Kx, Ky );
+    Krakieta.setFillColor( sf::Color::Yellow );
+    Krakieta.setRotation( Kkatrakiety + 90 );
+
+    sf::CircleShape Kplaneta1( Kpromien1 );
+    Kplaneta1.setPosition( Kx1, Ky1 );
+
+    sf::CircleShape Kplaneta2( Kpromien2 );
+    Kplaneta2.setPosition( Kx2, Ky2 );
+
     while(okno.isOpen())
     {
         while(odleglosc <= 106370000)
@@ -120,16 +152,37 @@ int main()
         }
         while(odleglosc > 106370000)
         {
-             while(okno.pollEvent(zdarzenie))
+
+            while( okno.pollEvent ( zdarzenie ) )
             {
                 if( zdarzenie.type == sf::Event::Closed )
                  okno.close();
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-                 start=true;
-
+                if( sf::Keyboard::isKeyPressed ( sf::Keyboard::Space ) )
+                 Kstart = true;
             }
+
+            if ( Kstart == true )
+            {
+                Kx1 -= 1;
+                Ky1 -= 1 * Ktangens;
+                Kx2 -= 1;
+                Ky2 -= 1 * Ktangens;
+            }
+
+            if ( Kx2 <= Kpx1 + 200 )
+                Kstart = false;
+
+            Kplaneta1.setPosition( Kx1, Ky1 );
+            Kplaneta2.setPosition( Kx2, Ky2 );
+
+            okno.clear( sf::Color::Black );
+            okno.draw( Krakieta );
+            okno.draw( Kplaneta1 );
+            okno.draw( Kplaneta2 );
             okno.display();
+
         }
+            okno.display();
     }
     return 0;
 }
