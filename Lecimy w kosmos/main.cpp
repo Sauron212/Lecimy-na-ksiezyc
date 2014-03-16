@@ -87,7 +87,7 @@ int main()
 
     while(okno.isOpen())
     {
-        while(odleglosc <= 106370000)
+        while(odleglosc <= 6471000)
         {
             while(okno.pollEvent(zdarzenie))
             {
@@ -154,7 +154,7 @@ int main()
             wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
             okno.display();
         }
-        while(odleglosc > 106370000)
+        while(odleglosc > 6471000)
         {
 
             while( okno.pollEvent ( zdarzenie ) )
@@ -190,7 +190,6 @@ int main()
             okno.display();
 
         }
-            okno.display();
     }
     return 0;
 }
