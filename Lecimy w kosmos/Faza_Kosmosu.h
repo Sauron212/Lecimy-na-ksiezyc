@@ -7,7 +7,7 @@ std::ofstream dx ("dx.txt");
 
 sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, double y_2, double masa_2)
 {
-    double Fg = masa_1 * masa_2 / (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2));
+    double Fg = 6.67 * masa_1 * masa_2 / (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * pow (10, -11);
     sf::Vector2f wektor_grawitacji (Fg / sqrt (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * (x_2 - x_1), Fg / sqrt (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * (y_2 - y_1));
     return wektor_grawitacji;
 }
@@ -64,9 +64,23 @@ class Rakieta : public Obiekt_Kosmiczny
 
 void Laduj_Uklad ()
 {
-    planety.push_back (Planeta (1, 100, 100, 200, 100));
-    planety [0].v.x = 10.5409255339;
-    planety.push_back (Planeta (2, 100, 1000, 100000, 100));
+    planety.push_back (Planeta (1, 0, 0, 1989100000000000, 70));
+    planety.push_back (Planeta (2, 57.909176, 0, 333020000, 20));
+    planety [1].v.y = 47.87; // * pow (10, -6);
+    planety.push_back (Planeta (3, 108.208926, 0, 4868500000, 20));
+    planety [2].v.y = 35.020; // * pow (10, -6);
+    planety.push_back (Planeta (4, 149.597870, 0, 5972100000, 20));
+    planety [3].v.y = 29.783; //* pow (10, -6);
+    planety.push_back (Planeta (5, 227.936637, 0, 641850000, 20));
+    planety [4].v.y = 24.13; //* pow (10, -6);
+    planety.push_back (Planeta (6, 778.412020, 0, 1898600000000, 20));
+    planety [5].v.y = 13.07; //* pow (10, -6);
+    planety.push_back (Planeta (7, 1426.725413, 0, 568460000000, 40));
+    planety [6].v.y = 9.638;//* pow (10, -6);
+    planety.push_back (Planeta (8, 2870.972220, 0, 86832000000, 40));
+    planety [7].v.y = 6.795; //* pow (10, -6);
+    planety.push_back (Planeta (9, 4498.252900, 0, 102440000000, 40));
+    planety [8].v.y = 5.478; //* pow (10, -6);
 }
 
 void Obiekt_Kosmiczny::Aktualizacja ()

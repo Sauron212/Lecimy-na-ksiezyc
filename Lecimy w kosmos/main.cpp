@@ -64,7 +64,7 @@ int main()
 
     /* ZMIENNE GRUPY JARKA : */
 
-    Rakieta KRakieta (0, 300, 300, 100);
+    Rakieta KRakieta (0, 300, 300, 100 * pow (10, - 12));
     KRakieta.v.x = 10.5409255339;
     Laduj_Uklad ();
     sf::Clock timer;
@@ -78,7 +78,7 @@ int main()
     bool Kstart = false;
 
     sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 2400, 1800));
+    klip.reset (sf::FloatRect (0, 0, 800, 600));
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
@@ -191,9 +191,11 @@ int main()
                 if (zdarzenie.type == sf::Event::Closed) okno.close ();
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Kstart = true;
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) okno.close ();
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
             }
             t_1 = timer.getElapsedTime ();
-            if (Kstart == true && t_1.asSeconds () > 0.01)
+            if (Kstart == true && t_1.asSeconds () > 0.05)
             {
                 KRakieta.Aktualizacja ();
                 for (int i = 0; i < planety.size (); i++)
