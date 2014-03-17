@@ -12,8 +12,20 @@ inline void czcionka(void);
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
 sf::Font font;
 
+
 int main()
 {
+    font.loadFromFile("arial.ttf");                 // ustawienie czcionki
+    int menu=0;
+    sf::Text ziemiaT("ZIEMIA", font,20);
+    sf::Text kosmosT("KOSMOS", font,20);
+    sf::Text wyjscieT("WYJSCIE", font,20);
+    ziemiaT.setColor((sf::Color::Black));
+    kosmosT.setColor((sf::Color::Black));
+    wyjscieT.setColor((sf::Color::Black));
+    ziemiaT.setPosition(300,200);
+    kosmosT.setPosition(300,250);
+    wyjscieT.setPosition(300,300);
     /* ZMIENNE GRUPY GRZESIA : */
     int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
@@ -38,8 +50,6 @@ int main()
 
     sf::Event zdarzenie;
     sf::Clock czas,czas_pod, czas_rotacja;             // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
-
-    font.loadFromFile("arial.ttf");                 // ustawienie czcionki
 
     sf::Texture tlo_tekstura;                       //    Stworzenie tekstury  tlo_tekstura
     tlo_tekstura.loadFromFile("tlo-start.png");
@@ -77,7 +87,36 @@ int main()
 
     while(okno.isOpen())
     {
-        while(odleglosc <= 6471000 && okno.isOpen ())
+        while(okno.isOpen () && menu==0)
+        {
+            sf::Vector2i myszka2 = sf::Mouse::getPosition(okno);
+            sf::FloatRect myszka;
+            myszka.left = myszka2.x;
+            myszka.top=myszka2.y;
+            myszka.height=myszka.width=1;
+
+            sf::FloatRect ziemia = ziemiaT.getGlobalBounds();
+            sf::FloatRect kosmos = kosmosT.getGlobalBounds();
+            sf::FloatRect wyjscie = wyjscieT.getGlobalBounds();
+            while(okno.pollEvent(zdarzenie))
+            {
+                if( zdarzenie.type == sf::Event::Closed )
+                    okno.close();
+                if(myszka.intersects(ziemia) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    menu=1;
+                if(myszka.intersects(kosmos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    menu=2;
+                if(myszka.intersects(wyjscie) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    okno.close();
+            }
+            okno.clear(sf::Color(255,255,255));
+
+            okno.draw(ziemiaT);
+            okno.draw(kosmosT);
+            okno.draw(wyjscieT);
+            okno.display();
+        }
+        while(okno.isOpen ()&& (odleglosc <= 6471000 && menu==1))
         {
             while(okno.pollEvent(zdarzenie))
             {
@@ -144,7 +183,7 @@ int main()
             wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
             okno.display();
         }
-        while(odleglosc > 6471000 && okno.isOpen ())
+        while(okno.isOpen ()&&(odleglosc > 6471000 || menu==2))
         {
             while( okno.pollEvent ( zdarzenie ) )
             {
