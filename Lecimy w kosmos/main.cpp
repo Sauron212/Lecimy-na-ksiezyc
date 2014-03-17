@@ -64,7 +64,8 @@ int main()
 
     /* ZMIENNE GRUPY JARKA : */
 
-    Rakieta KRakieta (300, 300, 100);
+    Rakieta KRakieta (0, 300, 300, 100);
+    KRakieta.v.x = 10.5409255339;
     Laduj_Uklad ();
     sf::Clock timer;
     sf::Time t_1;
@@ -192,21 +193,26 @@ int main()
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) okno.close ();
             }
             t_1 = timer.getElapsedTime ();
-            if (Kstart == true && t_1.asSeconds () > 0.1)
+            if (Kstart == true && t_1.asSeconds () > 0.01)
             {
                 KRakieta.Aktualizacja ();
+                for (int i = 0; i < planety.size (); i++)
+                {
+                    planety [i].Aktualizacja ();
+                    planety [i].grafika.setPosition (planety [i].koordynata_x - planety [i].promien, planety [i].koordynata_y - planety [i].promien);
+                }
                 timer.restart ();
             }
             Krakieta.setPosition (KRakieta.koordynata_x, KRakieta.koordynata_y);
             klip.setCenter (KRakieta.koordynata_x, KRakieta.koordynata_y);
             okno.setView (klip);
             okno.clear (sf::Color::Black);
+            okno.draw (Krakieta);
             for (int i = 0; i < planety.size (); i++)
             {
                 okno.draw (planety [i].grafika);
                 if (sqrt (pow ((KRakieta.koordynata_x - planety [i].koordynata_x), 2) + pow ((KRakieta.koordynata_y - planety [i].koordynata_y), 2)) < planety [i].promien) Kstart = false;
             }
-            okno.draw (Krakieta);
             okno.display ();
         }
     }
