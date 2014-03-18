@@ -156,11 +156,11 @@ int main()
                     czas_rotacja.restart();
                 }
 
-                opor = Cx*1.1717*predkosc*predkosc*pole/2*1000000;          // uatkualnienie oporu powietrza
+                opor = Cx*1.1717*predkosc*predkosc*pole/2;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
-                    predkosc = przyspieszenie*(czas_pod.getElapsedTime().asMilliseconds()-6000); // obliczanie predkosci
+                    predkosc += przyspieszenie; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
 
                     if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu

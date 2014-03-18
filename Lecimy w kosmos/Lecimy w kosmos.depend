@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1395152905 source:c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
+1395174898 source:c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
 	<SFML/Graphics.hpp>
 	<cmath>
 	<sstream>
@@ -1020,9 +1020,9 @@
 	<string>
 	<vector>
 
-1395092214 c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
+1395165281 c:\users\grzegorz\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
 	<SFML/Graphics.hpp>
-	<fstream>
+	<cmath>
 
 1395161517 source:f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
 	<SFML/Graphics.hpp>
