@@ -2,8 +2,10 @@
 #define FAZA_KOSMOSU_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
-#include <fstream>
-std::ofstream dx ("dx.txt");
+#include <cmath>
+
+const double pi = atan (1) * 4;
+int modyfikator = 10000;
 
 sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, double y_2, double masa_2)
 {
@@ -12,19 +14,47 @@ sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, doub
     return wektor_grawitacji;
 }
 
-class Obiekt_Kosmiczny
+class Planeta
 {
     public:
-        int ID;
+        double masa;
+        double omega;
+        double pozycja_katowa;
+        double promien_orbity;
+        double promien_planety;
+        sf::CircleShape grafika;
+        Planeta (double c_masa, double c_T, double c_promien_orbity, double c_promien_planety)
+        {
+            masa = c_masa;
+            if (c_T != 0) omega = 2 * pi / c_T;
+            else omega = 0;
+            pozycja_katowa = 0;
+            promien_orbity = c_promien_orbity;
+            promien_planety = c_promien_planety;
+            grafika.setRadius (promien_planety);
+            grafika.setPosition (cos (pozycja_katowa) * promien_orbity - promien_planety, sin (pozycja_katowa) * promien_orbity - promien_planety);
+        }
+        void Aktualizacja (double czas)
+        {
+            pozycja_katowa += omega * czas * modyfikator;
+            if (pozycja_katowa > 360) pozycja_katowa -= 360;
+            grafika.setPosition (cos (pozycja_katowa) * promien_orbity - promien_planety, sin (pozycja_katowa) * promien_orbity - promien_planety);
+        }
+};
+
+std::vector <Planeta> planety;
+
+class Rakieta
+{
+    public:
         double koordynata_x;
         double koordynata_y;
         double masa;
         sf::Vector2f Fg;
         sf::Vector2f a;
         sf::Vector2f v;
-        Obiekt_Kosmiczny (int c_ID, double c_x, double c_y, double c_masa)
+        Rakieta (int c_ID, double c_x, double c_y, double c_masa)
         {
-            ID = c_ID;
             koordynata_x = c_x;
             koordynata_y = c_y;
             masa = c_masa;
@@ -35,66 +65,31 @@ class Obiekt_Kosmiczny
             v.x = 0;
             v.y = 0;
         }
-        void Aktualizacja ();
-};
-
-class Planeta : public Obiekt_Kosmiczny
-{
-    public:
-        double promien;
-        sf::CircleShape grafika;
-        Planeta (int c_ID, double c_x, double c_y, double c_masa, double c_promien) : Obiekt_Kosmiczny (c_ID, c_x, c_y, c_masa)
+        void Aktualizacja (double czas)
         {
-            promien = c_promien;
-            grafika.setRadius (promien);
-            grafika.setPosition (koordynata_x - promien, koordynata_y - promien);
-        }
-};
-
-std::vector <Planeta> planety;
-
-class Rakieta : public Obiekt_Kosmiczny
-{
-    public:
-        Rakieta (int c_ID, double c_x, double c_y, double c_masa) : Obiekt_Kosmiczny (c_ID, c_x, c_y, c_masa)
-        {
-
+            Fg.x = 0;
+            Fg.y = 0;
+            a.x = 0;
+            a.y = 0;
+            a.x += Fg.x / masa;
+            a.y += Fg.y / masa;
+            v += a;
+            koordynata_x += v.x * czas * modyfikator;
+            koordynata_y += v.y * czas * modyfikator;
         }
 };
 
 void Laduj_Uklad ()
 {
-    planety.push_back (Planeta (1, 0, 0, 1989100000000000, 70));
-    planety.push_back (Planeta (2, 57.909176, 0, 333020000, 20));
-    planety [1].v.y = 47.87; // * pow (10, -6);
-    planety.push_back (Planeta (3, 108.208926, 0, 4868500000, 20));
-    planety [2].v.y = 35.020; // * pow (10, -6);
-    planety.push_back (Planeta (4, 149.597870, 0, 5972100000, 20));
-    planety [3].v.y = 29.783; //* pow (10, -6);
-    planety.push_back (Planeta (5, 227.936637, 0, 641850000, 20));
-    planety [4].v.y = 24.13; //* pow (10, -6);
-    planety.push_back (Planeta (6, 778.412020, 0, 1898600000000, 20));
-    planety [5].v.y = 13.07; //* pow (10, -6);
-    planety.push_back (Planeta (7, 1426.725413, 0, 568460000000, 40));
-    planety [6].v.y = 9.638;//* pow (10, -6);
-    planety.push_back (Planeta (8, 2870.972220, 0, 86832000000, 40));
-    planety [7].v.y = 6.795; //* pow (10, -6);
-    planety.push_back (Planeta (9, 4498.252900, 0, 102440000000, 40));
-    planety [8].v.y = 5.478; //* pow (10, -6);
-}
-
-void Obiekt_Kosmiczny::Aktualizacja ()
-{
-    Fg.x = 0;
-    Fg.y = 0;
-    a.x = 0;
-    a.y = 0;
-    for (int i = 0; i < planety.size (); i++) if (planety [i].ID != ID) Fg += Grawitacja (koordynata_x, koordynata_y, masa, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
-    a.x += Fg.x / masa;
-    a.y += Fg.y / masa;
-    v += a;
-    koordynata_x += v.x;
-    koordynata_y += v.y;
+    planety.push_back (Planeta (1989100000000000, 0, 0, 70));
+    planety.push_back (Planeta (333020000, 7600551.84, 57.909176, 20));
+    planety.push_back (Planeta (4868500000, 19414162.944,108.208926, 20));
+    planety.push_back (Planeta (5972100000, 31558149.7635, 149.597870, 20));
+    planety.push_back (Planeta (641850000, 59353352.64, 227.936637, 20));
+    planety.push_back (Planeta (1898600000000, 374395970.88, 778.412020, 20));
+    planety.push_back (Planeta (568460000000, 929620800, 1426.725413, 40));
+    planety.push_back (Planeta (86832000000, 2653185024, 2870.972220, 40));
+    planety.push_back (Planeta (102440000000, 5203297440, 4498.252900, 40));
 }
 
 #endif // FAZA_KOSMOSU_H_INCLUDED

@@ -74,7 +74,6 @@ int main()
     /* ZMIENNE GRUPY JARKA : */
 
     Rakieta KRakieta (0, 300, 300, 100 * pow (10, - 12));
-    KRakieta.v.x = 10.5409255339;
     Laduj_Uklad ();
     sf::Clock timer;
     sf::Time t_1;
@@ -208,16 +207,14 @@ int main()
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) okno.close ();
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::A)) modyfikator -= 10000;
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::D)) modyfikator += 10000;
             }
             t_1 = timer.getElapsedTime ();
-            if (Kstart == true && t_1.asSeconds () > 0.05)
+            if (Kstart == true)
             {
-                KRakieta.Aktualizacja ();
-                for (int i = 0; i < planety.size (); i++)
-                {
-                    planety [i].Aktualizacja ();
-                    planety [i].grafika.setPosition (planety [i].koordynata_x - planety [i].promien, planety [i].koordynata_y - planety [i].promien);
-                }
+                KRakieta.Aktualizacja (t_1.asSeconds ());
+                for (int i = 0; i < planety.size (); i++)planety [i].Aktualizacja (t_1.asSeconds ());
                 timer.restart ();
             }
             Krakieta.setPosition (KRakieta.koordynata_x, KRakieta.koordynata_y);
@@ -228,7 +225,6 @@ int main()
             for (int i = 0; i < planety.size (); i++)
             {
                 okno.draw (planety [i].grafika);
-                if (sqrt (pow ((KRakieta.koordynata_x - planety [i].koordynata_x), 2) + pow ((KRakieta.koordynata_y - planety [i].koordynata_y), 2)) < planety [i].promien) Kstart = false;
             }
             okno.display ();
         }

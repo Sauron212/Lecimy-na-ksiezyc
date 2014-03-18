@@ -1024,7 +1024,7 @@
 	<SFML/Graphics.hpp>
 	<fstream>
 
-1395085577 source:f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
+1395161517 source:f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
 	<SFML/Graphics.hpp>
 	<cmath>
 	<sstream>
@@ -1365,7 +1365,7 @@
 	<string>
 	<vector>
 
-1395085695 f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
+1395161637 f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
 	<SFML/Graphics.hpp>
-	<fstream>
+	<cmath>
 
