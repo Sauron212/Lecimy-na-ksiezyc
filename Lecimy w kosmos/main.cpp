@@ -75,8 +75,6 @@ int main()
 
     Rakieta KRakieta (0, 300, 300, 100 * pow (10, - 12));
     Laduj_Uklad ();
-    sf::Clock timer;
-    sf::Time t_1;
 
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
 
@@ -203,19 +201,22 @@ int main()
             while( okno.pollEvent ( zdarzenie ) )
             {
                 if (zdarzenie.type == sf::Event::Closed) okno.close ();
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Kstart = true;
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) okno.close ();
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space))
+                {
+                    Kstart = true;
+                    for (int i = 0; i < planety.size (); i++) planety [i].stoper.restart ();
+                }
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
+                {
+                    okno.close ();
+                    dx.close ();
+                }
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::A)) modyfikator -= 10000;
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::D)) modyfikator += 10000;
             }
-            t_1 = timer.getElapsedTime ();
             if (Kstart == true)
             {
-                KRakieta.Aktualizacja (t_1.asSeconds ());
-                for (int i = 0; i < planety.size (); i++)planety [i].Aktualizacja (t_1.asSeconds ());
-                timer.restart ();
+                for (int i = 0; i < planety.size (); i++)planety [i].Aktualizacja ();
             }
             Krakieta.setPosition (KRakieta.koordynata_x, KRakieta.koordynata_y);
             klip.setCenter (KRakieta.koordynata_x, KRakieta.koordynata_y);
