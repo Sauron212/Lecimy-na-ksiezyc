@@ -79,7 +79,8 @@ int main()
 
     /* ZMIENNE GRUPY JARKA : */
 
-    Rakieta KRakieta (0, 300, 300, 100 * pow (10, - 12));
+    Rakieta KRakieta (-1.495893767 * pow (10, 11), 3.229983412 * pow (10, 9), 100);
+    KRakieta.v.x = 10.53;
     Laduj_Uklad ();
 
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
@@ -94,7 +95,7 @@ int main()
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
-    Krakieta.setPosition(KRakieta.koordynata_x, KRakieta.koordynata_y);
+    Krakieta.setPosition(KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
     Krakieta.setFillColor( sf::Color::Yellow );
     Krakieta.setRotation( Kkatrakiety + 90 );
 
@@ -220,6 +221,7 @@ int main()
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space))
                 {
                     Kstart = true;
+                    KRakieta.stoper.restart ();
                     for (int i = 0; i < planety.size (); i++) planety [i].stoper.restart ();
                 }
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
@@ -232,10 +234,11 @@ int main()
             }
             if (Kstart == true)
             {
+                KRakieta.Aktualizacja ();
                 for (int i = 0; i < planety.size (); i++)planety [i].Aktualizacja ();
             }
-            Krakieta.setPosition (KRakieta.koordynata_x, KRakieta.koordynata_y);
-            klip.setCenter (KRakieta.koordynata_x, KRakieta.koordynata_y);
+            Krakieta.setPosition (KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
+            klip.setCenter (KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
             okno.setView (klip);
             okno.clear (sf::Color::Black);
             okno.draw (Krakieta);
