@@ -340,11 +340,12 @@
 	<string>
 	<vector>
 
-1394840510 source:c:\users\adamek\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
+1395336772 source:c:\users\adamek\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\main.cpp
 	<SFML/Graphics.hpp>
 	<cmath>
 	<sstream>
 	<iostream>
+	"Faza_Kosmosu.h"
 
 1394131755 c:\users\adamek\documents\github\lecimy-na-ksiezyc\biblioteki\sfml-2.1\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -1366,6 +1367,11 @@
 	<vector>
 
 1395262284 f:\documents and settings\michal\moje dokumenty\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
+	<SFML/Graphics.hpp>
+	<cmath>
+	<fstream>
+
+1395327428 c:\users\adamek\documents\github\lecimy-na-ksiezyc\lecimy w kosmos\faza_kosmosu.h
 	<SFML/Graphics.hpp>
 	<cmath>
 	<fstream>

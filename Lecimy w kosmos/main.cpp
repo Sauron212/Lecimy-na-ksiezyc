@@ -66,9 +66,15 @@ int main()
         prostokat.setPosition(0.86*okno.getSize().x-3,0.02*okno.getSize().y-2);
         prostokat.setFillColor(sf::Color(0,0,0));
             sf::View minimapa;
-            minimapa.setViewport(sf::FloatRect(0.86f,0.02, 0.12f, 0.15f));
+            minimapa.setViewport(sf::FloatRect(0.86f, 0.02, 0.12f, 0.15f));
             minimapa.setSize(500,500);
             minimapa.zoom(2);
+
+
+            sf::View mapa; //stwoerzenie widoku mapy
+            mapa.reset(sf::FloatRect(0,0,800, 600));
+            mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
+
 
 
     /* ZMIENNE GRUPY JARKA : */
@@ -161,20 +167,27 @@ int main()
                     predkosc += przyspieszenie; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
 
-                    if(rakieta.getPosition().y>=300 )   // ustawienie rakiety na srodku ekranu
-                        rakieta.move(0,-predkosc);
-                    else
-                        tlo.move(0,predkosc);   // poruszanie sie tla
+                    if(rakieta.getPosition().y<300 )   // ustawienie rakiety na srodku ekranu
+                    {
+                        mapa.move(0,-predkosc); //przesuwanie ekranu
+                        minimapa.move(0,-predkosc); //przesuwanie widoku minimapy
+                    }
+
+                    rakieta.move(0, -predkosc);
                     odleglosc+=predkosc;
                 }
                 czas.restart();
             }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo);
-            okno.draw(prostokat);
+
+            okno.setView(okno.getDefaultView());
+                okno.draw(prostokat);
+
             okno.setView(minimapa);                 // minimapa
                 okno.draw(tlo);                     // to znajduje sie na minimapie
                 okno.draw(rakieta);                 // to znajduje sie na minimapie
+
             okno.setView(okno.getDefaultView());
             if(odleglosc>17000 && odleglosc<22000)                  // Wyswietlanie komunikatu o sferach
             {
@@ -190,10 +203,13 @@ int main()
                 mezosfera.setColor(sf::Color::Red);
                 okno.draw(mezosfera);
             }
-            okno.setView(okno.getDefaultView());
+            okno.setView(mapa);
                 okno.draw(rakieta);
+
+            okno.setView(okno.getDefaultView());
                 wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
 
+            okno.setView(mapa);
             okno.display();
         }
         while(okno.isOpen ()&&(odleglosc > 6471000 || menu==2))
