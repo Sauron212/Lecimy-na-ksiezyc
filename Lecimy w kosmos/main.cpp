@@ -27,7 +27,7 @@ int main()
     kosmosT.setPosition(300,250);
     wyjscieT.setPosition(300,300);
     /* ZMIENNE GRUPY GRZESIA : */
-    int x{375},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
+    int x{394},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
     long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
@@ -59,7 +59,7 @@ int main()
     tlo.setPosition(0,-7297);
 
 
-    sf::RectangleShape rakieta(sf::Vector2f(10,110)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
+    sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
     rakieta.setFillColor(sf::Color(0,0,0));
     sf::RectangleShape prostokat(sf::Vector2f(0.12*okno.getSize().x-5,0.12*okno.getSize().y-5));
@@ -168,10 +168,9 @@ int main()
                     predkosc += przyspieszenie; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
 
-                    if(rakieta.getPosition().y<300 )   // ustawienie rakiety na srodku ekranu
+                    if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
                     {
-                        mapa.move(0,-predkosc); //przesuwanie ekranu
-                        minimapa.move(0,-predkosc); //przesuwanie widoku minimapy
+                    mapa.setCenter(rakieta.getPosition().x+6,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
 
                     rakieta.move(0, -predkosc);
@@ -264,25 +263,25 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
     sf::Text czas_wys(czas3, font, 20);
     czas_wys.setColor((sf::Color::Black));
-    czas_wys.setPosition(400, 480);
+    czas_wys.setPosition(410, 480);
     ss.str("");
     ss<<"Przyspieszenie "<<przyspieszenie*1000000<<"m/s^2";
     string przyspieszenie_w = ss.str();
     sf::Text przyspieszenie_wys(przyspieszenie_w, font,20);
     przyspieszenie_wys.setColor((sf::Color::Black));
-    przyspieszenie_wys.setPosition(400,500);
+    przyspieszenie_wys.setPosition(410,500);
     ss.str("");
     ss<<"Predkosc "<<predkosc*1000<<"m/s";
     string predkosc_w = ss.str();
     sf::Text predkosc_wys(predkosc_w, font,20);
     predkosc_wys.setColor((sf::Color::Black));
-    predkosc_wys.setPosition(400,520);
+    predkosc_wys.setPosition(410,520);
     ss.str("");
     ss<<"Wysokosc nad poziomem morza "<<odleglosc-6371000<<"m";
     string wysokosc_w = ss.str();
     sf::Text wysokosc_wys(wysokosc_w, font,20);
     wysokosc_wys.setColor((sf::Color::Black));
-    wysokosc_wys.setPosition(400,540);
+    wysokosc_wys.setPosition(410,540);
     ss.str("");
     if(kinetyczna<=1000000)
         ss<<"Energia kinetyczna "<<kinetyczna<<"J";
@@ -291,7 +290,7 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     string kinetyczna_w = ss.str();
     sf::Text kinetyczna_wys(kinetyczna_w, font,20);
     kinetyczna_wys.setColor((sf::Color::Black));
-    kinetyczna_wys.setPosition(400,560);
+    kinetyczna_wys.setPosition(410,560);
 
 
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
