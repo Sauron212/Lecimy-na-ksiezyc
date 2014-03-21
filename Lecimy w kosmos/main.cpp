@@ -42,10 +42,10 @@ int main()
     long double predkosc=0;                     // predkosc z jaka porusza sie rakieta
     long double kinetyczna=0;                   // Energia kinetyczna
     double pole = 112.97;                       // pole jakie jest brane pod uwage w oporze
-    double Cx = 0.521;                          // wspó³czynnik si³y oporu
+    double Cx = 0.3;                          // wspó³czynnik si³y oporu
 
 
-    long double F1 = 33850966.49;                    // Sila silnikow pierwszego stopnia w N
+    long double F1 = 39428858.47;                    // Sila silnikow pierwszego stopnia w N
     long double opor = Cx*1.1717*predkosc*predkosc*pole/2;      // opor powietrza
 
     sf::Event zdarzenie;
@@ -172,8 +172,8 @@ int main()
                     {
                     mapa.setCenter(rakieta.getPosition().x+6,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
-
-                    rakieta.move(0, -predkosc);
+                    double radiany=(rakieta.getRotation()*M_PI)/180.0;
+                    rakieta.move(predkosc*sin(radiany), -predkosc*cos(radiany));
                     odleglosc+=predkosc;
                 }
                 czas.restart();
