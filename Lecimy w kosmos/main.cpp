@@ -148,16 +148,16 @@ int main()
                 if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70 )
                     m-=13169.063/1000;
 
-                if(czas_rotacja.getElapsedTime().asSeconds() >= 1) // Co sekundę...
+                if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
                     if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
-                    rakieta.rotate(0.7280000);//...obrót rakiety o tyle stopni
+                    rakieta.rotate(0.7280000/1000);//...obrót rakiety o tyle stopni
 
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
-                    rakieta.rotate(0.4696364);
+                    rakieta.rotate(0.4696364/1000);
 
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
-                    rakieta.rotate(0.2970000);
+                    rakieta.rotate(0.2970000/1000);
                     czas_rotacja.restart();
                 }
 
