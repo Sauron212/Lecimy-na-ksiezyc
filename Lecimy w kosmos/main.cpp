@@ -8,8 +8,8 @@ using namespace std;
 
 void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna);
 inline void czcionka(void);
-
-sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos");
+    sf::ContextSettings settings( 0,0,8,2,0 );
+sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font;
 
 
