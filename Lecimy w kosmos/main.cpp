@@ -83,6 +83,12 @@ int main()
     KRakieta.v.x = 10.53;
     Laduj_Uklad ();
 
+    sf::Texture Ktlo_tekstura;
+    Ktlo_tekstura.loadFromFile("Ktlo.png");
+    sf::Sprite Ktlo;
+    Ktlo.setTexture(Ktlo_tekstura);
+    Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 9) - 400, KRakieta.koordynata_y / pow (10, 9) - 300);
+
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
 
     double Kkatrakiety;
@@ -240,6 +246,7 @@ int main()
             klip.setCenter (KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
             okno.setView (klip);
             okno.clear (sf::Color::Black);
+            okno.draw (Ktlo);
             okno.draw (Krakieta);
             for (int i = 0; i < planety.size (); i++)
             {
