@@ -171,7 +171,8 @@ int main()
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
-                    predkosc += przyspieszenie; // obliczanie predkosci
+                    int t = czas.getElapsedTime().asMilliseconds();
+                    predkosc += przyspieszenie*t; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
 
                     if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
@@ -180,7 +181,7 @@ int main()
                     }
                     double radiany=(rakieta.getRotation()*M_PI)/180.0;
                     rakieta.move(predkosc*sin(radiany), -predkosc*cos(radiany));
-                    odleglosc+=predkosc;
+                    odleglosc+=predkosc*t;
                 }
                 czas.restart();
             }
