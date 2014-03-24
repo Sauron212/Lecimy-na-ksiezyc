@@ -78,16 +78,15 @@ int main()
 
 
     /* ZMIENNE GRUPY JARKA : */
-
-    Rakieta KRakieta (-1.495893767 * pow (10, 11), 3.229983412 * pow (10, 9), 100);
-    KRakieta.v.x = 10.53;
+    Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
+    KRakieta.v.y = 7910;
     Laduj_Uklad ();
 
     sf::Texture Ktlo_tekstura;
     Ktlo_tekstura.loadFromFile("Ktlo.png");
     sf::Sprite Ktlo;
     Ktlo.setTexture(Ktlo_tekstura);
-    Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 9) - 400, KRakieta.koordynata_y / pow (10, 9) - 300);
+    Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 6) - 400, KRakieta.koordynata_y / pow (10, 6) - 300);
 
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
 
@@ -97,7 +96,7 @@ int main()
     bool Kstart = false;
 
     sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 800, 600));
+    klip.reset (sf::FloatRect (0, 0, 8000, 6000));
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
@@ -179,7 +178,7 @@ int main()
                     {
                     mapa.setCenter(rakieta.getPosition().x+6,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
-                    double radiany=(rakieta.getRotation()*M_PI)/180.0;
+                    double radiany=(rakieta.getRotation()*pi)/180.0;
                     rakieta.move(predkosc*sin(radiany), -predkosc*cos(radiany));
                     odleglosc+=predkosc*t;
                 }
@@ -230,7 +229,7 @@ int main()
                     KRakieta.stoper.restart ();
                     for (int i = 0; i < planety.size (); i++) planety [i].stoper.restart ();
                 }
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q))
                 {
                     okno.close ();
                     dx.close ();
@@ -238,21 +237,20 @@ int main()
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
             }
-            if (Kstart == true)
+            if (Kstart)
             {
                 KRakieta.Aktualizacja ();
-                for (int i = 0; i < planety.size (); i++)planety [i].Aktualizacja ();
             }
-            Krakieta.setPosition (KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
-            klip.setCenter (KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
+            Krakieta.setPosition (KRakieta.koordynata_x / pow (10, 6), KRakieta.koordynata_y / pow (10, 6));
+            klip.setCenter (KRakieta.koordynata_x / pow (10, 6), -KRakieta.koordynata_y / pow (10, 6));
             okno.setView (klip);
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
-            okno.draw (Krakieta);
             for (int i = 0; i < planety.size (); i++)
             {
                 okno.draw (planety [i].grafika);
             }
+            okno.draw (KRakieta.grafika);
             okno.display ();
         }
     }
