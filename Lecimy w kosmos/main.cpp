@@ -11,7 +11,7 @@ inline void czcionka(void);
     sf::ContextSettings settings( 0,0,8,2,0 );
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
-sf::Font font;
+sf::Font font[2];
 
 
 int main()
@@ -24,16 +24,19 @@ int main()
     sf::Sprite tlo1;
     tlo1.setTexture(tlo_menu);
     tlo1.setScale(okno.getSize().x/1920.0,okno.getSize().y/1080.0);
+    font[0].loadFromFile("arial.ttf");  // ustawienie czcionki
+    font[1].loadFromFile("ocr.ttf");
 
-
-    font.loadFromFile("arial.ttf");                 // ustawienie czcionki
     int menu=0;
-    sf::Text ziemiaT("ZIEMIA", font,20);
-    sf::Text kosmosT("KOSMOS", font,20);
-    sf::Text wyjscieT("WYJSCIE", font,20);
-    ziemiaT.setColor((sf::Color::Black));
-    kosmosT.setColor((sf::Color::Black));
-    wyjscieT.setColor((sf::Color::Black));
+    sf::Text ziemiaT("ZIEMIA", font[0],20);
+    sf::Text lecimyT("Lecimy w kosmos!", font[1],80);
+    sf::Text kosmosT("KOSMOS", font[0],20);
+    sf::Text wyjscieT("WYJSCIE", font[0],20);
+    lecimyT.setColor(sf::Color::White);
+    ziemiaT.setColor(sf::Color::Black);
+    kosmosT.setColor(sf::Color::Black);
+    wyjscieT.setColor(sf::Color::Black);
+    lecimyT.setPosition((okno.getSize().x-lecimyT.getGlobalBounds().width)/2, 20);
     ziemiaT.setPosition(300,200);
     kosmosT.setPosition(300,250);
     wyjscieT.setPosition(300,300);
@@ -141,6 +144,7 @@ int main()
             }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
+            okno.draw(lecimyT);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
             okno.draw(wyjscieT);
@@ -218,14 +222,14 @@ int main()
             okno.setView(okno.getDefaultView());
             if(odleglosc>17000 && odleglosc<22000)                  // Wyswietlanie komunikatu o sferach
             {
-                sf::Text stratosfera("Weszlismy w STRATOSFERE", font, 18);
+                sf::Text stratosfera("Weszlismy w STRATOSFERE", font[0], 18);
                 stratosfera.setPosition(300,400);
                 stratosfera.setColor(sf::Color::Red);
                 okno.draw(stratosfera);
             }
             if(odleglosc>55000 && odleglosc<60000)
             {
-                sf::Text mezosfera("Weszlismy w MEZOSFERE", font, 18);
+                sf::Text mezosfera("Weszlismy w MEZOSFERE", font[0], 18);
                 mezosfera.setPosition(300,400);
                 mezosfera.setColor(sf::Color::Red);
                 okno.draw(mezosfera);
@@ -288,25 +292,25 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
             int sekundy = a-godziny*3600-minuty*60;
     ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
-    sf::Text czas_wys(czas3, font, 20);
+    sf::Text czas_wys(czas3, font[0], 20);
     czas_wys.setColor((sf::Color::Black));
     czas_wys.setPosition(410, 480);
     ss.str("");
     ss<<"Przyspieszenie "<<przyspieszenie*1000000<<"m/s^2";
     string przyspieszenie_w = ss.str();
-    sf::Text przyspieszenie_wys(przyspieszenie_w, font,20);
+    sf::Text przyspieszenie_wys(przyspieszenie_w, font[0],20);
     przyspieszenie_wys.setColor((sf::Color::Black));
     przyspieszenie_wys.setPosition(410,500);
     ss.str("");
     ss<<"Predkosc "<<predkosc*1000<<"m/s";
     string predkosc_w = ss.str();
-    sf::Text predkosc_wys(predkosc_w, font,20);
+    sf::Text predkosc_wys(predkosc_w, font[0],20);
     predkosc_wys.setColor((sf::Color::Black));
     predkosc_wys.setPosition(410,520);
     ss.str("");
     ss<<"Wysokosc nad poziomem morza "<<odleglosc-6371000<<"m";
     string wysokosc_w = ss.str();
-    sf::Text wysokosc_wys(wysokosc_w, font,20);
+    sf::Text wysokosc_wys(wysokosc_w, font[0],20);
     wysokosc_wys.setColor((sf::Color::Black));
     wysokosc_wys.setPosition(410,540);
     ss.str("");
@@ -315,7 +319,7 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     else
         ss<<"Energia kinetyczna "<<kinetyczna/1000000<<"MJ";
     string kinetyczna_w = ss.str();
-    sf::Text kinetyczna_wys(kinetyczna_w, font,20);
+    sf::Text kinetyczna_wys(kinetyczna_w, font[0],20);
     kinetyczna_wys.setColor((sf::Color::Black));
     kinetyczna_wys.setPosition(410,560);
 
