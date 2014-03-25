@@ -9,12 +9,23 @@ using namespace std;
 void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna);
 inline void czcionka(void);
     sf::ContextSettings settings( 0,0,8,2,0 );
+
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font;
 
 
 int main()
 {
+    bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
+    if(fullscreen)
+        okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
+    sf::Texture tlo_menu;
+    tlo_menu.loadFromFile("tlo-menu.png");
+    sf::Sprite tlo1;
+    tlo1.setTexture(tlo_menu);
+    tlo1.setScale(okno.getSize().x/1920.0,okno.getSize().y/1080.0);
+
+
     font.loadFromFile("arial.ttf");                 // ustawienie czcionki
     int menu=0;
     sf::Text ziemiaT("ZIEMIA", font,20);
@@ -129,6 +140,7 @@ int main()
                     okno.close();
             }
             okno.clear(sf::Color(255,255,255));
+            okno.draw(tlo1);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
             okno.draw(wyjscieT);
@@ -142,6 +154,8 @@ int main()
                  okno.close();
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                  start=true;
+                if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
+                    okno.close();
             }
             if(start==false)                // Zerowanie czasu jak jest na ziemii
                 czas_pod.restart();
@@ -165,12 +179,19 @@ int main()
                     rakieta.rotate(0.2970000/1000);
                     czas_rotacja.restart();
                 }
-
                 opor = Cx*1.1717*predkosc*predkosc*pole/2;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
-                    int t = czas.getElapsedTime().asMilliseconds();
+                    float k = 1.41;
+                    float R = 287;
+                    float temp = 288.15;
+                    if(predkosc*1000/sqrt(k*R*temp)<=0.5)
+                    {
+                        Cx-=0.0006/1000;
+                        cout << Cx;
+                    }
+                    float t = czas.getElapsedTime().asMilliseconds();
                     predkosc += przyspieszenie*t; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
 
