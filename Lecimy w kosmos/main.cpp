@@ -58,9 +58,14 @@ int main()
     double pole = 112.97;                       // pole jakie jest brane pod uwage w oporze
     double Cx = 0.3;                          // wspó³czynnik si³y oporu
 
+    double k=1.41;
+    double R=287;
+    double T=301.15;
+    double predkosc_dzwieku=sqrt(k*R*T);
+    double Q = 1.1717;                              //gestosc powietrza
 
     long double F1 = 39428858.47;                    // Sila silnikow pierwszego stopnia w N
-    long double opor = Cx*1.1717*predkosc*predkosc*pole/2;      // opor powietrza
+    long double opor = Cx*Q*predkosc*predkosc*pole/2;      // opor powietrza
 
     sf::Event zdarzenie;
     sf::Clock czas,czas_pod, czas_rotacja;             // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
@@ -183,18 +188,20 @@ int main()
                     rakieta.rotate(0.2970000/1000);
                     czas_rotacja.restart();
                 }
+                predkosc_dzwieku=sqrt(k*R*T);
+                float Ma = predkosc*1000/predkosc_dzwieku;
+                if(Ma<0.5)
+                {
+                  Cx-=0.0000016;
+                  cout << Cx << endl;
+                }
+                if(Ma>=0.5)
+                    cin.get();
+
                 opor = Cx*1.1717*predkosc*predkosc*pole/2;          // uatkualnienie oporu powietrza
                 przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
-                    float k = 1.41;
-                    float R = 287;
-                    float temp = 288.15;
-                    if(predkosc*1000/sqrt(k*R*temp)<=0.5)
-                    {
-                        Cx-=0.0006/1000;
-                        cout << Cx;
-                    }
                     float t = czas.getElapsedTime().asMilliseconds();
                     predkosc += przyspieszenie*t; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
