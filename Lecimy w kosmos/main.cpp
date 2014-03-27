@@ -64,7 +64,7 @@ int main()
     double predkosc_dzwieku=sqrt(k*R*T);
     double Q = 1.1717;                              //gestosc powietrza
 
-    long double F1 = 39428858.47;                    // Sila silnikow pierwszego stopnia w N
+    long double F1[4] = {39428858.47,0,0,0};                    // Sila silnikow pierwszego stopnia w N
     long double opor = Cx*Q*predkosc*predkosc*pole/2;      // opor powietrza
 
     sf::Event zdarzenie;
@@ -172,9 +172,12 @@ int main()
             {
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
                 if(czas_pod.getElapsedTime().asSeconds()-6<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
-                    m-=5876.59/1000;
-                if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70 )
+                    m-=6562.2/1000;
+                else if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70)
                     m-=13169.063/1000;
+                else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
+                    m-=13374.6246/1000;
+
 
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
@@ -188,20 +191,21 @@ int main()
                     rakieta.rotate(0.2970000/1000);
                     czas_rotacja.restart();
                 }
-                predkosc_dzwieku=sqrt(k*R*T);
-                float Ma = predkosc*1000/predkosc_dzwieku;
-                if(Ma<0.5)
-                {
-                  Cx-=0.0000016;
-                  cout << Cx << endl;
-                }
-                if(Ma>=0.5)
-                    cin.get();
 
-                opor = Cx*1.1717*predkosc*predkosc*pole/2;          // uatkualnienie oporu powietrza
-                przyspieszenie =((F1 - m*g-opor)/m)/1000000;                // obliczanie przyspieszenia
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
+                    opor = Cx*Q*predkosc*predkosc*pole/2;          // uatkualnienie oporu powietrza
+                    przyspieszenie =((F1[0] - m*g-opor)/m)/1000000;      // obliczanie przyspieszenia
+                    predkosc_dzwieku=sqrt(k*R*T);
+                    float Ma = predkosc*1000/predkosc_dzwieku;
+                        if(Ma<0.5)
+                        {
+                          Cx-=0.0000016;
+                        }
+                        else if(Ma>=0.5&&Ma<1.3)
+                        {
+                          Cx+=0.000025;
+                        }
                     float t = czas.getElapsedTime().asMilliseconds();
                     predkosc += przyspieszenie*t; // obliczanie predkosci
                     kinetyczna=0.5*m*predkosc*predkosc;                                          // obliczanie Ek
@@ -213,6 +217,8 @@ int main()
                     double radiany=(rakieta.getRotation()*pi)/180.0;
                     rakieta.move(predkosc*sin(radiany), -predkosc*cos(radiany));
                     odleglosc+=predkosc*t;
+                    Q-=predkosc*t*0.0001;
+
                 }
                 czas.restart();
             }
