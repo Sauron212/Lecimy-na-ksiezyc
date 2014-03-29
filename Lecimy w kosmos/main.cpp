@@ -97,9 +97,26 @@ int main()
 
 
     /* ZMIENNE GRUPY JARKA : */
+
+
+    sf::Text v_plusT("Plus", font[0],20);
+    sf::Text v_minusT("Minus", font[0],20);
+
+    v_plusT.setColor(sf::Color::White);
+    v_minusT.setColor(sf::Color::White);
+    v_plusT.setPosition(500,200);
+    v_minusT.setPosition(500,250);
+
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     KRakieta.v.y = 7910;
     Laduj_Uklad ();
+
+    ostringstream s;
+    s<< KRakieta.v.y;
+    string wyswietlanie_KRakieta_v_y = s.str();
+    sf::Text Tekst_KRakieta_v_y(wyswietlanie_KRakieta_v_y, font[0], 20);
+    Tekst_KRakieta_v_y.setColor((sf::Color::White));
+    Tekst_KRakieta_v_y.setPosition(500, 150);
 
     sf::Texture Ktlo_tekstura;
     Ktlo_tekstura.loadFromFile("Ktlo.png");
@@ -136,10 +153,30 @@ int main()
             sf::FloatRect ziemia = ziemiaT.getGlobalBounds();
             sf::FloatRect kosmos = kosmosT.getGlobalBounds();
             sf::FloatRect wyjscie = wyjscieT.getGlobalBounds();
+            sf::FloatRect v_plus = v_plusT.getGlobalBounds();
+            sf::FloatRect v_minus = v_minusT.getGlobalBounds();
             while(okno.pollEvent(zdarzenie))
             {
                 if( zdarzenie.type == sf::Event::Closed )
                     okno.close();
+                if(myszka.intersects(v_plus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    {
+                        KRakieta.v.y += 1000;
+                        s.str("");
+                        s<< KRakieta.v.y;
+                        wyswietlanie_KRakieta_v_y = s.str();
+                        Tekst_KRakieta_v_y.setString(wyswietlanie_KRakieta_v_y);
+
+                    }
+                if(myszka.intersects(v_minus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    {
+                        KRakieta.v.y -= 1000;
+                        s.str("");
+                        s<< KRakieta.v.y;
+                        wyswietlanie_KRakieta_v_y = s.str();
+                        Tekst_KRakieta_v_y.setString(wyswietlanie_KRakieta_v_y);
+
+                    }
                 if(myszka.intersects(ziemia) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     menu=1;
                 if(myszka.intersects(kosmos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -149,6 +186,9 @@ int main()
             }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
+            okno.draw( v_plusT );
+            okno.draw( v_minusT );
+            okno.draw( Tekst_KRakieta_v_y );
             okno.draw(lecimyT);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
