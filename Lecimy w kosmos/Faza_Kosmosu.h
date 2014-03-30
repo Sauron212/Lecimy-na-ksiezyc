@@ -3,11 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
-#include <fstream>
 
 const double pi = atan (1) * 4;
-int modyfikator = 864;
-std::ofstream dx ("dx.txt");
 
 sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, double y_2, double masa_2)
 {
@@ -25,9 +22,6 @@ class Planeta
         double promien_orbity;
         double promien_planety;
         sf::CircleShape grafika;
-        sf::Clock stoper;
-        sf::Time czas;
-        sf::Time t2;
         Planeta (double c_masa, double c_T, double c_pozycja_katowa, double c_promien_orbity, double c_promien_planety)
         {
             masa = c_masa;
@@ -38,15 +32,10 @@ class Planeta
             promien_planety = c_promien_planety;
             grafika.setRadius (promien_planety / pow (10, 6));
             grafika.setPosition (cos (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius (), -sin (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius ());
-            czas = sf::Time::Zero;
-            t2 = sf::Time::Zero;
         }
         void Aktualizacja ()
         {
-            pozycja_katowa += omega * czas.asSeconds () * modyfikator;
-            czas = stoper.getElapsedTime ();
-            t2 += czas;
-            stoper.restart ();
+            pozycja_katowa += omega;
             if (pozycja_katowa > 2 * pi) pozycja_katowa = 0;
             grafika.setPosition (cos (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius (), -sin (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius ());
         }
@@ -63,8 +52,6 @@ class Rakieta
         sf::Vector2f Fg;
         sf::Vector2f a;
         sf::Vector2f v;
-        sf::Clock stoper;
-        sf::Time czas;
         sf::CircleShape grafika;
         Rakieta (double c_x, double c_y, double c_masa)
         {
@@ -89,15 +76,15 @@ class Rakieta
             for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
             a.x += Fg.x / masa;
             a.y += Fg.y / masa;
-            czas = stoper.getElapsedTime ();
-            v.x += a.x * modyfikator * czas.asSeconds ();
-            v.y += a.y * modyfikator * czas.asSeconds ();
-            koordynata_x += v.x * czas.asSeconds () * modyfikator;
-            koordynata_y += v.y * czas.asSeconds () * modyfikator;
-            stoper.restart ();
+            v.x += a.x;
+            v.y += a.y;
+            koordynata_x += v.x;
+            koordynata_y += v.y;
             grafika.setPosition (koordynata_x / pow (10, 6) - 2, -koordynata_y / pow (10, 6) - 2);
         }
 };
+
+Rakieta FK_Rakieta (1.49597870 * pow (10, 11) - 42231860.82, 0, 100);
 
 void Laduj_Uklad ()
 {
@@ -110,6 +97,27 @@ void Laduj_Uklad ()
     planety.push_back (Planeta (5.6846 * pow (10, 26), 929620800, 3.98615747863, 1.426725413 * pow (10, 12), 60268000));
     planety.push_back (Planeta (8.6832 * pow (10, 25), 2653185024, 0.21502456384, 2.870972220  * pow (10, 12), 25559000));
     planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
+}
+
+std::vector <sf::Vertex> punkty;
+std::vector <double> czasy;
+
+void Symulacja (int czas)
+{
+    punkty.clear ();
+    czasy.clear ();
+    punkty.push_back (sf::Vertex (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y  / 1000000)));
+    czasy.push_back (0);
+    for (long i = 0; i < czas; i++)
+    {
+        for (int i = 0; i < planety.size () - 1; i++) planety [i].Aktualizacja ();
+        FK_Rakieta.Aktualizacja ();
+        if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].position.x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].position.y), 2) > 1000000000000)
+        {
+            punkty.push_back (sf::Vertex (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y  / 1000000)));
+            czasy.push_back (i);
+        }
+    }
 }
 
 #endif // FAZA_KOSMOSU_H_INCLUDED

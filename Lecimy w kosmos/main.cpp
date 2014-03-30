@@ -13,7 +13,6 @@ inline void czcionka(void);
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
 
-
 int main()
 {
     bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
@@ -108,8 +107,8 @@ int main()
     v_minusT.setPosition(500,250);
 
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
-    KRakieta.v.y = 7910;
     Laduj_Uklad ();
+    FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
 
     ostringstream s;
     s<< KRakieta.v.y;
@@ -296,39 +295,23 @@ int main()
             okno.setView(mapa);
             okno.display();
         }
-        while(okno.isOpen ()&&(odleglosc > 6471000 || menu==2))
+        while (okno.isOpen () && (odleglosc > 6471000 || menu == 2))
         {
-            while( okno.pollEvent ( zdarzenie ) )
+            while (okno.pollEvent (zdarzenie))
             {
                 if (zdarzenie.type == sf::Event::Closed) okno.close ();
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space))
-                {
-                    Kstart = true;
-                    KRakieta.stoper.restart ();
-                    for (int i = 0; i < planety.size (); i++) planety [i].stoper.restart ();
-                }
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q))
-                {
-                    okno.close ();
-                    dx.close ();
-                }
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Symulacja (86400);
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q)) okno.close ();
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
             }
-            if (Kstart)
-            {
-                KRakieta.Aktualizacja ();
-            }
-            Krakieta.setPosition (KRakieta.koordynata_x / pow (10, 6), KRakieta.koordynata_y / pow (10, 6));
-            klip.setCenter (KRakieta.koordynata_x / pow (10, 6), -KRakieta.koordynata_y / pow (10, 6));
+            klip.setCenter (FK_Rakieta.koordynata_x / pow (10, 6), -FK_Rakieta.koordynata_y / pow (10, 6));
             okno.setView (klip);
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
-            for (int i = 0; i < planety.size (); i++)
-            {
-                okno.draw (planety [i].grafika);
-            }
-            okno.draw (KRakieta.grafika);
+            okno.draw (&punkty [0], punkty.size(), sf::LinesStrip);
+            for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
+            okno.draw (FK_Rakieta.grafika);
             okno.display ();
         }
     }
