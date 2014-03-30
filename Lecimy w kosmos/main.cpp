@@ -76,6 +76,10 @@ int main()
     tlo.setTexture(tlo_tekstura);
     tlo.setPosition(0,-7297);
 
+    sf::RectangleShape w_sil(sf::Vector2f(1, (F1[0]/100000) )); //wektor siły silnikow
+    w_sil.setPosition(x+5,y-(F1[0]/100000)+55);
+    w_sil.setFillColor(sf::Color(0,0,0));
+
 
     sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
@@ -221,13 +225,23 @@ int main()
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
                     if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
+                    {
                     rakieta.rotate(0.7280000/1000);//...obrót rakiety o tyle stopni
+                    w_sil.rotate(0.7280000/1000);
+                    w_sil.move(F1[0]/100000 * (sin(0.7280000/1000)*3.141592/180),0);
+                    }
 
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
+                    {
                     rakieta.rotate(0.4696364/1000);
+                    w_sil.rotate(0.7280000/1000);
+                    }
 
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
+                    {
                     rakieta.rotate(0.2970000/1000);
+                    w_sil.rotate(0.7280000/1000);
+                    }
                     czas_rotacja.restart();
                 }
 
@@ -255,6 +269,7 @@ int main()
                     }
                     double radiany=(rakieta.getRotation()*pi)/180.0;
                     rakieta.move(predkosc*sin(radiany), -predkosc*cos(radiany));
+                    w_sil.move(predkosc*sin(radiany), -predkosc*cos(radiany));
                     odleglosc+=predkosc*t;
                     Q-=predkosc*t*0.0001;
 
@@ -288,6 +303,7 @@ int main()
             }
             okno.setView(mapa);
                 okno.draw(rakieta);
+                okno.draw(w_sil);
 
             okno.setView(okno.getDefaultView());
                 wyswietlanie_danych(czas_pod,przyspieszenie,predkosc,odleglosc,kinetyczna);
