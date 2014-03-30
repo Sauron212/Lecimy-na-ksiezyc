@@ -7,7 +7,6 @@ using namespace sf;
 using namespace std;
 
 void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna);
-void Rotacja(sf::RectangleShape rakieta ,sf::Clock czas_pod, sf::Clock czas_rotacja);
     sf::ContextSettings settings( 0,0,8,2,0 );
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
@@ -69,7 +68,7 @@ int main()
     double Q = 1.1717;                              //gestosc powietrza
 
     long double moc_silnikow[4] = {39428858.47,0,0,0};     // Sila silnikow pierwszego stopnia w N
-    long double opor;      // opor powietrza
+    sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
     sf::Event zdarzenie;
     sf::Clock czas,czas_pod, czas_rotacja;             // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
@@ -226,32 +225,37 @@ int main()
                 else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
                     m-=13374.6246/1000;
 
-
-                Rotacja(rakieta,czas_pod,czas_rotacja);
+                if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
+                {
+                    if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
+                        rakieta.rotate(0.7280000/1000);//...obrót rakiety o tyle stopni
+                    else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
+                        rakieta.rotate(0.4696364/1000);
+                    else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
+                        rakieta.rotate(0.2970000/1000);
+                czas_rotacja.restart();
+                }
 
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
                     radiany=(rakieta.getRotation()*pi)/180.0;
                     t = czas.getElapsedTime().asMilliseconds();
-                    opor = Cx*Q*pow(IpredkoscI,2)*pole/2;          // uatkualnienie oporu powietrza
-
+                    opor.x = Cx*Q*pow(predkosc.x,2)*pole/2;          // uatkualnienie oporu powietrza
+                    opor.y = Cx*Q*pow(predkosc.y,2)*pole/2;
                     Fg.x = 0;Fg.y = m*g;
                     F.x = moc_silnikow[0]*sin(radiany) ; F.y = moc_silnikow[0]*cos(radiany);
-                    przyspieszenie.x = (F.x-Fg.x-opor)/(m*1000000);
-                    przyspieszenie.y = (F.y-Fg.y-opor)/(m*1000000);
+                    przyspieszenie.x = (F.x-Fg.x-opor.x)/(m*1000000);
+                    przyspieszenie.y = (F.y-Fg.y-opor.y)/(m*1000000);
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
                     IprzyspieszenieI =sqrt(pow(przyspieszenie.x,2)+pow(przyspieszenie.y,2));
-                    if(czas_pod.getElapsedTime().asSeconds() >=60)
-                    {
-                        cin.get();
-                        cin.get();
-                    }
                     predkosc_dzwieku=sqrt(k*R*T);
                     float Ma = IpredkoscI*1000/predkosc_dzwieku;
                         if(Ma<0.5)
                         {
                             Cx-=0.000002;
+                            cout << Ma << endl;
+                            cout << Cx << endl;
                         }
                         else if(Ma>=0.5&&Ma<1.3)
                         {
@@ -269,8 +273,6 @@ int main()
                     odleglosc+=predkosc.y*t;
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
-
-
                 }
                 czas.restart();
             }
@@ -380,17 +382,3 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     okno.draw(czas_wys);                        // wyswietlenie czasu
     okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
     }
-void Rotacja(sf::RectangleShape rakieta ,sf::Clock czas_pod, sf::Clock czas_rotacja)
-{
-    if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
-    {
-        if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
-            rakieta.rotate(0.7280000/1000);//...obrót rakiety o tyle stopni
-        else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
-            rakieta.rotate(0.4696364/1000);
-        else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
-            rakieta.rotate(0.2970000/1000);
-
-        czas_rotacja.restart();
-    }
-}
