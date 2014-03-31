@@ -3,8 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <fstream>
 
 const double pi = atan (1) * 4;
+std::ofstream dx ("dx.txt");
 
 sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, double y_2, double masa_2)
 {
@@ -99,22 +101,25 @@ void Laduj_Uklad ()
     planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
 }
 
-std::vector <sf::Vertex> punkty;
+std::vector <sf::Vector2f> punkty;
+std::vector <sf::Vertex> punkty_2;
 std::vector <double> czasy;
 
 void Symulacja (int czas)
 {
+    punkty_2.clear ();
     punkty.clear ();
     czasy.clear ();
-    punkty.push_back (sf::Vertex (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y  / 1000000)));
+    punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
     czasy.push_back (0);
     for (long i = 0; i < czas; i++)
     {
         for (int i = 0; i < planety.size () - 1; i++) planety [i].Aktualizacja ();
         FK_Rakieta.Aktualizacja ();
-        if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].position.x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].position.y), 2) > 1000000000000)
+        if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
         {
-            punkty.push_back (sf::Vertex (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y  / 1000000)));
+            punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
+            punkty_2.push_back (sf::Vertex (sf::Vector2f (cos (planety [3].pozycja_katowa) * planety [3].promien_orbity / pow (10, 6), -sin (planety [3].pozycja_katowa) * planety [3].promien_orbity / pow (10, 6))));
             czasy.push_back (i);
         }
     }

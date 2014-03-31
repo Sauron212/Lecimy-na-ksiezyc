@@ -105,49 +105,43 @@ int main()
 
 
     /* ZMIENNE GRUPY JARKA : */
-
-
     sf::Text v_plusT("Plus", font[0],20);
     sf::Text v_minusT("Minus", font[0],20);
-
     v_plusT.setColor(sf::Color::White);
     v_minusT.setColor(sf::Color::White);
     v_plusT.setPosition(500,200);
     v_minusT.setPosition(500,250);
-
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
-
+    int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
+    time_frame = 86400;
+    time_start = 0;
+    time_stop = 86400;
+    time_modifier = 20;
+    bool simulation_start = false;
     ostringstream s;
     s<< KRakieta.v.y;
     string wyswietlanie_KRakieta_v_y = s.str();
     sf::Text Tekst_KRakieta_v_y(wyswietlanie_KRakieta_v_y, font[0], 20);
     Tekst_KRakieta_v_y.setColor((sf::Color::White));
     Tekst_KRakieta_v_y.setPosition(500, 150);
-
     sf::Texture Ktlo_tekstura;
     Ktlo_tekstura.loadFromFile("Ktlo.png");
     sf::Sprite Ktlo;
     Ktlo.setTexture(Ktlo_tekstura);
     Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 6) - 400, KRakieta.koordynata_y / pow (10, 6) - 300);
-
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
-
     double Kkatrakiety;
     Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
-
     bool Kstart = false;
-
     sf::View klip;
     klip.reset (sf::FloatRect (0, 0, 8000, 6000));
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
-
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
     Krakieta.setPosition(KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
     Krakieta.setFillColor( sf::Color::Yellow );
     Krakieta.setRotation( Kkatrakiety + 90 );
-
     while(okno.isOpen())
     {
         while(okno.isOpen () && menu==0)
@@ -317,16 +311,35 @@ int main()
             while (okno.pollEvent (zdarzenie))
             {
                 if (zdarzenie.type == sf::Event::Closed) okno.close ();
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Symulacja (86400);
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Symulacja (time_frame);
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q)) okno.close ();
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
                 if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
+                if (sf::Keyboard::isKeyPressed (sf::Keyboard::O) && zdarzenie.type == sf::Event::KeyPressed)
+                {
+                    simulation_start = !simulation_start;
+                    time_current = time_start;
+                    time_current_index = 0;
+                    for (int i = 0;(i < czasy.size () - 1) && (czasy [i] < time_start); i++) time_current_index = i - 1;
+                    for (int i = 0; i < planety.size () - 1; i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
+                }
+            }
+            if (simulation_start)
+            {
+                do if (time_current > czasy [time_current_index]) time_current_index += 1;
+                while (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1);
+                FK_Rakieta.koordynata_x = punkty [time_current_index].x;
+                FK_Rakieta.koordynata_y = punkty [time_current_index].y;
+                FK_Rakieta.grafika.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
+                for (int i = 0; i < time_modifier; i++) for (int j = 0; j < planety.size () - 1; j++) planety [j].Aktualizacja ();
+                time_current += time_modifier;
+                if (time_current >= time_stop) simulation_start = false;
             }
             klip.setCenter (FK_Rakieta.koordynata_x / pow (10, 6), -FK_Rakieta.koordynata_y / pow (10, 6));
             okno.setView (klip);
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
-            okno.draw (&punkty [0], punkty.size(), sf::LinesStrip);
+            okno.draw (&punkty_2[0], punkty_2.size () - 1, sf::LinesStrip);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
             okno.draw (FK_Rakieta.grafika);
             okno.display ();
