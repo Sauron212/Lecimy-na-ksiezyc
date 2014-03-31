@@ -80,9 +80,10 @@ int main()
     tlo.setTexture(tlo_tekstura);
     tlo.setPosition(0,-7297);
 
-    sf::RectangleShape w_sil(sf::Vector2f(1, (moc_silnikow[0]/100000) )); //wektor siły silnikow
-    w_sil.setPosition(x+5,y-(moc_silnikow[0]/100000)+55);
+    sf::RectangleShape w_sil(sf::Vector2f(1, (moc_silnikow[0]/200000) )); //wektor siły silnikow
+    w_sil.setPosition(x+5,y);
     w_sil.setFillColor(sf::Color(0,0,0));
+    w_sil.setRotation(180);
 
 
     sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
@@ -233,6 +234,8 @@ int main()
                         rakieta.rotate(0.4696364/1000);
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
                         rakieta.rotate(0.2970000/1000);
+                    w_sil.setRotation(rakieta.getRotation()+180);
+
                 czas_rotacja.restart();
                 }
 
@@ -254,8 +257,6 @@ int main()
                         if(Ma<0.5)
                         {
                             Cx-=0.000002;
-                            cout << Ma << endl;
-                            cout << Cx << endl;
                         }
                         else if(Ma>=0.5&&Ma<1.3)
                         {
