@@ -80,8 +80,8 @@ int main()
     tlo.setTexture(tlo_tekstura);
     tlo.setPosition(0,-7297);
 
-    sf::RectangleShape w_sil(sf::Vector2f(1, (moc_silnikow[0]/200000) )); //wektor siły silnikow
-    w_sil.setPosition(x+5,y);
+    sf::RectangleShape w_sil(sf::Vector2f(2, (moc_silnikow[0]/200000) )); //wektor siły silnikow
+    w_sil.setPosition(x+6,y);
     w_sil.setFillColor(sf::Color(0,0,0));
     w_sil.setRotation(180);
 
