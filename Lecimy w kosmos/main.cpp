@@ -45,7 +45,10 @@ int main()
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
 
-    long double m=2902991.17;      // masa rakiety (kg) na starcie
+    long double m=242186.12;      // masa rakiety (kg) na starcie
+    long double paliwo[4]={2145798.08,443235.04,107095.43,74453.11};
+    long double Mc = m+paliwo[0]+paliwo[1]+paliwo[2]+paliwo[3];
+
 
     const long double G=0.0000000000667; // Stala grawitacji 6,67*10^-11
     const long double Mz=5.9736;          // Masa ziemi (kg), trzeba mnozyc razy 10^24
@@ -67,7 +70,8 @@ int main()
     double predkosc_dzwieku=sqrt(k*R*T);
     double Q = 1.1717;                              //gestosc powietrza
 
-    long double moc_silnikow[4] = {39428858.47,0,0,0};     // Sila silnikow pierwszego stopnia w N
+    long double moc_silnikow[4] = {34318696.99,0,0,0};     // Sila silnikow pierwszego stopnia w N
+    int numer = 0;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
     sf::Event zdarzenie;
@@ -212,37 +216,46 @@ int main()
                 czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
+                t = czas.getElapsedTime().asMilliseconds();
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
                 if(czas_pod.getElapsedTime().asSeconds()-6<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
-                    m-=6562.2/1000;
+                    paliwo[0]-=t*6562.2/1000;
                 else if(czas_pod.getElapsedTime().asSeconds()-6>0 && czas_pod.getElapsedTime().asSeconds()-6<=70)
-                    m-=13169.063/1000;
+                    paliwo[0]-=t*13169.063/1000;
                 else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
-                    m-=13374.6246/1000;
+                    paliwo[0]-=t*13374.6246/1000;
 
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
                     if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
-                        rakieta.rotate(0.7280000/1000);//...obrót rakiety o tyle stopni
+                        rakieta.rotate(t*0.7280000/1000);//...obrót rakiety o tyle stopni
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
-                        rakieta.rotate(0.4696364/1000);
+                        rakieta.rotate(t*0.4696364/1000);
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
-                        rakieta.rotate(0.2970000/1000);
+                        rakieta.rotate(t*0.2970000/1000);
                     w_sil.setRotation(rakieta.getRotation()+180);
 
                 czas_rotacja.restart();
                 }
+                    if(paliwo[0]>=315239.89)
+                        moc_silnikow[0]+=6.2*t*(czas_pod.getElapsedTime().asSeconds()/10);
+                    else if(paliwo[0]>=0 && paliwo[0]<=70)
+                      {numer = 1;
+                        moc_silnikow[1]+=1000*t;
+                      }
+
 
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
                 {
+
+                    Mc = m+paliwo[0]+paliwo[1]+paliwo[2]+paliwo[3];
                     radiany=(rakieta.getRotation()*pi)/180.0;
-                    t = czas.getElapsedTime().asMilliseconds();
-                    opor.x = Cx*Q*pow(predkosc.x,2)*pole/2;          // uatkualnienie oporu powietrza
-                    opor.y = Cx*Q*pow(predkosc.y,2)*pole/2;
-                    Fg.x = 0;Fg.y = m*g;
-                    F.x = moc_silnikow[0]*sin(radiany) ; F.y = moc_silnikow[0]*cos(radiany);
-                    przyspieszenie.x = (F.x-Fg.x-opor.x)/(m*1000000);
-                    przyspieszenie.y = (F.y-Fg.y-opor.y)/(m*1000000);
+                    opor.x = Cx*(Q*pow(predkosc.x,2)/2)*pole;          // uatkualnienie oporu powietrza
+                    opor.y = Cx*(Q*pow(predkosc.y,2)/2)*pole;
+                    Fg.x = 0;Fg.y = Mc*g;
+                    F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
+                    przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
+                    przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
                     IprzyspieszenieI =sqrt(pow(przyspieszenie.x,2)+pow(przyspieszenie.y,2));
@@ -295,6 +308,20 @@ int main()
                 mezosfera.setPosition(300,400);
                 mezosfera.setColor(sf::Color::Red);
                 okno.draw(mezosfera);
+            }
+            if(czas_pod.getElapsedTime().asSeconds()>=66.7)
+            {
+            cout.precision(15);
+             cout << "Przyspieszenie: " << przyspieszenie.x*1000000 << " " << przyspieszenie.y*1000000 << endl;
+             cout << "Moc silnikow: " << F.x << " " << F.y << endl;
+             cout << "Masa: " << Mc << endl;
+             cout << "paliwo: " << paliwo[0] << endl;
+             cout << "Odleglosc: " << odleglosc << endl;
+             cout << "Temp: " << T << endl;
+             cout << "OPOR: " << opor.y << " " << endl;
+             cin.get();
+             cin.get();
+
             }
             okno.setView(mapa);
                 okno.draw(rakieta);
