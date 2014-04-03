@@ -44,6 +44,7 @@ int main()
     long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
+    bool wektor=false;                      //ustawienie wyswietlania wektorow
 
     long double m=242186.12;      // masa rakiety (kg) na starcie
     long double paliwo[4]={2145798.08,443235.04,107095.43,74453.11};
@@ -69,6 +70,7 @@ int main()
     double T=301.15;
     double predkosc_dzwieku=sqrt(k*R*T);
     double Q = 1.1717;                              //gestosc powietrza
+
 
     long double moc_silnikow[4] = {34318696.99,0,0,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
@@ -211,6 +213,12 @@ int main()
                  start=true;
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
                     okno.close();
+
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::W) //Wywolanie akcji klawiszem W
+                {
+                    wektor=!wektor;
+                }
+
             }
             if(start==false)                // Zerowanie czasu jak jest na ziemii
                 czas_pod.restart();
@@ -325,6 +333,8 @@ int main()
             }
             okno.setView(mapa);
                 okno.draw(rakieta);
+
+                if(wektor) //wyswietlenie wektorow
                 okno.draw(w_sil);
 
             okno.setView(okno.getDefaultView());
