@@ -124,5 +124,33 @@ void Symulacja (int czas)
         }
     }
 }
+class Wektory
+{
+    public:
+        sf::RectangleShape wektor;
+        int dlugosc;
+        double poczatkowe=0;
+        Wektory(sf::Vector2f W,int x, int y,sf::Color s,bool zwrot=true);
+};
+Wektory::Wektory(sf::Vector2f W,int x, int y,sf::Color s,bool zwrot)    /// zwrot == true/false do gory/w dol
+{
+    dlugosc = sqrt(pow(W.x,2)+pow(W.y,2));
+    if(dlugosc>=30000000)
+        dlugosc==400;
+    else if(dlugosc>=10000000)
+        dlugosc==133;
+    else if(dlugosc>=500000)
+        dlugosc==65;
+    else if(dlugosc>=250000)
+        dlugosc==35;
+    else if(dlugosc>0)
+        dlugosc==15;
+    wektor.setSize(sf::Vector2f(2,dlugosc));
+    wektor.setFillColor(s);
+    wektor.setPosition(x,y);
+    if(zwrot)
+        wektor.setOrigin(0,wektor.getSize().y);
+    wektor.setRotation(asin(W.x/dlugosc)*180/pi);
+}
 
 #endif // FAZA_KOSMOSU_H_INCLUDED

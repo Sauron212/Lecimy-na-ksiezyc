@@ -39,7 +39,7 @@ int main()
     kosmosT.setPosition(300,250);
     wyjscieT.setPosition(300,300);
     /* ZMIENNE GRUPY GRZESIA : */
-    int x{394},y{400}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
+    int x{390},y{455}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
     long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
@@ -87,18 +87,15 @@ int main()
     tlo.setTexture(tlo_tekstura);
     tlo.setPosition(0,-7297);
 
-    sf::RectangleShape w_sil(sf::Vector2f(2, (moc_silnikow[0]/200000) )); //wektor siły silnikow
-    w_sil.setPosition(x+6,y);
-    w_sil.setFillColor(sf::Color(0,0,0));
-    w_sil.setRotation(180);
-
-
     sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
+    rakieta.setOrigin(5,55);
     rakieta.setFillColor(sf::Color(0,0,0));
-    sf::RectangleShape prostokat(sf::Vector2f(0.12*okno.getSize().x-5,0.12*okno.getSize().y-5));
+
+        sf::RectangleShape prostokat(sf::Vector2f(0.12*okno.getSize().x-5,0.12*okno.getSize().y-5));
         prostokat.setPosition(0.86*okno.getSize().x-3,0.02*okno.getSize().y-2);
         prostokat.setFillColor(sf::Color(0,0,0));
+
             sf::View minimapa;
             minimapa.setViewport(sf::FloatRect(0.86f, 0.02, 0.12f, 0.15f));
             minimapa.setSize(500,500);
@@ -242,7 +239,6 @@ int main()
                         rakieta.rotate(t*0.4696364/1000);
                     else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
                         rakieta.rotate(t*0.2970000/1000);
-                    w_sil.setRotation(rakieta.getRotation()+180);
 
                 czas_rotacja.restart();
                 }
@@ -291,7 +287,6 @@ int main()
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
                     rakieta.move(predkosc.x*t, -predkosc.y*t);
-                    w_sil.move(predkosc.x*t, -predkosc.y*t);
                 }
                 czas.restart();
             }
@@ -322,9 +317,16 @@ int main()
             }
             okno.setView(mapa);
                 okno.draw(rakieta);
-
                 if(wektor) //wyswietlenie wektorow
-                okno.draw(w_sil);
+                {
+                    Wektory grawitacja(Fg,rakieta.getPosition().x,rakieta.getPosition().y,sf::Color::Red,false);
+                    Wektory ciag(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Blue);
+                    okno.draw(ciag.wektor);
+                    okno.draw(grawitacja.wektor);
+                    okno.draw(przyspieszeniew.wektor);
+                }
+
+
 
             okno.setView(okno.getDefaultView());
                 wyswietlanie_danych(czas_pod,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna);
