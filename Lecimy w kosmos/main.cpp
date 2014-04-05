@@ -100,8 +100,6 @@ int main()
             minimapa.setViewport(sf::FloatRect(0.86f, 0.02, 0.12f, 0.15f));
             minimapa.setSize(500,500);
             minimapa.zoom(2);
-
-
             sf::View mapa; //stwoerzenie widoku mapy
             mapa.reset(sf::FloatRect(0,0,800, 600));
             mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
@@ -323,7 +321,6 @@ int main()
                     Wektory ciag(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Blue);
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
-                    okno.draw(przyspieszeniew.wektor);
                 }
 
 
