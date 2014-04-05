@@ -114,6 +114,14 @@ int main()
     time_frame_plusT.setPosition(500,200);
     time_frame_minusT.setPosition(500,250);
 
+    sf::Text time_modifier_plusT("Plus", font[0],20);
+    sf::Text time_modifier_minusT("Minus", font[0],20);
+    time_modifier_plusT.setColor(sf::Color::White);
+    time_modifier_minusT.setColor(sf::Color::White);
+    time_modifier_plusT.setPosition(600,200);
+    time_modifier_minusT.setPosition(600,250);
+
+
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
@@ -124,12 +132,20 @@ int main()
     time_modifier = 20;
     bool simulation_start = false;
 
-    ostringstream s;
-    s<< time_frame;
-    string wyswietlanie_time_frame = s.str();
+
+    ostringstream ss_time_frame;
+    ss_time_frame<< time_frame;
+    string wyswietlanie_time_frame = ss_time_frame.str();
     sf::Text Tekst_time_frame(wyswietlanie_time_frame, font[0], 20);
     Tekst_time_frame.setColor((sf::Color::White));
     Tekst_time_frame.setPosition(500, 150);
+
+    ostringstream ss_time_modifier;
+    ss_time_modifier<< time_modifier;
+    string wyswietlanie_time_modifier = ss_time_modifier.str();
+    sf::Text Tekst_time_modifier(wyswietlanie_time_modifier, font[0], 20);
+    Tekst_time_modifier.setColor((sf::Color::White));
+    Tekst_time_modifier.setPosition(600, 150);
 
     sf::Texture Ktlo_tekstura;
     Ktlo_tekstura.loadFromFile("Ktlo.png");
@@ -162,6 +178,8 @@ int main()
             sf::FloatRect wyjscie = wyjscieT.getGlobalBounds();
             sf::FloatRect time_frame_plus = time_frame_plusT.getGlobalBounds();
             sf::FloatRect time_frame_minus = time_frame_minusT.getGlobalBounds();
+            sf::FloatRect time_modifier_plus = time_modifier_plusT.getGlobalBounds();
+            sf::FloatRect time_modifier_minus = time_modifier_minusT.getGlobalBounds();
             while(okno.pollEvent(zdarzenie))
             {
                 if( zdarzenie.type == sf::Event::Closed )
@@ -169,19 +187,36 @@ int main()
                 if(myszka.intersects(time_frame_plus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
                         time_frame += 1000;
-                        s.str("");
-                        s<< time_frame;
-                        wyswietlanie_time_frame = s.str();
+                        ss_time_frame.str("");
+                        ss_time_frame<< time_frame;
+                        wyswietlanie_time_frame = ss_time_modifier.str();
                         Tekst_time_frame.setString(wyswietlanie_time_frame);
                     }
                 if(myszka.intersects(time_frame_minus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
                         time_frame -= 1000;
-                        s.str("");
-                        s<< time_frame;
-                        wyswietlanie_time_frame = s.str();
+                        ss_time_frame.str("");
+                        ss_time_frame<< time_frame;
+                        wyswietlanie_time_frame = ss_time_frame.str();
                         Tekst_time_frame.setString(wyswietlanie_time_frame);
                     }
+                if(myszka.intersects(time_modifier_plus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    {
+                        time_modifier += 10;
+                        ss_time_modifier.str("");
+                        ss_time_modifier<< time_modifier;
+                        wyswietlanie_time_modifier = ss_time_modifier.str();
+                        Tekst_time_modifier.setString(wyswietlanie_time_modifier);
+                    }
+                if(myszka.intersects(time_modifier_minus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    {
+                        time_modifier -= 10;
+                        ss_time_modifier.str("");
+                        ss_time_modifier<< time_modifier;
+                        wyswietlanie_time_modifier = ss_time_modifier.str();
+                        Tekst_time_modifier.setString(wyswietlanie_time_modifier);
+                    }
+
                 if(myszka.intersects(ziemia) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     menu=1;
                 if(myszka.intersects(kosmos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -194,6 +229,9 @@ int main()
             okno.draw( time_frame_plusT );
             okno.draw( time_frame_minusT );
             okno.draw( Tekst_time_frame );
+            okno.draw( time_modifier_plusT );
+            okno.draw( time_modifier_minusT );
+            okno.draw( Tekst_time_modifier );
             okno.draw(lecimyT);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
