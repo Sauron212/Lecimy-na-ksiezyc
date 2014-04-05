@@ -107,12 +107,13 @@ int main()
 
 
     /* ZMIENNE GRUPY JARKA : */
-    sf::Text v_plusT("Plus", font[0],20);
-    sf::Text v_minusT("Minus", font[0],20);
-    v_plusT.setColor(sf::Color::White);
-    v_minusT.setColor(sf::Color::White);
-    v_plusT.setPosition(500,200);
-    v_minusT.setPosition(500,250);
+    sf::Text time_frame_plusT("Plus", font[0],20);
+    sf::Text time_frame_minusT("Minus", font[0],20);
+    time_frame_plusT.setColor(sf::Color::White);
+    time_frame_minusT.setColor(sf::Color::White);
+    time_frame_plusT.setPosition(500,200);
+    time_frame_minusT.setPosition(500,250);
+
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
@@ -122,12 +123,14 @@ int main()
     time_stop = 86400;
     time_modifier = 20;
     bool simulation_start = false;
+
     ostringstream s;
-    s<< KRakieta.v.y;
-    string wyswietlanie_KRakieta_v_y = s.str();
-    sf::Text Tekst_KRakieta_v_y(wyswietlanie_KRakieta_v_y, font[0], 20);
-    Tekst_KRakieta_v_y.setColor((sf::Color::White));
-    Tekst_KRakieta_v_y.setPosition(500, 150);
+    s<< time_frame;
+    string wyswietlanie_time_frame = s.str();
+    sf::Text Tekst_time_frame(wyswietlanie_time_frame, font[0], 20);
+    Tekst_time_frame.setColor((sf::Color::White));
+    Tekst_time_frame.setPosition(500, 150);
+
     sf::Texture Ktlo_tekstura;
     Ktlo_tekstura.loadFromFile("Ktlo.png");
     sf::Sprite Ktlo;
@@ -157,29 +160,27 @@ int main()
             sf::FloatRect ziemia = ziemiaT.getGlobalBounds();
             sf::FloatRect kosmos = kosmosT.getGlobalBounds();
             sf::FloatRect wyjscie = wyjscieT.getGlobalBounds();
-            sf::FloatRect v_plus = v_plusT.getGlobalBounds();
-            sf::FloatRect v_minus = v_minusT.getGlobalBounds();
+            sf::FloatRect time_frame_plus = time_frame_plusT.getGlobalBounds();
+            sf::FloatRect time_frame_minus = time_frame_minusT.getGlobalBounds();
             while(okno.pollEvent(zdarzenie))
             {
                 if( zdarzenie.type == sf::Event::Closed )
                     okno.close();
-                if(myszka.intersects(v_plus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                if(myszka.intersects(time_frame_plus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
-                        KRakieta.v.y += 1000;
+                        time_frame += 1000;
                         s.str("");
-                        s<< KRakieta.v.y;
-                        wyswietlanie_KRakieta_v_y = s.str();
-                        Tekst_KRakieta_v_y.setString(wyswietlanie_KRakieta_v_y);
-
+                        s<< time_frame;
+                        wyswietlanie_time_frame = s.str();
+                        Tekst_time_frame.setString(wyswietlanie_time_frame);
                     }
-                if(myszka.intersects(v_minus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                if(myszka.intersects(time_frame_minus) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
-                        KRakieta.v.y -= 1000;
+                        time_frame -= 1000;
                         s.str("");
-                        s<< KRakieta.v.y;
-                        wyswietlanie_KRakieta_v_y = s.str();
-                        Tekst_KRakieta_v_y.setString(wyswietlanie_KRakieta_v_y);
-
+                        s<< time_frame;
+                        wyswietlanie_time_frame = s.str();
+                        Tekst_time_frame.setString(wyswietlanie_time_frame);
                     }
                 if(myszka.intersects(ziemia) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     menu=1;
@@ -190,9 +191,9 @@ int main()
             }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
-            okno.draw( v_plusT );
-            okno.draw( v_minusT );
-            okno.draw( Tekst_KRakieta_v_y );
+            okno.draw( time_frame_plusT );
+            okno.draw( time_frame_minusT );
+            okno.draw( Tekst_time_frame );
             okno.draw(lecimyT);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
