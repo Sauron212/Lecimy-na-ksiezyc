@@ -51,10 +51,20 @@ class Rakieta
         double koordynata_x;
         double koordynata_y;
         double masa;
+        double epsilon;
+        double omega;
+        double pozycja_katowa;
+        double dlugosc_1;
+        double dlugosc_2;
+        double alfa_1;
+        double alfa_2;
         sf::Vector2f Fg;
+        sf::Vector2f Fg_1;
+        sf::Vector2f Fg_2;
         sf::Vector2f a;
         sf::Vector2f v;
         sf::CircleShape grafika;
+        sf::CircleShape grafika_2;
         Rakieta (double c_x, double c_y, double c_masa)
         {
             koordynata_x = c_x;
@@ -66,23 +76,42 @@ class Rakieta
             a.y = 0;
             v.x = 0;
             v.y = 0;
-            grafika.setRadius (2);
+            grafika.setRadius (3);
             grafika.setFillColor (sf::Color::Yellow);
+            grafika_2.setRadius (1);
+            grafika_2.setFillColor (sf::Color::Red);
+            dlugosc_1 = 15000;
+            dlugosc_2 = dlugosc_1;
+            epsilon = 0;
+            omega = 0;
+            pozycja_katowa = pi / 2;
         }
         void Aktualizacja ()
         {
             Fg.x = 0;
             Fg.y = 0;
+            Fg_1.x = 0;
+            Fg_1.y = 0;
+            Fg_2.x = 0;
+            Fg_2.y = 0;
             a.x = 0;
             a.y = 0;
+            epsilon = 0;
             for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            a.x += Fg.x / masa;
-            a.y += Fg.y / masa;
+            for (int i = 0; i < planety.size (); i++) Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+            for (int i = 0; i < planety.size (); i++) Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+            a.x = Fg.x / masa;
+            a.y = Fg.y / masa;
             v.x += a.x;
             v.y += a.y;
             koordynata_x += v.x;
             koordynata_y += v.y;
-            grafika.setPosition (koordynata_x / pow (10, 6) - 2, -koordynata_y / pow (10, 6) - 2);
+            alfa_1 = atan2 (Fg_1.y, Fg_1.x) + (1 - std::signbit (Fg_1.y)) * 2 * pi - pozycja_katowa;
+            alfa_2 = atan2 (Fg_2.y, Fg_2.x) + (1 - std::signbit (Fg_2.y)) * 2 * pi - pozycja_katowa + pi;
+            if (alfa_2 > 2 * pi) alfa_2 -= 2 * pi;
+            epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2);
+            omega += epsilon;
+            pozycja_katowa += omega;
         }
 };
 
@@ -102,13 +131,13 @@ void Laduj_Uklad ()
 }
 
 std::vector <sf::Vector2f> punkty;
-std::vector <sf::Vertex> punkty_2;
+std::vector <double> katy;
 std::vector <double> czasy;
 
 void Symulacja (int czas)
 {
-    punkty_2.clear ();
     punkty.clear ();
+    katy.clear ();
     czasy.clear ();
     punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
     czasy.push_back (0);
@@ -119,7 +148,7 @@ void Symulacja (int czas)
         if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
         {
             punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
-            punkty_2.push_back (sf::Vertex (sf::Vector2f (cos (planety [3].pozycja_katowa) * planety [3].promien_orbity / pow (10, 6), -sin (planety [3].pozycja_katowa) * planety [3].promien_orbity / pow (10, 6))));
+            katy.push_back (FK_Rakieta.pozycja_katowa);
             czasy.push_back (i);
         }
     }

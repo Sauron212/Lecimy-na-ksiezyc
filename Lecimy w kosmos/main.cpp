@@ -129,7 +129,7 @@ int main()
     time_frame = 86400;
     time_start = 0;
     time_stop = 86400;
-    time_modifier = 20;
+    time_modifier = 1;
     bool simulation_start = false;
 
 
@@ -394,7 +394,9 @@ int main()
                 while (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1);
                 FK_Rakieta.koordynata_x = punkty [time_current_index].x;
                 FK_Rakieta.koordynata_y = punkty [time_current_index].y;
-                FK_Rakieta.grafika.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
+                FK_Rakieta.pozycja_katowa = katy [time_current_index];
+                FK_Rakieta.grafika.setPosition (FK_Rakieta.koordynata_x / 1000000 - 3, -FK_Rakieta.koordynata_y / 1000000 - 3);
+                FK_Rakieta.grafika_2.setPosition (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000) + sf::Vector2f (3 * cos (FK_Rakieta.pozycja_katowa) - 1, -3 * sin (FK_Rakieta.pozycja_katowa) - 1));
                 for (int i = 0; i < time_modifier; i++) for (int j = 0; j < planety.size () - 1; j++) planety [j].Aktualizacja ();
                 time_current += time_modifier;
                 if (time_current >= time_stop) simulation_start = false;
@@ -403,9 +405,9 @@ int main()
             okno.setView (klip);
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
-            okno.draw (&punkty_2[0], punkty_2.size () - 1, sf::LinesStrip);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
             okno.draw (FK_Rakieta.grafika);
+            okno.draw (FK_Rakieta.grafika_2);
             okno.display ();
         }
     }
