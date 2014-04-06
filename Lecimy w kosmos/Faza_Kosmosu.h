@@ -80,7 +80,7 @@ class Rakieta
             grafika.setFillColor (sf::Color::Yellow);
             grafika_2.setRadius (1);
             grafika_2.setFillColor (sf::Color::Red);
-            dlugosc_1 = 15000;
+            dlugosc_1 = 15;
             dlugosc_2 = dlugosc_1;
             epsilon = 0;
             omega = 0;
@@ -98,19 +98,21 @@ class Rakieta
             a.y = 0;
             epsilon = 0;
             for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            for (int i = 0; i < planety.size (); i++) Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            for (int i = 0; i < planety.size (); i++) Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+            for (int i = 0; i < planety.size (); i++) Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+            for (int i = 0; i < planety.size (); i++) Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
             a.x = Fg.x / masa;
             a.y = Fg.y / masa;
             v.x += a.x;
             v.y += a.y;
             koordynata_x += v.x;
             koordynata_y += v.y;
-            alfa_1 = atan2 (Fg_1.y, Fg_1.x) + (1 - std::signbit (Fg_1.y)) * 2 * pi - pozycja_katowa;
-            alfa_2 = atan2 (Fg_2.y, Fg_2.x) + (1 - std::signbit (Fg_2.y)) * 2 * pi - pozycja_katowa + pi;
+            alfa_1 = atan2 (Fg_1.y, Fg_1.x) + (1 - std::signbit (Fg_1.y)) * pi - pozycja_katowa;
+            alfa_2 = atan2 (Fg_2.y, Fg_2.x) + (1 - std::signbit (Fg_2.y)) * pi - pozycja_katowa + pi;
             if (alfa_2 > 2 * pi) alfa_2 -= 2 * pi;
             epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2);
-            omega += epsilon;
+            dx<<epsilon;
+            dx.close ();
+            omega += epsilon / 1000;
             pozycja_katowa += omega;
         }
 };

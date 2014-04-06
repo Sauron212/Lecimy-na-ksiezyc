@@ -157,7 +157,7 @@ int main()
     Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
     bool Kstart = false;
     sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 8000, 6000));
+    klip.reset (sf::FloatRect (0, 0, 800, 600));
     klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
     Krakieta.setPosition(KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
