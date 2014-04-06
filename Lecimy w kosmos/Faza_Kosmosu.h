@@ -88,6 +88,7 @@ class Rakieta
         }
         void Aktualizacja ()
         {
+            if (pozycja_katowa > 2 * pi) pozycja_katowa -= 2 * pi;
             Fg.x = 0;
             Fg.y = 0;
             Fg_1.x = 0;
@@ -106,11 +107,11 @@ class Rakieta
             v.y += a.y;
             koordynata_x += v.x;
             koordynata_y += v.y;
-            alfa_1 = atan2 (Fg_1.y, Fg_1.x) + (1 - std::signbit (Fg_1.y)) * pi - pozycja_katowa;
-            alfa_2 = atan2 (Fg_2.y, Fg_2.x) + (1 - std::signbit (Fg_2.y)) * pi - pozycja_katowa + pi;
+            alfa_1 = std::signbit (((atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) + std::signbit (atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - pi - pozycja_katowa + std::signbit (sin (pozycja_katowa)) * pi) * -2 + 1) * pi + atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi + std::signbit (atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - (pozycja_katowa - std::signbit (sin (pozycja_katowa)) * pi);
+            alfa_2 = std::signbit (((atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - pi - pozycja_katowa + std::signbit (sin (pozycja_katowa)) * pi) * -2 + 1) * pi + atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - (pozycja_katowa - std::signbit (sin (pozycja_katowa)) * pi) + pi;
             if (alfa_2 > 2 * pi) alfa_2 -= 2 * pi;
             epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2);
-            dx<<epsilon;
+            dx<<alfa_1 * 180 / pi<<":"<<alfa_2 * 180 / pi;
             dx.close ();
             omega += epsilon / 1000;
             pozycja_katowa += omega;
