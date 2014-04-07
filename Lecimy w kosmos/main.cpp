@@ -129,7 +129,7 @@ int main()
     time_frame = 86400;
     time_start = 0;
     time_stop = 86400;
-    time_modifier = 1;
+    time_modifier = 5;
     bool simulation_start = false;
 
 
@@ -152,6 +152,7 @@ int main()
     sf::Sprite Ktlo;
     Ktlo.setTexture(Ktlo_tekstura);
     Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 6) - 400, KRakieta.koordynata_y / pow (10, 6) - 300);
+    FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
     double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
     double Kkatrakiety;
     Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
@@ -395,8 +396,8 @@ int main()
                 FK_Rakieta.koordynata_x = punkty [time_current_index].x;
                 FK_Rakieta.koordynata_y = punkty [time_current_index].y;
                 FK_Rakieta.pozycja_katowa = katy [time_current_index];
-                FK_Rakieta.grafika.setPosition (FK_Rakieta.koordynata_x / 1000000 - 3, -FK_Rakieta.koordynata_y / 1000000 - 3);
-                FK_Rakieta.grafika_2.setPosition (sf::Vector2f (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000) + sf::Vector2f (3 * cos (FK_Rakieta.pozycja_katowa) - 1, -3 * sin (FK_Rakieta.pozycja_katowa) - 1));
+                FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
+                FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
                 for (int i = 0; i < time_modifier; i++) for (int j = 0; j < planety.size () - 1; j++) planety [j].Aktualizacja ();
                 time_current += time_modifier;
                 if (time_current >= time_stop) simulation_start = false;
@@ -406,8 +407,7 @@ int main()
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
-            okno.draw (FK_Rakieta.grafika);
-            okno.draw (FK_Rakieta.grafika_2);
+            okno.draw (FK_Rakieta.sprite);
             okno.display ();
         }
     }

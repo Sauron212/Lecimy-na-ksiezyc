@@ -63,8 +63,8 @@ class Rakieta
         sf::Vector2f Fg_2;
         sf::Vector2f a;
         sf::Vector2f v;
-        sf::CircleShape grafika;
-        sf::CircleShape grafika_2;
+        sf::Texture obrazek;
+        sf::Sprite sprite;
         Rakieta (double c_x, double c_y, double c_masa)
         {
             koordynata_x = c_x;
@@ -76,10 +76,11 @@ class Rakieta
             a.y = 0;
             v.x = 0;
             v.y = 0;
-            grafika.setRadius (3);
-            grafika.setFillColor (sf::Color::Yellow);
-            grafika_2.setRadius (1);
-            grafika_2.setFillColor (sf::Color::Red);
+            obrazek.loadFromFile ("Rakieta.png");
+            obrazek.setSmooth (true);
+            sprite.setTexture (obrazek);
+            sprite.setOrigin (187.5, 150);
+            sprite.setScale (0.02, 0.02);
             dlugosc_1 = 15;
             dlugosc_2 = dlugosc_1;
             epsilon = 0;
