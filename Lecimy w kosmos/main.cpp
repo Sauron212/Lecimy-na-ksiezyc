@@ -124,6 +124,7 @@ int main()
 
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
+    Laduj_Guziki ();
     FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
     time_frame = 86400;
@@ -131,6 +132,10 @@ int main()
     time_stop = 86400;
     time_modifier = 5;
     bool simulation_start = false;
+    sf::Vector2f mouse;
+    sf::View gui_view;
+    gui_view.reset (sf::FloatRect (0, 0, 800, 600));
+    gui_view.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
 
     ostringstream ss_time_frame;
@@ -381,18 +386,52 @@ int main()
         {
             while (okno.pollEvent (zdarzenie))
             {
-                if (zdarzenie.type == sf::Event::Closed) okno.close ();
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Space)) Symulacja (time_frame);
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q)) okno.close ();
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::S)) klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::W)) klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
-                if (sf::Keyboard::isKeyPressed (sf::Keyboard::O) && zdarzenie.type == sf::Event::KeyPressed)
+                switch (zdarzenie.type)
                 {
-                    simulation_start = !simulation_start;
-                    time_current = time_start;
-                    time_current_index = 0;
-                    for (int i = 0;(i < czasy.size () - 1) && (czasy [i] < time_start); i++) time_current_index = i - 1;
-                    for (int i = 0; i < planety.size () - 1; i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
+                    case sf::Event::Closed:
+                        okno.close ();
+                        break;
+                    case sf::Event::KeyPressed:
+                        switch (zdarzenie.key.code)
+                        {
+                            case sf::Keyboard::Escape:
+                                okno.close ();
+                                break;
+                            case sf::Keyboard::Space:
+                                Symulacja (time_frame);
+                                break;
+                            case sf::Keyboard::Return:
+                                simulation_start = !simulation_start;
+                                time_current = time_start;
+                                time_current_index = 0;
+                                for (int i = 0;(i < czasy.size () - 1) && (czasy [i] < time_start); i++) time_current_index = i - 1;
+                                for (int i = 0; i < planety.size () - 1; i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
+                                break;
+                            case sf::Keyboard::Add:
+                                klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
+                                break;
+                            case sf::Keyboard::Subtract:
+                                klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case sf::Event::MouseButtonReleased:
+                        if (!simulation_start)
+                        {
+                            mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
+                            for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i].koordynata_x - buttons [i].szerokosc / 2) && (mouse.x < buttons [i].koordynata_x + buttons [i].szerokosc / 2)) && ((mouse.y > buttons [i].koordynata_y - buttons [i].wysokosc / 2) && (mouse.y < buttons [i].koordynata_y + buttons [i].wysokosc / 2))) buttons [i].clicked = true;
+                        }
+                        if (buttons [0].clicked)
+                        if (buttons [1].clicked)
+                        if (buttons [2].clicked)
+                        if (buttons [3].clicked)
+                        if (buttons [4].clicked)
+                        if (buttons [5].clicked)
+                        break;
+                    default:
+                        break;
                 }
             }
             if (simulation_start)

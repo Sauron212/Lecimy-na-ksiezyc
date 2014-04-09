@@ -35,6 +35,10 @@ class Planeta
             grafika.setRadius (promien_planety / pow (10, 6));
             grafika.setPosition (cos (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius (), -sin (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius ());
         }
+        ~Planeta ()
+        {
+
+        }
         void Aktualizacja ()
         {
             pozycja_katowa += omega;
@@ -63,22 +67,19 @@ class Rakieta
         sf::Vector2f Fg_2;
         sf::Vector2f a;
         sf::Vector2f v;
-        sf::Texture obrazek;
+        sf::Texture image;
         sf::Sprite sprite;
         Rakieta (double c_x, double c_y, double c_masa)
         {
             koordynata_x = c_x;
             koordynata_y = c_y;
             masa = c_masa;
-            Fg.x = 0;
-            Fg.y = 0;
-            a.x = 0;
-            a.y = 0;
-            v.x = 0;
-            v.y = 0;
-            obrazek.loadFromFile ("Rakieta.png");
-            obrazek.setSmooth (true);
-            sprite.setTexture (obrazek);
+            Fg = sf::Vector2f (0, 0);
+            a = Fg;
+            v = Fg;
+            image.loadFromFile ("Rakieta.png");
+            image.setSmooth (true);
+            sprite.setTexture (image);
             sprite.setOrigin (187.5, 150);
             sprite.setScale (0.02, 0.02);
             dlugosc_1 = 15;
@@ -89,37 +90,57 @@ class Rakieta
         }
         void Aktualizacja ()
         {
-            if (pozycja_katowa > 2 * pi) pozycja_katowa -= 2 * pi;
-            Fg.x = 0;
-            Fg.y = 0;
-            Fg_1.x = 0;
-            Fg_1.y = 0;
-            Fg_2.x = 0;
-            Fg_2.y = 0;
-            a.x = 0;
-            a.y = 0;
-            epsilon = 0;
-            for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            for (int i = 0; i < planety.size (); i++) Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            for (int i = 0; i < planety.size (); i++) Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-            a.x = Fg.x / masa;
-            a.y = Fg.y / masa;
-            v.x += a.x;
-            v.y += a.y;
+            Fg = sf::Vector2f (0, 0);
+            Fg_1 = Fg;
+            Fg_2 = Fg;
+            for (int i = 0; i < planety.size (); i++)
+            {
+                Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+                Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+                Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+            }
+            a = sf::Vector2f (Fg.x / masa, Fg.y / masa);
+            v += sf::Vector2f (a.x, a.y);
             koordynata_x += v.x;
             koordynata_y += v.y;
             alfa_1 = std::signbit (((atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) + std::signbit (atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - pi - pozycja_katowa + std::signbit (sin (pozycja_katowa)) * pi) * -2 + 1) * pi + atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi + std::signbit (atan2 (Fg_1.y, Fg_1.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - (pozycja_katowa - std::signbit (sin (pozycja_katowa)) * pi);
             alfa_2 = std::signbit (((atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - pi - pozycja_katowa + std::signbit (sin (pozycja_katowa)) * pi) * -2 + 1) * pi + atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - (pozycja_katowa - std::signbit (sin (pozycja_katowa)) * pi) + pi;
-            if (alfa_2 > 2 * pi) alfa_2 -= 2 * pi;
-            epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2);
-            dx<<alfa_1 * 180 / pi<<":"<<alfa_2 * 180 / pi;
-            dx.close ();
-            omega += epsilon / 1000;
+            epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / (masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2));
+            omega += epsilon;
+            if (pozycja_katowa > 2 * pi) pozycja_katowa -= 2 * pi;
             pozycja_katowa += omega;
         }
 };
 
 Rakieta FK_Rakieta (1.49597870 * pow (10, 11) - 42231860.82, 0, 100);
+
+class Button
+{
+    public:
+        int koordynata_x;
+        int koordynata_y;
+        int szerokosc;
+        int wysokosc;
+        bool clicked;
+        sf::Texture image;
+        sf::Sprite sprite;
+        Button (int c_koordynata_x, int c_koordynata_y, int c_szerokosc, int c_wysokosc, std::string image_path)
+        {
+            koordynata_x = c_koordynata_x;
+            koordynata_y = c_koordynata_y;
+            szerokosc = c_szerokosc;
+            wysokosc = c_wysokosc;
+            clicked = false;
+            image.loadFromFile (image_path.c_str ());
+            image.setSmooth (true);
+            sprite.setTexture (image);
+            sprite.setOrigin (25, 25);
+            sprite.setPosition (koordynata_x, koordynata_y);
+        }
+
+};
+
+std::vector <Button> buttons;
 
 void Laduj_Uklad ()
 {
@@ -134,6 +155,11 @@ void Laduj_Uklad ()
     planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
 }
 
+void Laduj_Guziki ()
+{
+
+}
+
 std::vector <sf::Vector2f> punkty;
 std::vector <double> katy;
 std::vector <double> czasy;
@@ -144,6 +170,7 @@ void Symulacja (int czas)
     katy.clear ();
     czasy.clear ();
     punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
+    katy.push_back (FK_Rakieta.pozycja_katowa);
     czasy.push_back (0);
     for (long i = 0; i < czas; i++)
     {
