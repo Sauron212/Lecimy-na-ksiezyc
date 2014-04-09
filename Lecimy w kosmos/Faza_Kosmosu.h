@@ -157,7 +157,12 @@ void Laduj_Uklad ()
 
 void Laduj_Guziki ()
 {
-
+    buttons.push_back (Button (50, 50, 50, 50, "Minus.png"));
+    buttons.push_back (Button (150, 50, 50, 50, "Plus.png"));
+    buttons.push_back (Button (50, 150, 50, 50, "Minus.png"));
+    buttons.push_back (Button (150, 150, 50, 50, "Plus.png"));
+    buttons.push_back (Button (50, 250, 50, 50, "Minus.png"));
+    buttons.push_back (Button (150, 250, 50, 50, "Plus.png"));
 }
 
 std::vector <sf::Vector2f> punkty;

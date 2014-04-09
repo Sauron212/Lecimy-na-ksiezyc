@@ -130,7 +130,7 @@ int main()
     time_frame = 86400;
     time_start = 0;
     time_stop = 86400;
-    time_modifier = 5;
+    time_modifier = 1;
     bool simulation_start = false;
     sf::Vector2f mouse;
     sf::View gui_view;
@@ -423,12 +423,13 @@ int main()
                             mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
                             for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i].koordynata_x - buttons [i].szerokosc / 2) && (mouse.x < buttons [i].koordynata_x + buttons [i].szerokosc / 2)) && ((mouse.y > buttons [i].koordynata_y - buttons [i].wysokosc / 2) && (mouse.y < buttons [i].koordynata_y + buttons [i].wysokosc / 2))) buttons [i].clicked = true;
                         }
-                        if (buttons [0].clicked)
-                        if (buttons [1].clicked)
-                        if (buttons [2].clicked)
-                        if (buttons [3].clicked)
-                        if (buttons [4].clicked)
-                        if (buttons [5].clicked)
+                        if (buttons [0].clicked && time_frame > 200) time_frame -= 200;
+                        if (buttons [1].clicked) time_frame += 200;
+                        if (buttons [2].clicked && time_stop > 200) time_stop -= 200;
+                        if (buttons [3].clicked && time_stop < time_frame) time_stop += 200;
+                        if (buttons [4].clicked && time_modifier > 1) time_modifier -= 1;
+                        if (buttons [5].clicked) time_modifier += 1;
+                        for (int i = 0; i < buttons.size (); i++) buttons [i].clicked = false;
                         break;
                     default:
                         break;
@@ -453,6 +454,8 @@ int main()
             okno.draw (Ktlo);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
             okno.draw (FK_Rakieta.sprite);
+            okno.setView (gui_view);
+            for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i].sprite);
             okno.display ();
         }
     }
