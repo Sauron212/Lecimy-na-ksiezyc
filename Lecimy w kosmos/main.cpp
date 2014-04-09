@@ -260,15 +260,15 @@ int main()
                 czas_pod.restart();
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
-                t = -0.1+czas.getElapsedTime().asMilliseconds()*1.0+0.1;
+                t = czas.getElapsedTime().asMicroseconds()/1000.0;
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
                 if(czas_pod.getElapsedTime().asMilliseconds()-6000<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
-                    paliwo[0]-=t*(7062.2/1000);
+                    paliwo[0]-=t*(6562.2/1000);
                 else if(czas_pod.getElapsedTime().asMilliseconds()-6000>=0 && czas_pod.getElapsedTime().asMilliseconds()-6000<=70000)
                     paliwo[0]-=t*(13225.7/1000);
                 else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
                     paliwo[0]-=t*(13374.6246/1000);
-                t = czas.getElapsedTime().asMilliseconds()*1.0;
+                t = czas.getElapsedTime().asMicroseconds()/1000.0;
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
                     if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
@@ -280,13 +280,14 @@ int main()
 
                 czas_rotacja.restart();
                 }
-                t = -0.1+czas.getElapsedTime().asMilliseconds()*1.0+0.1;
+                t = czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(paliwo[0]>=315239.89)
-                        moc_silnikow[0]+=25*t;
-                    else if(paliwo[0]>=0 && paliwo[0]<=70)
-                      {numer = 1;
+                        moc_silnikow[0]+=9.5*t;
+                    else if(paliwo[0]>=0 && paliwo[0]<=70)  // odpada silnik
+                    {
+                        numer = 1;
                         moc_silnikow[1]+=1000*t;
-                      }
+                    }
 
 
                 if(czas_pod.getElapsedTime().asSeconds()-6>=0)
@@ -300,7 +301,7 @@ int main()
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
-                    t = -0.1+czas.getElapsedTime().asMilliseconds()*1.0+0.1;
+                    t = czas.getElapsedTime().asMicroseconds()/1000.0;
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
                     IprzyspieszenieI =sqrt(pow(przyspieszenie.x,2)+pow(przyspieszenie.y,2));
@@ -318,9 +319,9 @@ int main()
 
                     if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
                     {
-                    mapa.setCenter(rakieta.getPosition().x+6,rakieta.getPosition().y+56);//podązanie za rakietą
+                        mapa.setCenter(rakieta.getPosition().x+11,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
-                    t = -0.1+czas.getElapsedTime().asMilliseconds()*1.0+0.1;
+                    t = czas.getElapsedTime().asMicroseconds()/1000.0;
                     odleglosc+=predkosc.y*t;
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
@@ -362,7 +363,12 @@ int main()
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
                 }
-
+            if(czas_pod.getElapsedTime().asSeconds()>=36.8)
+            {
+                cout << moc_silnikow[0];
+                cin.get();
+                cin.get();
+            }
 
 
             okno.setView(okno.getDefaultView());
