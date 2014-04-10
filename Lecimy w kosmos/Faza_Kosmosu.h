@@ -18,6 +18,8 @@ sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, doub
 class Planeta
 {
     public:
+        double koordynata_x;
+        double koordynata_y;
         double masa;
         double omega;
         double pozycja_katowa;
@@ -26,6 +28,8 @@ class Planeta
         sf::CircleShape grafika;
         Planeta (double c_masa, double c_T, double c_pozycja_katowa, double c_promien_orbity, double c_promien_planety)
         {
+            koordynata_x = cos (c_pozycja_katowa) * c_promien_orbity;
+            koordynata_y = sin (c_pozycja_katowa) * c_promien_orbity;
             masa = c_masa;
             if (c_T != 0) omega = 2 * pi / c_T;
             else omega = 0;
@@ -33,21 +37,57 @@ class Planeta
             promien_orbity = c_promien_orbity;
             promien_planety = c_promien_planety;
             grafika.setRadius (promien_planety / pow (10, 6));
-            grafika.setPosition (cos (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius (), -sin (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius ());
-        }
-        ~Planeta ()
-        {
-
+            grafika.setPosition (koordynata_x / pow (10, 6) - grafika.getRadius (), -koordynata_y / pow (10, 6) - grafika.getRadius ());
         }
         void Aktualizacja ()
         {
             pozycja_katowa += omega;
             if (pozycja_katowa > 2 * pi) pozycja_katowa = 0;
-            grafika.setPosition (cos (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius (), -sin (pozycja_katowa) * promien_orbity / pow (10, 6) - grafika.getRadius ());
+            koordynata_x = cos (pozycja_katowa) * promien_orbity;
+            koordynata_y = sin (pozycja_katowa) * promien_orbity;
+            grafika.setPosition (koordynata_x / pow (10, 6) - grafika.getRadius (), -koordynata_y / pow (10, 6) - grafika.getRadius ());
         }
 };
 
 std::vector <Planeta> planety;
+
+class Satelita
+{
+    public:
+        Planeta* planeta;
+        double koordynata_x;
+        double koordynata_y;
+        double masa;
+        double omega;
+        double pozycja_katowa;
+        double promien_orbity;
+        double promien_satelity;
+        sf::CircleShape grafika;
+        Satelita (double c_masa, double c_T, double c_pozycja_katowa, double c_promien_orbity, double c_promien_satelity, Planeta* c_planeta)
+        {
+            planeta = c_planeta;
+            koordynata_x = cos (c_pozycja_katowa) * c_promien_orbity + cos (planeta->pozycja_katowa) * planeta->promien_orbity;
+            koordynata_y = sin (c_pozycja_katowa) * c_promien_orbity + sin (planeta->pozycja_katowa) * planeta->promien_orbity;
+            masa = c_masa;
+            if (c_T != 0) omega = 2 * pi / c_T;
+            else omega = 0;
+            pozycja_katowa = 0;
+            promien_orbity = c_promien_orbity;
+            promien_satelity = c_promien_satelity;
+            grafika.setRadius (promien_satelity / pow (10, 6));
+            grafika.setPosition (koordynata_x / pow (10, 6) - grafika.getRadius (), -koordynata_y / pow (10, 6) - grafika.getRadius ());
+        }
+        void Aktualizacja ()
+        {
+            pozycja_katowa += omega;
+            if (pozycja_katowa > 2 * pi) pozycja_katowa = 0;
+            koordynata_x = cos (pozycja_katowa) * promien_orbity + cos (planeta->pozycja_katowa) * planeta->promien_orbity;
+            koordynata_y = sin (pozycja_katowa) * promien_orbity + sin (planeta->pozycja_katowa) * planeta->promien_orbity;
+            grafika.setPosition (koordynata_x / pow (10, 6) - grafika.getRadius (), -koordynata_y / pow (10, 6) - grafika.getRadius ());
+        }
+};
+
+std::vector <Satelita> satelity;
 
 class Rakieta
 {
@@ -95,9 +135,15 @@ class Rakieta
             Fg_2 = Fg;
             for (int i = 0; i < planety.size (); i++)
             {
-                Fg += Grawitacja (koordynata_x, koordynata_y, masa, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-                Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
-                Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, cos (planety [i].pozycja_katowa) * planety [i].promien_orbity, sin (planety [i].pozycja_katowa) * planety [i].promien_orbity, planety [i].masa);
+                Fg += Grawitacja (koordynata_x, koordynata_y, masa, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
+                Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
+                Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
+            }
+            for (int i = 0; i < satelity.size (); i++)
+            {
+                Fg += Grawitacja (koordynata_x, koordynata_y, masa, satelity [i].koordynata_x, satelity [i].koordynata_y, satelity [i].masa);
+                Fg_1 += Grawitacja (koordynata_x + cos (pozycja_katowa) * dlugosc_1, koordynata_y + sin (pozycja_katowa) * dlugosc_1, masa / 2, satelity [i].koordynata_x, satelity [i].koordynata_y, satelity [i].masa);
+                Fg_2 += Grawitacja (koordynata_x + cos (pozycja_katowa + pi) * dlugosc_2, koordynata_y + sin (pozycja_katowa + pi) * dlugosc_2, masa / 2, satelity [i].koordynata_x, satelity [i].koordynata_y, satelity [i].masa);
             }
             a = sf::Vector2f (Fg.x / masa, Fg.y / masa);
             v += sf::Vector2f (a.x, a.y);
@@ -131,16 +177,15 @@ class Button
             szerokosc = c_szerokosc;
             wysokosc = c_wysokosc;
             clicked = false;
-            image.loadFromFile (image_path.c_str ());
+            image.loadFromFile (image_path);
             image.setSmooth (true);
             sprite.setTexture (image);
             sprite.setOrigin (25, 25);
             sprite.setPosition (koordynata_x, koordynata_y);
         }
-
 };
 
-std::vector <Button> buttons;
+std::vector <Button*> buttons;
 
 void Laduj_Uklad ()
 {
@@ -153,16 +198,17 @@ void Laduj_Uklad ()
     planety.push_back (Planeta (5.6846 * pow (10, 26), 929620800, 3.98615747863, 1.426725413 * pow (10, 12), 60268000));
     planety.push_back (Planeta (8.6832 * pow (10, 25), 2653185024, 0.21502456384, 2.870972220  * pow (10, 12), 25559000));
     planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
+    satelity.push_back (Satelita (7.347673 * pow (10, 24), 2360591.5104, 0, 384400000, 1737064, &planety [3]));
 }
 
 void Laduj_Guziki ()
 {
-    buttons.push_back (Button (50, 50, 50, 50, "Minus.png"));
-    buttons.push_back (Button (150, 50, 50, 50, "Plus.png"));
-    buttons.push_back (Button (50, 150, 50, 50, "Minus.png"));
-    buttons.push_back (Button (150, 150, 50, 50, "Plus.png"));
-    buttons.push_back (Button (50, 250, 50, 50, "Minus.png"));
-    buttons.push_back (Button (150, 250, 50, 50, "Plus.png"));
+    buttons.push_back (new Button (50, 50, 50, 50, "Minus.png"));
+    buttons.push_back (new Button (150, 50, 50, 50, "Plus.png"));
+    buttons.push_back (new Button (50, 150, 50, 50, "Minus.png"));
+    buttons.push_back (new Button (150, 150, 50, 50, "Plus.png"));
+    buttons.push_back (new Button (50, 250, 50, 50, "Minus.png"));
+    buttons.push_back (new Button (150, 250, 50, 50, "Plus.png"));
 }
 
 std::vector <sf::Vector2f> punkty;
@@ -179,7 +225,8 @@ void Symulacja (int czas)
     czasy.push_back (0);
     for (long i = 0; i < czas; i++)
     {
-        for (int i = 0; i < planety.size () - 1; i++) planety [i].Aktualizacja ();
+        for (int j = 0; j < planety.size (); j++) planety [j].Aktualizacja ();
+        for (int j = 0; j < satelity.size (); j++) satelity [j].Aktualizacja ();
         FK_Rakieta.Aktualizacja ();
         if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
         {

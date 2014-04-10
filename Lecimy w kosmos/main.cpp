@@ -125,12 +125,13 @@ int main()
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = 3071.187586 + planety [3].omega * planety [3].promien_orbity;
+    FK_Rakieta.v.y = 4603.187586 + planety [3].omega * planety [3].promien_orbity;
+    FK_Rakieta.v.x = 3071.187586;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
-    time_frame = 86400;
+    time_frame = 4*86400;
     time_start = 0;
-    time_stop = 86400;
-    time_modifier = 1;
+    time_stop = 4*86400;
+    time_modifier = 15;
     bool simulation_start = false;
     sf::Vector2f mouse;
     sf::View gui_view;
@@ -404,8 +405,9 @@ int main()
                                 simulation_start = !simulation_start;
                                 time_current = time_start;
                                 time_current_index = 0;
-                                for (int i = 0;(i < czasy.size () - 1) && (czasy [i] < time_start); i++) time_current_index = i - 1;
-                                for (int i = 0; i < planety.size () - 1; i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
+                                for (int i = 0;(i < czasy.size ()) && (czasy [i] < time_start); i++) time_current_index = i - 1;
+                                for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
+                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = satelity [i].omega * time_current;
                                 break;
                             case sf::Keyboard::Add:
                                 klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
@@ -421,15 +423,15 @@ int main()
                         if (!simulation_start)
                         {
                             mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
-                            for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i].koordynata_x - buttons [i].szerokosc / 2) && (mouse.x < buttons [i].koordynata_x + buttons [i].szerokosc / 2)) && ((mouse.y > buttons [i].koordynata_y - buttons [i].wysokosc / 2) && (mouse.y < buttons [i].koordynata_y + buttons [i].wysokosc / 2))) buttons [i].clicked = true;
+                            for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mouse.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mouse.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mouse.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
                         }
-                        if (buttons [0].clicked && time_frame > 200) time_frame -= 200;
-                        if (buttons [1].clicked) time_frame += 200;
-                        if (buttons [2].clicked && time_stop > 200) time_stop -= 200;
-                        if (buttons [3].clicked && time_stop < time_frame) time_stop += 200;
-                        if (buttons [4].clicked && time_modifier > 1) time_modifier -= 1;
-                        if (buttons [5].clicked) time_modifier += 1;
-                        for (int i = 0; i < buttons.size (); i++) buttons [i].clicked = false;
+                        if (buttons [0]->clicked && time_frame > 200) time_frame -= 200;
+                        if (buttons [1]->clicked) time_frame += 200;
+                        if (buttons [2]->clicked && time_stop > 200) time_stop -= 200;
+                        if (buttons [3]->clicked && time_stop < time_frame) time_stop += 200;
+                        if (buttons [4]->clicked && time_modifier > 1) time_modifier -= 1;
+                        if (buttons [5]->clicked) time_modifier += 1;
+                        for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
                         break;
                     default:
                         break;
@@ -444,7 +446,11 @@ int main()
                 FK_Rakieta.pozycja_katowa = katy [time_current_index];
                 FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
                 FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
-                for (int i = 0; i < time_modifier; i++) for (int j = 0; j < planety.size () - 1; j++) planety [j].Aktualizacja ();
+                for (int i = 0; i < time_modifier; i++)
+                {
+                    for (int i = 0; i < planety.size (); i++) planety [i].Aktualizacja ();
+                    for (int i = 0; i < satelity.size (); i++) satelity [i].Aktualizacja ();
+                }
                 time_current += time_modifier;
                 if (time_current >= time_stop) simulation_start = false;
             }
@@ -453,9 +459,10 @@ int main()
             okno.clear (sf::Color::Black);
             okno.draw (Ktlo);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].grafika);
+            for (int i = 0; i < satelity.size (); i++) okno.draw (satelity [i].grafika);
             okno.draw (FK_Rakieta.sprite);
             okno.setView (gui_view);
-            for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i].sprite);
+            for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
             okno.display ();
         }
     }
