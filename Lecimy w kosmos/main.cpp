@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna);
+void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3]);
     sf::ContextSettings settings( 0,0,8,2,0 );
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
@@ -73,7 +73,7 @@ int main()
     double Q = 1.1717;                              //gestosc powietrza
 
 
-    long double moc_silnikow[4] = {34318696.99,0,0,0};     // Sila silnikow pierwszego stopnia w N
+    long double moc_silnikow[4] = {34318696.99,5115000,0,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
@@ -274,6 +274,17 @@ int main()
                     paliwo[0]-=t*(13225.7/1000);
                 else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
                     paliwo[0]-=t*(13374.6246/1000);
+                else if(czas_pod.getElapsedTime().asSeconds()-6>135 && czas_pod.getElapsedTime().asSeconds()-6<161)
+                    paliwo[0]-=t*(10894.06/1000);
+
+                else if(czas_pod.getElapsedTime().asSeconds()-6>164 && czas_pod.getElapsedTime().asSeconds()-6<460)
+                    paliwo[1]-=t*(1225.45/1000);
+                else if(czas_pod.getElapsedTime().asSeconds()-6>460 && czas_pod.getElapsedTime().asSeconds()-6<498)
+                    paliwo[1]-=t*(980.36/1000);
+                else if(czas_pod.getElapsedTime().asSeconds()-6>498 && czas_pod.getElapsedTime().asSeconds()-6<548)
+                    paliwo[1]-=t*(728.52/1000);
+
+
                 t = czas.getElapsedTime().asMicroseconds()/1000.0;
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
@@ -369,16 +380,18 @@ int main()
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
                 }
+                /*
             if(czas_pod.getElapsedTime().asSeconds()>=36.8)
             {
-                cout << moc_silnikow[0];
+                cout << moc_silnikow[0] <<endl;
                 cin.get();
                 cin.get();
             }
+            */
 
 
             okno.setView(okno.getDefaultView());
-                wyswietlanie_danych(czas_pod,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna);
+                wyswietlanie_danych(czas_pod,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo);
 
             okno.setView(mapa);
             okno.display();
@@ -468,7 +481,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna)
+void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3])
 {
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
     sf::Time czas2 = czas.getElapsedTime();
@@ -510,10 +523,17 @@ void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double
     kinetyczna_wys.setColor((sf::Color::Black));
     kinetyczna_wys.setPosition(410,560);
 
+    ss.str("");
+    ss<<"Paliwo: "<<paliwo[0];
+    string pal_w = ss.str();
+    sf::Text pal_wys(pal_w, font[0],20);
+    pal_wys.setColor((sf::Color::Black));
+    pal_wys.setPosition(100,100);
 
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
     okno.draw(czas_wys);                        // wyswietlenie czasu
     okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
+    okno.draw(pal_wys);
     }
