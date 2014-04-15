@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3]);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3]);
     sf::ContextSettings settings( 0,0,8,2,0 );
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
@@ -78,7 +78,9 @@ int main()
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
     sf::Event zdarzenie;
-    sf::Clock czas,czas_pod, czas_rotacja;             // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
+    sf::Clock czas,czas_pod, czas_rotacja; // czas - okres ruchu, czas_pod - czas podró¿y, czas_rotacja - zmiana rotacji co sekudne;
+    float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
+    float szybkosc_sym=1;
 
     sf::Texture tlo_tekstura;                       //    Stworzenie tekstury  tlo_tekstura
     tlo_tekstura.loadFromFile("tlo-start.png");
@@ -255,49 +257,52 @@ int main()
                  start=true;
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
                     okno.close();
-
                 if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::W) //Wywolanie akcji klawiszem W
-                {
                     wektor=!wektor;
-                }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+                    szybkosc_sym<6?szybkosc_sym+=0.5:szybkosc_sym;
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+                    szybkosc_sym>0.5?szybkosc_sym-=0.5:szybkosc_sym;
 
             }
             if(start==false)                // Zerowanie czasu jak jest na ziemii
                 czas_pod.restart();
+            czas_podrozy += czas_pod.getElapsedTime().asSeconds()*szybkosc_sym;
+            czas_pod.restart();
+
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
-                t = czas.getElapsedTime().asMicroseconds()/1000.0;
+                t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
-                if(czas_pod.getElapsedTime().asMilliseconds()-6000<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                if(czas_podrozy<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
                     paliwo[0]-=t*(6562.2/1000);
-                else if(czas_pod.getElapsedTime().asMilliseconds()-6000>=0 && czas_pod.getElapsedTime().asMilliseconds()-6000<=70000)
+                else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
-                else if(czas_pod.getElapsedTime().asSeconds()-6>70 && czas_pod.getElapsedTime().asSeconds()-6<135)
+                else if(czas_podrozy>70 && czas_pod.getElapsedTime().asSeconds()<135)
                     paliwo[0]-=t*(13374.6246/1000);
-                else if(czas_pod.getElapsedTime().asSeconds()-6>135 && czas_pod.getElapsedTime().asSeconds()-6<161)
+                else if(czas_podrozy>135 && czas_podrozy<161)
                     paliwo[0]-=t*(10894.06/1000);
 
-                else if(czas_pod.getElapsedTime().asSeconds()-6>164 && czas_pod.getElapsedTime().asSeconds()-6<460)
+                else if(czas_podrozy>164 && czas_podrozy<460)
                     paliwo[1]-=t*(1225.45/1000);
-                else if(czas_pod.getElapsedTime().asSeconds()-6>460 && czas_pod.getElapsedTime().asSeconds()-6<498)
+                else if(czas_podrozy>460 && czas_podrozy<498)
                     paliwo[1]-=t*(980.36/1000);
-                else if(czas_pod.getElapsedTime().asSeconds()-6>498 && czas_pod.getElapsedTime().asSeconds()-6<548)
+                else if(czas_podrozy>498 && czas_podrozy<548)
                     paliwo[1]-=t*(728.52/1000);
 
-
-                t = czas.getElapsedTime().asMicroseconds()/1000.0;
+                t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
                 {
-                    if(czas_pod.getElapsedTime().asSeconds()-6>=30 && czas_pod.getElapsedTime().asSeconds()-6<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
+                    if(czas_podrozy>=30 && czas_podrozy<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
                         rakieta.rotate(t*0.7280000/1000);//...obrót rakiety o tyle stopni
-                    else if(czas_pod.getElapsedTime().asSeconds()-6>=80 && czas_pod.getElapsedTime().asSeconds()-6<135)
+                    else if(czas_podrozy>=80 && czas_podrozy<135)
                         rakieta.rotate(t*0.4696364/1000);
-                    else if(czas_pod.getElapsedTime().asSeconds()-6>=135 && czas_pod.getElapsedTime().asSeconds()-6<165)
+                    else if(czas_podrozy>=135 && czas_podrozy<165)
                         rakieta.rotate(t*0.2970000/1000);
 
                 czas_rotacja.restart();
                 }
-                t = czas.getElapsedTime().asMicroseconds()/1000.0;
+                t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(paliwo[0]>=315239.89)
                         moc_silnikow[0]+=9.5*t;
                     else if(paliwo[0]>=0 && paliwo[0]<=70)  // odpada silnik
@@ -305,9 +310,7 @@ int main()
                         numer = 1;
                         moc_silnikow[1]+=1000*t;
                     }
-
-
-                if(czas_pod.getElapsedTime().asSeconds()-6>=0)
+                if(czas_podrozy>=0)
                 {
 
                     Mc = m+paliwo[0]+paliwo[1]+paliwo[2];
@@ -318,7 +321,7 @@ int main()
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
-                    t = czas.getElapsedTime().asMicroseconds()/1000.0;
+                    t =  szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
                     IprzyspieszenieI =sqrt(pow(przyspieszenie.x,2)+pow(przyspieszenie.y,2));
@@ -338,7 +341,7 @@ int main()
                     {
                         mapa.setCenter(rakieta.getPosition().x+11,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
-                    t = czas.getElapsedTime().asMicroseconds()/1000.0;
+                    t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     odleglosc+=predkosc.y*t;
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
@@ -346,6 +349,7 @@ int main()
                 }
                 czas.restart();
             }
+
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo);
 
@@ -372,7 +376,7 @@ int main()
                 okno.draw(mezosfera);
             }
             okno.setView(mapa);
-                okno.draw(rakieta);
+            okno.draw(rakieta);
                 if(wektor) //wyswietlenie wektorow
                 {
                     Wektory grawitacja(Fg,rakieta.getPosition().x,rakieta.getPosition().y,sf::Color::Red,false);
@@ -380,18 +384,9 @@ int main()
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
                 }
-                /*
-            if(czas_pod.getElapsedTime().asSeconds()>=36.8)
-            {
-                cout << moc_silnikow[0] <<endl;
-                cin.get();
-                cin.get();
-            }
-            */
-
 
             okno.setView(okno.getDefaultView());
-                wyswietlanie_danych(czas_pod,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo);
+            wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo);
 
             okno.setView(mapa);
             okno.display();
@@ -481,15 +476,12 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(sf::Clock czas, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3])
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3])
 {
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
-    sf::Time czas2 = czas.getElapsedTime();
-    int a = czas2.asSeconds();
-            a-=6;
-            int godziny = a/3600;
-            int minuty = (a-godziny*3600)/60;
-            int sekundy = a-godziny*3600-minuty*60;
+            int godziny = czas_podrozy/3600;
+            int minuty = (czas_podrozy-godziny*3600)/60;
+            int sekundy = czas_podrozy-godziny*3600-minuty*60;
     ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
     sf::Text czas_wys(czas3, font[0], 20);
