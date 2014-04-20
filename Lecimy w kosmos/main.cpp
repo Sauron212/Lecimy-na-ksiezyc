@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3]);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer);
     sf::ContextSettings settings( 0,0,8,2,0 );
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
@@ -73,7 +73,7 @@ int main()
     double Q = 1.1717;                              //gestosc powietrza
 
 
-    long double moc_silnikow[4] = {34318696.99,5115000,0,0};     // Sila silnikow pierwszego stopnia w N
+    long double moc_silnikow[4] = {34318696.99,5104334.30,0,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
@@ -324,9 +324,6 @@ int main()
                     }
                     if(numer==1)
                     {
-                        cout<< numer;
-                        cin.get();
-                        cin.get();
                         if(paliwo[1]>=79742.90)
                             moc_silnikow[1]+=0;
                         else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
@@ -422,7 +419,7 @@ int main()
                 }
 
             okno.setView(okno.getDefaultView());
-            wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo);
+            wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer);
 
             okno.setView(mapa);
             okno.display();
@@ -512,7 +509,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3])
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer)
 {
     ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
             int godziny = czas_podrozy/3600;
@@ -552,8 +549,8 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     kinetyczna_wys.setPosition(410,560);
 
     ss.str("");
-    ss<<"Zbiornik nr 1";
-    float zmienna =2145798.08;
+    ss<<"Zbiornik " << numer+1;
+    long double pelne_zbiorniki[3]={2145798.08,443235.04,107095.43};
     string pal_w = ss.str();
     sf::Text pal_wys(pal_w, font[0],20);
     pal_wys.setColor((sf::Color::Black));
@@ -562,7 +559,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     sf::RectangleShape czerwony(sf::Vector2f(20,200));
     czerwony.setPosition(100,120);
     czerwony.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony(sf::Vector2f(20, paliwo[0]/zmienna*200));
+    sf::RectangleShape zielony(sf::Vector2f(20, paliwo[numer]/pelne_zbiorniki[numer]*200));
     zielony.setOrigin(0,0);
     zielony.setFillColor(sf::Color::Green);
     zielony.setPosition(120,320);
