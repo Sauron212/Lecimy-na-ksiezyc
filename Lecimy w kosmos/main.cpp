@@ -274,21 +274,25 @@ int main()
             {
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
+                // spalanie 1 silnik
                 if(czas_podrozy<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
                     paliwo[0]-=t*(6562.2/1000);
                 else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
-                else if(czas_podrozy>70 && czas_pod.getElapsedTime().asSeconds()<135)
+                else if(czas_podrozy>70 && czas_podrozy<135)
                     paliwo[0]-=t*(13374.6246/1000);
                 else if(czas_podrozy>135 && czas_podrozy<161)
-                    paliwo[0]-=t*(10894.06/1000);
-
-                else if(czas_podrozy>164 && czas_podrozy<460)
+                    paliwo[0]-=t*(10894.06/1000);//10716.83
+                // spalanie 2 silnik
+                else if(czas_podrozy>164 && czas_podrozy<=460)
                     paliwo[1]-=t*(1225.45/1000);
-                else if(czas_podrozy>460 && czas_podrozy<498)
+                else if(czas_podrozy>460 && czas_podrozy<=498)
                     paliwo[1]-=t*(980.36/1000);
-                else if(czas_podrozy>498 && czas_podrozy<548)
+                else if(czas_podrozy>498 && czas_podrozy<=548)
                     paliwo[1]-=t*(728.52/1000);
+                //spalanie 3 silnik
+                else if(czas_podrozy>552 && czas_podrozy<=699)
+                    paliwo[2]-=t*(213.42/1000);
 
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
@@ -303,13 +307,45 @@ int main()
                 czas_rotacja.restart();
                 }
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
-                    if(paliwo[0]>=315239.89)
-                        moc_silnikow[0]+=9.5*t;
-                    else if(paliwo[0]>=0 && paliwo[0]<=70)  // odpada silnik
+                    if(numer==0)
                     {
-                        numer = 1;
-                        moc_silnikow[1]+=1000*t;
+                        if(paliwo[0]>=315239.89)
+                            moc_silnikow[0]+=9.5*t;
+                        else if(paliwo[0]<315239.89 && paliwo[0]>315200.89) // wylaczenie centralnego silnika
+                            moc_silnikow[0]=31942035;
+                        else if(paliwo[0]<315239.89 && paliwo[0]>31994.14)
+                            moc_silnikow[0]+=0.0000002;
+                        else if(paliwo[0]>0 && paliwo[0]<=31994.14)  // odpada silnik
+                        {
+                            numer = 1;
+                            m -= 132890.32;
+                            paliwo[0]=0;
+                        }
                     }
+                    if(numer==1)
+                    {
+                        cout<< numer;
+                        cin.get();
+                        cin.get();
+                        if(paliwo[1]>=79742.90)
+                            moc_silnikow[1]+=0;
+                        else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
+                            moc_silnikow[1]+=0;
+                        else if(paliwo[1]<43097.17 && paliwo[1]>=6510.86)
+                            moc_silnikow[1]+=0;
+                        else if(paliwo[1]<6510.86 && paliwo[1]>=0)
+                        {
+                            numer = 2;
+                            m -= 40392.40;
+                            paliwo[1]=0;
+                        }
+                    }
+                    if(numer==2)
+                    {
+                        if(paliwo[2]>=75695.49)
+                            moc_silnikow[2]+=0;
+                    }
+
                 if(czas_podrozy>=0)
                 {
 
@@ -516,11 +552,21 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     kinetyczna_wys.setPosition(410,560);
 
     ss.str("");
-    ss<<"Paliwo: "<<paliwo[0];
+    ss<<"Zbiornik nr 1";
+    float zmienna =2145798.08;
     string pal_w = ss.str();
     sf::Text pal_wys(pal_w, font[0],20);
     pal_wys.setColor((sf::Color::Black));
     pal_wys.setPosition(100,100);
+
+    sf::RectangleShape czerwony(sf::Vector2f(20,200));
+    czerwony.setPosition(100,120);
+    czerwony.setFillColor(sf::Color::Red);
+    sf::RectangleShape zielony(sf::Vector2f(20, paliwo[0]/zmienna*200));
+    zielony.setOrigin(0,0);
+    zielony.setFillColor(sf::Color::Green);
+    zielony.setPosition(120,320);
+    zielony.setRotation(180);
 
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
@@ -528,4 +574,6 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     okno.draw(czas_wys);                        // wyswietlenie czasu
     okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
     okno.draw(pal_wys);
+    okno.draw(czerwony);
+    okno.draw(zielony);
     }
