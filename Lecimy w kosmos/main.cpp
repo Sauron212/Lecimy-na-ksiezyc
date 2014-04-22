@@ -127,13 +127,13 @@ int main()
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = 4603.187586 + planety [3].omega * planety [3].promien_orbity;
-    FK_Rakieta.v.x = 3071.187586;
+    FK_Rakieta.v.y = 4180.800000; //+ planety [3].omega * planety [3].promien_orbity;
+    FK_Rakieta.v.x = 0;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
-    time_frame = 4*86400;
+    time_frame = 10*86400;
     time_start = 0;
-    time_stop = 4*86400;
-    time_modifier = 15;
+    time_stop = 10*86400;
+    time_modifier = 25;
     bool simulation_start = false;
     sf::Vector2f mouse;
     sf::View gui_view;
@@ -448,7 +448,7 @@ int main()
                                 time_current_index = 0;
                                 for (int i = 0;(i < czasy.size ()) && (czasy [i] < time_start); i++) time_current_index = i - 1;
                                 for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega * time_current;
-                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = satelity [i].omega * time_current;
+                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = 0.3 * pi;
                                 break;
                             case sf::Keyboard::Add:
                                 klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
@@ -466,12 +466,23 @@ int main()
                             mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
                             for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mouse.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mouse.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mouse.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
                         }
-                        if (buttons [0]->clicked && time_frame > 200) time_frame -= 200;
-                        if (buttons [1]->clicked) time_frame += 200;
-                        if (buttons [2]->clicked && time_stop > 200) time_stop -= 200;
-                        if (buttons [3]->clicked && time_stop < time_frame) time_stop += 200;
+                        if (buttons [0]->clicked && time_frame > 86400) time_frame -= 86400;
+                        if (buttons [1]->clicked) time_frame += 86400;
+                        if (buttons [2]->clicked && time_stop > 86400) time_stop -= 86400;
+                        if (buttons [3]->clicked && time_stop < time_frame) time_stop += 86400;
                         if (buttons [4]->clicked && time_modifier > 1) time_modifier -= 1;
                         if (buttons [5]->clicked) time_modifier += 1;
+                        if (buttons [6]->clicked) FK_Rakieta.v.y -= 1;
+                        if (buttons [7]->clicked) FK_Rakieta.v.y += 1;
+                        if (buttons [8]->clicked)
+                        {
+                            FK_Rakieta.koordynata_x = 1.49597870 * pow (10, 11) - 42231860.82;
+                            FK_Rakieta.masa = 100;
+                            FK_Rakieta.koordynata_y = 0;
+                            FK_Rakieta.v.y = 4300.800000;
+                            FK_Rakieta.v.x = 2071.187586;
+                            time_current = 0;
+                        }
                         for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
                         break;
                     default:
@@ -480,7 +491,7 @@ int main()
             }
             if (simulation_start)
             {
-                do if (time_current > czasy [time_current_index]) time_current_index += 1;
+                do if (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1) time_current_index += 1;
                 while (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1);
                 FK_Rakieta.koordynata_x = punkty [time_current_index].x;
                 FK_Rakieta.koordynata_y = punkty [time_current_index].y;
@@ -489,8 +500,16 @@ int main()
                 FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
                 for (int i = 0; i < time_modifier; i++)
                 {
-                    for (int i = 0; i < planety.size (); i++) planety [i].Aktualizacja ();
-                    for (int i = 0; i < satelity.size (); i++) satelity [i].Aktualizacja ();
+                    for (int i = 0; i < planety.size (); i++)
+                    {
+                        //planety [i].Aktualizacja ();
+                        planety [i].grafika.setPosition (planety [i].koordynata_x / 1000000, -planety [i].koordynata_y / 1000000);
+                    }
+                    for (int i = 0; i < satelity.size (); i++)
+                    {
+                        satelity [i].Aktualizacja ();
+                        satelity [i].grafika.setPosition (satelity [i].koordynata_x / 1000000, -satelity [i].koordynata_y / 1000000);
+                    }
                 }
                 time_current += time_modifier;
                 if (time_current >= time_stop) simulation_start = false;
