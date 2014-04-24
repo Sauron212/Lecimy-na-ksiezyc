@@ -303,6 +303,22 @@ int main()
                         rakieta.rotate(t*0.4696364/1000);
                     else if(czas_podrozy>=135 && czas_podrozy<165)
                         rakieta.rotate(t*0.2970000/1000);
+                    else if(czas_podrozy>=165 && czas_podrozy<185)
+                        rakieta.rotate(t*(-0.5285000)/1000);
+                    else if(czas_podrozy>=185 && czas_podrozy<320)
+                        rakieta.rotate(t*0.0309630/1000);
+                    else if(czas_podrozy>=320 && czas_podrozy<460)
+                        rakieta.rotate(t*0.0900000/1000);
+                    else if(czas_podrozy>=460 && czas_podrozy<480)
+                        rakieta.rotate(t*(-0.1380000)/1000);
+                    else if(czas_podrozy>=480 && czas_podrozy<550)
+                        rakieta.rotate(t*0.0971429/1000);
+                    else if(czas_podrozy>=550 && czas_podrozy<570)
+                        rakieta.rotate(t*(-0.2070000)/1000);
+                    else if(czas_podrozy>=570 && czas_podrozy<640)
+                        rakieta.rotate(t*0.1117143/1000);
+                    else if(czas_podrozy>=640 && czas_podrozy<705)
+                        rakieta.rotate(t*0.0486154/1000);
 
                 czas_rotacja.restart();
                 }
@@ -414,8 +430,10 @@ int main()
                 {
                     Wektory grawitacja(Fg,rakieta.getPosition().x,rakieta.getPosition().y,sf::Color::Red,false);
                     Wektory ciag(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Blue);
+                    Wektory opor_powietrza(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Yellow, false);
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
+                    okno.draw(opor_powietrza.wektor);
                 }
 
             okno.setView(okno.getDefaultView());
