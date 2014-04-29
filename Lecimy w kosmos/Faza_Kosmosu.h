@@ -151,8 +151,8 @@ class Rakieta
             alfa_2 = std::signbit (((atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - pi - pozycja_katowa + std::signbit (sin (pozycja_katowa)) * pi) * -2 + 1) * pi + atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi + std::signbit (atan2 (Fg_2.y, Fg_2.x) - std::signbit (sin (pozycja_katowa)) * pi) * 2 * pi - (pozycja_katowa - std::signbit (sin (pozycja_katowa)) * pi) + pi;
             epsilon = 3 * (dlugosc_1 * sin (alfa_1) * sqrt (Fg_1.x * Fg_1.x + Fg_1.y * Fg_1.y) + dlugosc_2 * sin (alfa_2) * sqrt (Fg_2.x * Fg_2.x + Fg_2.y * Fg_2.y)) / (masa * (dlugosc_1 + dlugosc_2) * (dlugosc_1 + dlugosc_2));
             omega += epsilon;
-            if (pozycja_katowa > 2 * pi) pozycja_katowa -= 2 * pi;
-            pozycja_katowa += omega;
+            pozycja_katowa = atan2 (v.y, v.x);
+            if (pozycja_katowa < 0) pozycja_katowa += 2 * pi;
         }
 };
 
@@ -187,16 +187,16 @@ std::vector <Button*> buttons;
 
 void Laduj_Uklad ()
 {
-    planety.push_back (Planeta (1.9891 * pow (10, 1), 0, 0, 0, 695500000));
-    planety.push_back (Planeta (3.3302 * pow (10, 23), 7600551.84, 4.47188260946, 5.7909176 * pow (10, 10), 2439500));
-    planety.push_back (Planeta (4.8685 * pow (10, 24), 19414162.944, 3.83379023493, 1.08208926 * pow (10, 11), 6052000));
+    //planety.push_back (Planeta (1.9891 * pow (10, 1), 0, 0, 0, 695500000));
+    //planety.push_back (Planeta (3.3302 * pow (10, 23), 7600551.84, 4.47188260946, 5.7909176 * pow (10, 10), 2439500));
+    //planety.push_back (Planeta (4.8685 * pow (10, 24), 19414162.944, 3.83379023493, 1.08208926 * pow (10, 11), 6052000));
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
-    planety.push_back (Planeta (6.4185 * pow (10, 23), 59353352.64, 3.31019145933, 2.27936637 * pow (10, 11), 3402500));
-    planety.push_back (Planeta (1.8986 * pow (10, 27), 374395970.88, 1.9455185172, 7.7841202 * pow (10, 11), 71492000));
-    planety.push_back (Planeta (5.6846 * pow (10, 26), 929620800, 3.98615747863, 1.426725413 * pow (10, 12), 60268000));
-    planety.push_back (Planeta (8.6832 * pow (10, 25), 2653185024, 0.21502456384, 2.870972220  * pow (10, 12), 25559000));
-    planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
-    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 0.3 * pi, 384400000, 1737064, &planety [3]));
+    //planety.push_back (Planeta (6.4185 * pow (10, 23), 59353352.64, 3.31019145933, 2.27936637 * pow (10, 11), 3402500));
+    //planety.push_back (Planeta (1.8986 * pow (10, 27), 374395970.88, 1.9455185172, 7.7841202 * pow (10, 11), 71492000));
+    //planety.push_back (Planeta (5.6846 * pow (10, 26), 929620800, 3.98615747863, 1.426725413 * pow (10, 12), 60268000));
+    //planety.push_back (Planeta (8.6832 * pow (10, 25), 2653185024, 0.21502456384, 2.870972220  * pow (10, 12), 25559000));
+    //planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
+    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 0.3 * pi, 384400000, 1737064, &planety [0]));
 }
 
 void Laduj_Guziki ()
@@ -229,7 +229,7 @@ void Symulacja (int czas)
     for (long i = 0; i < czas && !zderzenie; i++)
     {
         for (int j = 0; j < satelity.size (); j++) satelity [j].Aktualizacja ();
-        if (sqrt (pow (FK_Rakieta.koordynata_x - planety [3].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [3].koordynata_y, 2)) < planety [3].promien_planety) zderzenie = true;
+        if (sqrt (pow (FK_Rakieta.koordynata_x - planety [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [0].koordynata_y, 2)) < planety [0].promien_planety) zderzenie = true;
         FK_Rakieta.Aktualizacja ();
         if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
         {
