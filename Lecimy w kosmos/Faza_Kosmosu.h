@@ -250,7 +250,7 @@ class Wektory
 Wektory::Wektory(sf::Vector2f W,int x, int y,sf::Color s,bool zwrot)    /// zwrot == true/false do gory/w dol
 {
     dlugosc = sqrt(pow(W.x,2)+pow(W.y,2));
-    wektor.setSize(sf::Vector2f(2,dlugosc));
+    wektor.setSize(sf::Vector2f(2,dlugosc/100000));
     wektor.setFillColor(s);
     wektor.setPosition(x,y);
     if(zwrot)

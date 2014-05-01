@@ -82,12 +82,27 @@ int main()
     float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
     float szybkosc_sym=1;
 
-    sf::Texture tlo_tekstura;                       //    Stworzenie tekstury  tlo_tekstura
-    tlo_tekstura.loadFromFile("tlo-start.png");
+    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3;                       //    Stworzenie tekstury  tlo_tekstura
+    tlo_tekstura1.loadFromFile("tlo0.png");
+    tlo_tekstura2.loadFromFile("tlo1.png");
+    tlo_tekstura3.loadFromFile("tlo2.png");
+    tlo_tekstura1.setRepeated(true);
+    tlo_tekstura2.setRepeated(true);
+    tlo_tekstura3.setRepeated(true);
 
-    sf::Sprite tlo;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
-    tlo.setTexture(tlo_tekstura);
+
+    sf::Sprite tlo,tlo2,tlo3;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
+    tlo.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
+    tlo2.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
+    tlo3.setTextureRect(sf::IntRect(0, 0, 100000, 30000));
+
+    tlo.setTexture(tlo_tekstura1);
+    tlo2.setTexture(tlo_tekstura2);
+    tlo3.setTexture(tlo_tekstura3);
+
     tlo.setPosition(0,-7297);
+    tlo2.setPosition(0,-15297);
+    tlo3.setPosition(0,-45297);
 
     sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
@@ -254,7 +269,10 @@ int main()
                 if( zdarzenie.type == sf::Event::Closed )
                  okno.close();
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+                {
                  start=true;
+                 czas.restart();
+                }
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
                     okno.close();
                 if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::W) //Wywolanie akcji klawiszem W
@@ -274,17 +292,18 @@ int main()
             {
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
+                Mc = m+paliwo[0]+paliwo[1]+paliwo[2];
                 // spalanie 1 silnik
-                if(czas_podrozy<0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                if(czas_podrozy<=0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
                     paliwo[0]-=t*(6562.2/1000);
                 else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
-                else if(czas_podrozy>70 && czas_podrozy<135)
+                else if(czas_podrozy>70 && czas_podrozy<=135)
                     paliwo[0]-=t*(13374.6246/1000);
-                else if(czas_podrozy>135 && czas_podrozy<161)
-                    paliwo[0]-=t*(10894.06/1000);//10716.83
+                else if(czas_podrozy>=135 && czas_podrozy<=164)
+                    paliwo[0]-=t*(10894.06/1000);
                 // spalanie 2 silnik
-                else if(czas_podrozy>164 && czas_podrozy<=460)
+                else if(czas_podrozy>=164 && czas_podrozy<=460)
                     paliwo[1]-=t*(1225.45/1000);
                 else if(czas_podrozy>460 && czas_podrozy<=498)
                     paliwo[1]-=t*(980.36/1000);
@@ -326,14 +345,16 @@ int main()
                     if(numer==0)
                     {
                         if(paliwo[0]>=315239.89)
-                            moc_silnikow[0]+=9.5*t;
-                        else if(paliwo[0]<315239.89 && paliwo[0]>315200.89) // wylaczenie centralnego silnika
+                            moc_silnikow[0]+=45*t;
+                        else if(paliwo[0]<315239.89 && paliwo[0]>315100.89) // wylaczenie centralnego silnika
                             moc_silnikow[0]=31942035;
                         else if(paliwo[0]<315239.89 && paliwo[0]>31994.14)
-                            moc_silnikow[0]+=0.0000002;
+                            moc_silnikow[0]+=0.000000002*t;
                         else if(paliwo[0]>0 && paliwo[0]<=31994.14)  // odpada silnik
                         {
                             numer = 1;
+                            predkosc.y = Mc*predkosc.y/(Mc-132890.32-paliwo[0]);
+                            predkosc.x = Mc*predkosc.x/(Mc-132890.32-paliwo[0]);
                             m -= 132890.32;
                             paliwo[0]=0;
                         }
@@ -401,6 +422,8 @@ int main()
 
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo);
+            okno.draw(tlo2);
+            okno.draw(tlo3);
 
             okno.setView(okno.getDefaultView());
                 okno.draw(prostokat);
@@ -410,20 +433,6 @@ int main()
                 okno.draw(rakieta);                 // to znajduje sie na minimapie
 
             okno.setView(okno.getDefaultView());
-            if(odleglosc>17000 && odleglosc<22000)                  // Wyswietlanie komunikatu o sferach
-            {
-                sf::Text stratosfera("Weszlismy w STRATOSFERE", font[0], 18);
-                stratosfera.setPosition(300,400);
-                stratosfera.setColor(sf::Color::Red);
-                okno.draw(stratosfera);
-            }
-            if(odleglosc>55000 && odleglosc<60000)
-            {
-                sf::Text mezosfera("Weszlismy w MEZOSFERE", font[0], 18);
-                mezosfera.setPosition(300,400);
-                mezosfera.setColor(sf::Color::Red);
-                okno.draw(mezosfera);
-            }
             okno.setView(mapa);
             okno.draw(rakieta);
                 if(wektor) //wyswietlenie wektorow
@@ -435,7 +444,14 @@ int main()
                     okno.draw(grawitacja.wektor);
                     okno.draw(opor_powietrza.wektor);
                 }
-
+           // if(czas_podrozy>= 161 && czas_podrozy<=162)
+           // {
+           //     cout << paliwo[0] << endl;
+           //     cout << odleglosc-6371000 << endl;
+           //     cout << moc_silnikow[0];
+           //     cin.get();
+           //     cin.get();
+           // }
             okno.setView(okno.getDefaultView());
             wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer);
 
