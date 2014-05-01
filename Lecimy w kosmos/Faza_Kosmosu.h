@@ -87,6 +87,15 @@ class Satelita
 
 std::vector <Satelita> satelity;
 
+struct Czas
+{
+    int start;
+    int czas_trwania;
+};
+
+std::vector <Czas> czasy_silnika;
+int current_index = 0;
+
 class Rakieta
 {
     public:
@@ -100,6 +109,7 @@ class Rakieta
         double dlugosc_2;
         double alfa_1;
         double alfa_2;
+        double ciag;
         sf::Vector2f Fg;
         sf::Vector2f Fg_1;
         sf::Vector2f Fg_2;
@@ -125,10 +135,13 @@ class Rakieta
             epsilon = 0;
             omega = 0;
             pozycja_katowa = pi / 2;
+            ciag = 225;
         }
-        void Aktualizacja ()
+        void Aktualizacja (int czas)
         {
             Fg = sf::Vector2f (0, 0);
+            if (czas > czasy_silnika [current_index].start && czas < czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania) Fg += sf::Vector2f (cos (pozycja_katowa) * ciag, sin (pozycja_katowa) * ciag);
+            dx<<Fg.x<<":"<<Fg.y<<std::endl;
             Fg_1 = Fg;
             Fg_2 = Fg;
             for (int i = 0; i < planety.size (); i++)
@@ -156,7 +169,7 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (1.49597870 * pow (10, 11), 42231860.82, 100);
+Rakieta FK_Rakieta (1.49597870 * pow (10, 11), 1.99584335558 * pow (10, 7), 100);
 
 class Button
 {
@@ -197,6 +210,10 @@ void Laduj_Uklad ()
     //planety.push_back (Planeta (8.6832 * pow (10, 25), 2653185024, 0.21502456384, 2.870972220  * pow (10, 12), 25559000));
     //planety.push_back (Planeta (1.0244 * pow (10, 26), 5203297440, 5.85016911976, 4.498252900  * pow (10, 12), 24764000));
     satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 0.3 * pi, 384400000, 1737064, &planety [0]));
+    Czas cz;
+    cz.start = 0;
+    cz.czas_trwania = 86400;
+    czasy_silnika.push_back (cz);
 }
 
 void Laduj_Guziki ()
@@ -230,7 +247,8 @@ void Symulacja (int czas)
     {
         for (int j = 0; j < satelity.size (); j++) satelity [j].Aktualizacja ();
         if (sqrt (pow (FK_Rakieta.koordynata_x - planety [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [0].koordynata_y, 2)) < planety [0].promien_planety) zderzenie = true;
-        FK_Rakieta.Aktualizacja ();
+        if (i > czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania && current_index < czasy_silnika.size ()) current_index += 1;
+        FK_Rakieta.Aktualizacja (i);
         if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
         {
             punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
@@ -238,7 +256,14 @@ void Symulacja (int czas)
             czasy.push_back (i);
         }
     }
+    dx.close ();
 }
+
+void Dane ()
+{
+
+}
+
 class Wektory
 {
     public:
