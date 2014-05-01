@@ -17,27 +17,36 @@ int main()
     bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
     if(fullscreen)
         okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
-    sf::Texture tlo_menu;
-    tlo_menu.loadFromFile("tlo-menu.png");
-    sf::Sprite tlo1;
-    tlo1.setTexture(tlo_menu);
+    sf::Texture tlo_glowne,tlo_menu;
+    tlo_glowne.loadFromFile("tlo-menu.png");
+    tlo_menu.loadFromFile("menu.png");
+    sf::Sprite tlo1,menuP;
+    tlo1.setTexture(tlo_glowne);
+    menuP.setTexture(tlo_menu);
     tlo1.setScale(okno.getSize().x/1920.0,okno.getSize().y/1080.0);
+    menuP.setScale(350/594.0,295/500.0);
+    menuP.setTextureRect(sf::IntRect(0,0,594,500.0));
+    menuP.setPosition(0.15*okno.getSize().x,0.32*okno.getSize().y);
+
     font[0].loadFromFile("arial.ttf");  // ustawienie czcionki
     font[1].loadFromFile("ocr.ttf");
 
     int menu=0;
-    sf::Text ziemiaT("ZIEMIA", font[0],20);
+    sf::Text ziemiaT("ZIEMIA", font[0],24);
     sf::Text lecimyT("Lecimy w kosmos!", font[1],80);
     sf::Text kosmosT("KOSMOS", font[0],20);
+    sf::Text daneT("DANE", font[0],20);
     sf::Text wyjscieT("WYJSCIE", font[0],20);
     lecimyT.setColor(sf::Color::White);
-    ziemiaT.setColor(sf::Color::Black);
-    kosmosT.setColor(sf::Color::Black);
-    wyjscieT.setColor(sf::Color::Black);
+    ziemiaT.setColor(sf::Color::White);
+    kosmosT.setColor(sf::Color::White);
+    daneT.setColor(sf::Color::White);
+    wyjscieT.setColor(sf::Color::White);
     lecimyT.setPosition((okno.getSize().x-lecimyT.getGlobalBounds().width)/2, 20);
-    ziemiaT.setPosition(300,200);
-    kosmosT.setPosition(300,250);
-    wyjscieT.setPosition(300,300);
+    ziemiaT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+30);
+    kosmosT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+90);
+    daneT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+150);
+    wyjscieT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+210);
     /* ZMIENNE GRUPY GRZESIA : */
     int x{390},y{455}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
@@ -200,6 +209,7 @@ int main()
             sf::FloatRect ziemia = ziemiaT.getGlobalBounds();
             sf::FloatRect kosmos = kosmosT.getGlobalBounds();
             sf::FloatRect wyjscie = wyjscieT.getGlobalBounds();
+            sf::FloatRect dane = daneT.getGlobalBounds();
             sf::FloatRect time_frame_plus = time_frame_plusT.getGlobalBounds();
             sf::FloatRect time_frame_minus = time_frame_minusT.getGlobalBounds();
             sf::FloatRect time_modifier_plus = time_modifier_plusT.getGlobalBounds();
@@ -245,11 +255,14 @@ int main()
                     menu=1;
                 if(myszka.intersects(kosmos) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     menu=2;
+                if(myszka.intersects(dane) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    menu=3;
                 if(myszka.intersects(wyjscie) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     okno.close();
             }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
+            okno.draw(menuP);
             okno.draw( time_frame_plusT );
             okno.draw( time_frame_minusT );
             okno.draw( Tekst_time_frame );
@@ -259,10 +272,27 @@ int main()
             okno.draw(lecimyT);
             okno.draw(ziemiaT);
             okno.draw(kosmosT);
+            okno.draw(daneT);
             okno.draw(wyjscieT);
             okno.display();
         }
-        while(okno.isOpen ()&& (odleglosc <= 6471000 && menu==1))
+        while(okno.isOpen() && menu==3)
+        {
+            sf::Text dane("Zmiana danych", font[0], 25);
+            dane.setPosition(sf::Vector2f(50,50));
+                while(okno.pollEvent(zdarzenie))
+                {
+                if( zdarzenie.type == sf::Event::Closed )
+                 okno.close();
+                if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
+                    okno.close();
+                }
+            okno.clear(sf::Color(255,255,255));
+            okno.draw(tlo1);
+            okno.draw(dane);
+            okno.display();
+        }
+        while(okno.isOpen()&& (odleglosc <= 6471000 && menu==1))
         {
             while(okno.pollEvent(zdarzenie))
             {
