@@ -7,7 +7,8 @@ using namespace sf;
 using namespace std;
 
 void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer);
-    sf::ContextSettings settings( 0,0,8,2,0 );
+    sf::ContextSettings settings( 0,0,8,2,0);
+void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi);
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
@@ -587,6 +588,7 @@ int main()
             okno.draw (FK_Rakieta.sprite);
             okno.setView (gui_view);
             for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
+            wyswietlanie_danych_kosmos(time_current_index, czas_podrozy);
             okno.display ();
         }
     }
@@ -656,4 +658,23 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     okno.draw(pal_wys);
     okno.draw(czerwony);
     okno.draw(zielony);
+    }
+
+    void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi)
+{
+    float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
+    ostringstream ss;
+            int godziny = czas_podrozy/3600;
+            int minuty = (czas_podrozy-godziny*3600)/60;
+            int sekundy = czas_podrozy-godziny*3600-minuty*60;
+    ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
+    string czas3 = ss.str();
+    sf::Text czas_wys(czas3, font[0], 20);
+    czas_wys.setColor((sf::Color::White));
+    czas_wys.setPosition(410, 480);
+    ss.str("");
+
+
+    okno.draw(czas_wys);
+
     }
