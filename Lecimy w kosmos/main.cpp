@@ -8,7 +8,7 @@ using namespace std;
 
 void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer);
     sf::ContextSettings settings( 0,0,8,2,0);
-void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi);
+void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
 
 sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
@@ -588,7 +588,7 @@ int main()
             okno.draw (FK_Rakieta.sprite);
             okno.setView (gui_view);
             for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
-            wyswietlanie_danych_kosmos(time_current_index, czas_podrozy);
+            wyswietlanie_danych_kosmos(time_current_index, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y);
             okno.display ();
         }
     }
@@ -660,7 +660,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     okno.draw(zielony);
     }
 
-    void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi)
+    void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y)
 {
     float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
     ostringstream ss;
@@ -671,10 +671,27 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     string czas3 = ss.str();
     sf::Text czas_wys(czas3, font[0], 20);
     czas_wys.setColor((sf::Color::White));
-    czas_wys.setPosition(410, 480);
+    czas_wys.setPosition(410, 510);
     ss.str("");
 
+    double odleglosc_ziemia = sqrt((rakieta_x - ziemia_x) * (rakieta_x - ziemia_x) + (rakieta_y - ziemia_y) * (rakieta_y - ziemia_y));
+    ss<<"Odleglosc od ziemi: "<<fixed<<odleglosc_ziemia / 1000<<"km";
+    string odleglosc_ziemia_str = ss.str();
+    sf::Text odleglosc_ziemia_txt(odleglosc_ziemia_str, font[0],20);
+    odleglosc_ziemia_txt.setColor((sf::Color::White));
+    odleglosc_ziemia_txt.setPosition(410,540);
+    ss.str("");
 
+    double odleglosc_ksiezyc = sqrt((rakieta_x - ksiezyc_x) * (rakieta_x - ksiezyc_x) + (rakieta_y - ksiezyc_y) * (rakieta_y - ksiezyc_y));
+    ss<<"Odleglosc od ziemi: "<<fixed<<odleglosc_ksiezyc / 1000<<"km";
+    string odleglosc_ksiezyc_str = ss.str();
+    sf::Text odleglosc_ksiezyc_txt(odleglosc_ksiezyc_str, font[0],20);
+    odleglosc_ksiezyc_txt.setColor((sf::Color::White));
+    odleglosc_ksiezyc_txt.setPosition(410,570);
+    ss.str("");
+
+    okno.draw(odleglosc_ksiezyc_txt);
+    okno.draw(odleglosc_ziemia_txt);
     okno.draw(czas_wys);
 
     }
