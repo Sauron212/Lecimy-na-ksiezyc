@@ -18,11 +18,14 @@ int main()
     bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
     if(fullscreen)
         okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
-    sf::Texture tlo_glowne,tlo_menu;
+    sf::Texture tlo_glowne,tlo_menu,wstecz;
     tlo_glowne.loadFromFile("tlo-menu.png");
     tlo_menu.loadFromFile("menu.png");
-    sf::Sprite tlo1,menuP;
+    wstecz.loadFromFile("wstecz.png");
+    sf::Sprite tlo1,menuP,wsteczP;
     tlo1.setTexture(tlo_glowne);
+    wsteczP.setTexture(wstecz);
+    wsteczP.setPosition(0,okno.getSize().y - 68);
     menuP.setTexture(tlo_menu);
     tlo1.setScale(okno.getSize().x/1920.0,okno.getSize().y/1080.0);
     menuP.setScale(350/594.0,295/500.0);
@@ -38,16 +41,19 @@ int main()
     sf::Text kosmosT("KOSMOS", font[0],20);
     sf::Text daneT("DANE", font[0],20);
     sf::Text wyjscieT("WYJSCIE", font[0],20);
+    sf::Text wsteczT("WSTECZ", font[0],20);
     lecimyT.setColor(sf::Color::White);
     ziemiaT.setColor(sf::Color::White);
     kosmosT.setColor(sf::Color::White);
     daneT.setColor(sf::Color::White);
     wyjscieT.setColor(sf::Color::White);
+    wsteczT.setColor(sf::Color::White);
     lecimyT.setPosition((okno.getSize().x-lecimyT.getGlobalBounds().width)/2, 20);
     ziemiaT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+30);
     kosmosT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+90);
     daneT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+150);
     wyjscieT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+210);
+    wsteczT.setPosition(116,okno.getSize().y-45);
     /* ZMIENNE GRUPY GRZESIA : */
     int x{390},y{455}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
@@ -279,18 +285,30 @@ int main()
         }
         while(okno.isOpen() && menu==3)
         {
+            sf::Vector2i myszka2 = sf::Mouse::getPosition(okno);
+            sf::FloatRect myszka;
+            myszka.left = myszka2.x;
+            myszka.top=myszka2.y;
+            myszka.height=myszka.width=1;
+            sf::FloatRect wstecz = wsteczT.getGlobalBounds();
+
             sf::Text dane("Zmiana danych", font[0], 25);
             dane.setPosition(sf::Vector2f(50,50));
                 while(okno.pollEvent(zdarzenie))
                 {
                 if( zdarzenie.type == sf::Event::Closed )
                  okno.close();
+
+                if(myszka.intersects(wstecz) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                 menu=0;
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
                     okno.close();
                 }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
             okno.draw(dane);
+            okno.draw(wsteczP);
+            okno.draw(wsteczT);
             okno.display();
         }
         while(okno.isOpen()&& (odleglosc <= 6471000 && menu==1))
