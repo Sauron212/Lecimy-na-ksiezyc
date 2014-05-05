@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym);
     sf::ContextSettings settings( 0,0,8,2,0);
 void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
 
@@ -327,9 +327,9 @@ int main()
                     okno.close();
                 if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::W) //Wywolanie akcji klawiszem W
                     wektor=!wektor;
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Add)
                     szybkosc_sym<6?szybkosc_sym+=0.5:szybkosc_sym;
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Subtract)
                     szybkosc_sym>0.5?szybkosc_sym-=0.5:szybkosc_sym;
 
             }
@@ -489,7 +489,7 @@ int main()
                 }
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
-                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer);
+                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym);
             okno.setView(mapa);
             okno.display();
         }
@@ -598,7 +598,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer)
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym)
 {
     ostringstream ss;
     ss.precision(3);                       // potrzebne do konwersji z inta/clocka na stringa
@@ -707,6 +707,14 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     zielony3.setPosition(okno.getSize().x*0.88+40,okno.getSize().y*0.1+530);
     zielony3.setRotation(180);
 
+    ss.str("");
+    ss<<"x"<<szybkosc_sym;
+    pal_w = ss.str();
+    sf::Text przewijanie(pal_w, font[0],22);
+    przewijanie.setColor((sf::Color::Black));
+    przewijanie.setPosition(okno.getSize().x*0.08,okno.getSize().y*0.1);
+
+    okno.draw(przewijanie);
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
