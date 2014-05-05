@@ -10,12 +10,12 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     sf::ContextSettings settings( 0,0,8,2,0);
 void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
 
-sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
+sf::RenderWindow okno(sf::VideoMode(1000, 700), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
 
 int main()
 {
-    bool fullscreen = true; // jak chcecie miec w fullscreenie to zmiencie na true
+    bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
     if(fullscreen)
         okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
     sf::Texture tlo_glowne,tlo_menu,tlo_dane;
@@ -607,38 +607,38 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
             int sekundy = czas_podrozy-godziny*3600-minuty*60;
     ss<<"Czas podrózy: "<< godziny << "h " << minuty << "min " << sekundy << "s";
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
-    sf::Text czas_wys(czas3, font[0], 30);
+    sf::Text czas_wys(czas3, font[0], 22);
     czas_wys.setColor((sf::Color::White));
     czas_wys.setPosition(okno.getSize().x*0.71, okno.getSize().y*0.1);
     ss.str("");
 
     ss<<"Przyspieszenie: "<<przyspieszenie*1000000<<"m/s^2";
     string przyspieszenie_w = ss.str();
-    sf::Text przyspieszenie_wys(przyspieszenie_w, font[0],30);
+    sf::Text przyspieszenie_wys(przyspieszenie_w, font[0],22);
     przyspieszenie_wys.setColor((sf::Color::White));
     przyspieszenie_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+40);
     ss.str("");
 
-    ss<<"Predkosc "<<predkosc*1000<<"m/s";
+    ss<<"Predkosc: "<<predkosc*1000<<"m/s";
         if(predkosc*1000 > 950)
         {
             ss.str("");
             ss<<"Predkosc: "<<predkosc*1000*10/36<<"km/h";
         }
     string predkosc_w = ss.str();
-    sf::Text predkosc_wys(predkosc_w, font[0],30);
+    sf::Text predkosc_wys(predkosc_w, font[0],22);
     predkosc_wys.setColor((sf::Color::White));
     predkosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+80);
     ss.str("");
 
-    ss<<"Wysokosc n.p.m "<<odleglosc-6371000<<"m";
+    ss<<"Wysokosc: "<<odleglosc-6371000<<"m n.p.m";
         if(odleglosc-6371000>=1000)
         {
             ss.str("");
-            ss<<"Wysokosc n.p.m "<<(odleglosc-6371000)/1000<<"km";
+            ss<<"Wysokosc: "<<(odleglosc-6371000)/1000<<"km n.p.m";
         }
     string wysokosc_w = ss.str();
-    sf::Text wysokosc_wys(wysokosc_w, font[0],30);
+    sf::Text wysokosc_wys(wysokosc_w, font[0],22);
     wysokosc_wys.setColor((sf::Color::White));
     wysokosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+120);
 //    ss.str("");
@@ -652,51 +652,59 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
 //    kinetyczna_wys.setPosition(410,560);
     long double pelne_zbiorniki[3]={2145798.08,443235.04,107095.43};
     ss.str("");
-    ss<<"Zbiornik I";
+    ss<<"Zbiorniki paliwa";
     string pal_w = ss.str();
-    sf::Text zbiornik1(pal_w, font[0],28);
-    zbiornik1.setColor((sf::Color::White));
-    zbiornik1.setPosition(okno.getSize().x*0.70,okno.getSize().y*0.1+240);
+    sf::Text zbiorniki(pal_w, font[0],22);
+    zbiorniki.setColor((sf::Color::White));
+    zbiorniki.setPosition(okno.getSize().x*0.74,okno.getSize().y*0.1+200);
 
-    sf::RectangleShape czerwony1(sf::Vector2f(60,200));
+    ss.str("");
+    ss<<"I";
+    pal_w = ss.str();
+    sf::Text zbiornik1(pal_w, font[0],22);
+    zbiornik1.setColor((sf::Color::White));
+    zbiornik1.setPosition(okno.getSize().x*0.72+19,okno.getSize().y*0.1+240);
+
+    sf::RectangleShape czerwony1(sf::Vector2f(40,250));
     czerwony1.setPosition(okno.getSize().x*0.72,okno.getSize().y*0.1+280);
     czerwony1.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony1(sf::Vector2f(60, paliwo[0]/pelne_zbiorniki[0]*200));
+
+    sf::RectangleShape zielony1(sf::Vector2f(40, paliwo[0]/pelne_zbiorniki[0]*250));
     zielony1.setOrigin(0,0);
     zielony1.setFillColor(sf::Color::Green);
-    zielony1.setPosition(okno.getSize().x*0.72+60,okno.getSize().y*0.1+480);
+    zielony1.setPosition(okno.getSize().x*0.72+40,okno.getSize().y*0.1+530);
     zielony1.setRotation(180);
 
     ss.str("");
-    ss<<"Zbiornik II";
+    ss<<"II";
     pal_w = ss.str();
-    sf::Text zbiornik2(pal_w, font[0],28);
+    sf::Text zbiornik2(pal_w, font[0],22);
     zbiornik2.setColor((sf::Color::White));
-    zbiornik2.setPosition(okno.getSize().x*0.70+125,okno.getSize().y*0.1+240);
+    zbiornik2.setPosition(okno.getSize().x*0.80+17,okno.getSize().y*0.1+240);
 
-    sf::RectangleShape czerwony2(sf::Vector2f(60,200));
-    czerwony2.setPosition(okno.getSize().x*0.72+125,okno.getSize().y*0.1+280);
+    sf::RectangleShape czerwony2(sf::Vector2f(40,250));
+    czerwony2.setPosition(okno.getSize().x*0.80,okno.getSize().y*0.1+280);
     czerwony2.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony2(sf::Vector2f(60, paliwo[1]/pelne_zbiorniki[1]*200));
+    sf::RectangleShape zielony2(sf::Vector2f(40, paliwo[1]/pelne_zbiorniki[1]*250));
     zielony2.setOrigin(0,0);
     zielony2.setFillColor(sf::Color::Green);
-    zielony2.setPosition(okno.getSize().x*0.72+185,okno.getSize().y*0.1+480);
+    zielony2.setPosition(okno.getSize().x*0.80+40,okno.getSize().y*0.1+530);
     zielony2.setRotation(180);
 
     ss.str("");
-    ss<<"Zbiornik III";
+    ss<<"III";
     pal_w = ss.str();
-    sf::Text zbiornik3(pal_w, font[0],28);
+    sf::Text zbiornik3(pal_w, font[0],22);
     zbiornik3.setColor((sf::Color::White));
-    zbiornik3.setPosition(okno.getSize().x*0.70+260,okno.getSize().y*0.1+240);
+    zbiornik3.setPosition(okno.getSize().x*0.88+16,okno.getSize().y*0.1+240);
 
-    sf::RectangleShape czerwony3(sf::Vector2f(60,200));
-    czerwony3.setPosition(okno.getSize().x*0.72+260,okno.getSize().y*0.1+280);
+    sf::RectangleShape czerwony3(sf::Vector2f(40,250));
+    czerwony3.setPosition(okno.getSize().x*0.88,okno.getSize().y*0.1+280);
     czerwony3.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony3(sf::Vector2f(60, paliwo[2]/pelne_zbiorniki[2]*200));
+    sf::RectangleShape zielony3(sf::Vector2f(40, paliwo[2]/pelne_zbiorniki[2]*250));
     zielony3.setOrigin(0,0);
     zielony3.setFillColor(sf::Color::Green);
-    zielony3.setPosition(okno.getSize().x*0.72+320,okno.getSize().y*0.1+480);
+    zielony3.setPosition(okno.getSize().x*0.88+40,okno.getSize().y*0.1+530);
     zielony3.setRotation(180);
 
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
@@ -704,6 +712,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
     okno.draw(czas_wys);                        // wyswietlenie czasu
 //    okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
+    okno.draw(zbiorniki);
     okno.draw(zbiornik1);
     okno.draw(czerwony1);
     if(paliwo[0]/pelne_zbiorniki[0]*200>0)
