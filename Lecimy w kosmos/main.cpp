@@ -134,6 +134,11 @@ int main()
             mapa.reset(sf::FloatRect(100,10,800,600));
             mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
 
+    sf::Texture silnik_tex; //odpadajace silniki
+    silnik_tex.loadFromFile("silnik.png");
+    sf::Sprite silnik1;
+    silnik1.setTexture(silnik_tex);
+    bool zrzut1;
 
 
     /* ZMIENNE GRUPY JARKA : */
@@ -411,6 +416,12 @@ int main()
                     }
                     if(numer==1)
                     {
+                        if(!zrzut1)
+                        {
+                        silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
+                        zrzut1=1;
+                        }
+
                         if(paliwo[1]>=79742.90)
                             moc_silnikow[1]+=0;
                         else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
@@ -474,6 +485,7 @@ int main()
             okno.draw(tlo);
             okno.draw(tlo2);
             okno.draw(tlo3);
+            okno.draw(silnik1);
 
             okno.setView(okno.getDefaultView());
             okno.setView(mapa);
