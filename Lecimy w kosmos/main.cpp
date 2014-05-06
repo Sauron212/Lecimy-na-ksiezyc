@@ -90,7 +90,7 @@ int main()
     double Q = 1.1717;                              //gestosc powietrza
 
 
-    long double moc_silnikow[4] = {34318696.99,5104334.30,0,0};     // Sila silnikow pierwszego stopnia w N
+    long double moc_silnikow[4] = {34318696.99,5104334.30,901223.04,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
@@ -317,7 +317,7 @@ int main()
             okno.draw(wsteczT);
             okno.display();
         }
-        while(okno.isOpen()&& (odleglosc <= 6471000 && menu==1))
+        while(okno.isOpen()&&menu==1)
         {
             while(okno.pollEvent(zdarzenie))
             {
@@ -362,7 +362,7 @@ int main()
                     paliwo[1]-=t*(1225.45/1000);
                 else if(czas_podrozy>460 && czas_podrozy<=498)
                     paliwo[1]-=t*(980.36/1000);
-                else if(czas_podrozy>498 && czas_podrozy<=548)
+                else if(czas_podrozy>498 && czas_podrozy<=552)
                     paliwo[1]-=t*(728.52/1000);
                 //spalanie 3 silnik
                 else if(czas_podrozy>552 && czas_podrozy<=699)
@@ -408,8 +408,6 @@ int main()
                         else if(paliwo[0]>0 && paliwo[0]<=31994.14)  // odpada silnik
                         {
                             numer = 1;
-                            predkosc.y = Mc*predkosc.y/(Mc-132890.32-paliwo[0]);
-                            predkosc.x = Mc*predkosc.x/(Mc-132890.32-paliwo[0]);
                             m -= 132890.32;
                             paliwo[0]=0;
                         }
@@ -425,20 +423,22 @@ int main()
                         if(paliwo[1]>=79742.90)
                             moc_silnikow[1]+=0;
                         else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
-                            moc_silnikow[1]+=0;
-                        else if(paliwo[1]<43097.17 && paliwo[1]>=6510.86)
-                            moc_silnikow[1]+=0;
-                        else if(paliwo[1]<6510.86 && paliwo[1]>=0)
+                            moc_silnikow[1]=4066742.13;
+                        else if(paliwo[1]<43097.17 && paliwo[1]>6510.86)
+                            moc_silnikow[1]=3050634.87;
+                        else if(paliwo[1]<=6510.86 && paliwo[1]>=0)
                         {
                             numer = 2;
                             m -= 40392.40;
                             paliwo[1]=0;
+                            cout << "przerzucilem";
                         }
                     }
                     if(numer==2)
                     {
                         if(paliwo[2]>=75695.49)
                             moc_silnikow[2]+=0;
+
                     }
 
                 if(czas_podrozy>=0)
@@ -467,7 +467,7 @@ int main()
                           Cx+=0.000025;
                         }
                     kinetyczna=0.5*m*pow(IpredkoscI,2);                                          // obliczanie Ek
-
+                    rakieta.move(predkosc.x*t, -predkosc.y*t);
                     if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
                     {
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
@@ -476,11 +476,10 @@ int main()
                     odleglosc+=predkosc.y*t;
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
-                    rakieta.move(predkosc.x*t, -predkosc.y*t);
+
                 }
                 czas.restart();
             }
-
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo);
             okno.draw(tlo2);
@@ -502,10 +501,20 @@ int main()
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
                 wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym);
+                    if(czas_podrozy>=710)
+                    {
+                        //komunikat "wejscie na orbite"
+                    }
+                    if(czas_podrozy>=720)
+                    {
+                        //komunikat "Trwa zmiana widoku na widok kosmiczny czy ocs w tym stylu"
+                        //przekazywanie potrzebnych danych z tej czesci projektu do drugiej.
+                        menu=2;
+                    }
             okno.setView(mapa);
             okno.display();
         }
-        while (okno.isOpen () && (odleglosc > 6471000 || menu == 2))
+        while (okno.isOpen () && menu == 2)
         {
             while (okno.pollEvent (zdarzenie))
             {
