@@ -358,10 +358,10 @@ int main()
                 else if(czas_podrozy>=135 && czas_podrozy<=164)
                     paliwo[0]-=t*(10894.06/1000);
                 // spalanie 2 silnik
-                else if(czas_podrozy>=164 && czas_podrozy<=460)
+                else if(czas_podrozy>=164 && czas_podrozy<=461)
                     paliwo[1]-=t*(1225.45/1000);
-                else if(czas_podrozy>460 && czas_podrozy<=498)
-                    paliwo[1]-=t*(980.36/1000);
+                else if(czas_podrozy>461 && czas_podrozy<=498)
+                    paliwo[1]-=t*(980.4/1000);
                 else if(czas_podrozy>498 && czas_podrozy<=552)
                     paliwo[1]-=t*(728.52/1000);
                 //spalanie 3 silnik
@@ -393,9 +393,10 @@ int main()
                         rakieta.rotate(t*0.1117143/1000);
                     else if(czas_podrozy>=640 && czas_podrozy<705)
                         rakieta.rotate(t*0.0486154/1000);
-
                 czas_rotacja.restart();
                 }
+                if(czas_podrozy>=168 && czas_podrozy<198)
+                    m-=235.294/1000*t;
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(numer==0)
                     {
@@ -425,7 +426,10 @@ int main()
                         else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
                             moc_silnikow[1]=4066742.13;
                         else if(paliwo[1]<43097.17 && paliwo[1]>6510.86)
+                            {
                             moc_silnikow[1]=3050634.87;
+                            cout << paliwo[1] << endl;
+                            }
                         else if(paliwo[1]<=6510.86 && paliwo[1]>=0)
                         {
                             numer = 2;
@@ -493,10 +497,10 @@ int main()
                 {
                     Wektory grawitacja(Fg,rakieta.getPosition().x,rakieta.getPosition().y,sf::Color::Red,false);
                     Wektory ciag(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Blue);
-                    Wektory opor_powietrza(F,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Yellow, false);
+                    Wektory wypadkowa(F-Fg-opor,rakieta.getPosition().x,rakieta.getPosition().y, sf::Color::Yellow);
                     okno.draw(ciag.wektor);
                     okno.draw(grawitacja.wektor);
-                    okno.draw(opor_powietrza.wektor);
+                    okno.draw(wypadkowa.wektor);
                 }
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
