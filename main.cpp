@@ -6,11 +6,11 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer);
     sf::ContextSettings settings( 0,0,8,2,0);
 void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
 
-sf::RenderWindow okno(sf::VideoMode(1000, 700), "Lecimy w kosmos",sf::Style::Default,settings);
+sf::RenderWindow okno(sf::VideoMode(800, 600), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
 
 int main()
@@ -18,15 +18,14 @@ int main()
     bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
     if(fullscreen)
         okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
-    sf::Texture tlo_glowne,tlo_menu,tlo_dane;
+    sf::Texture tlo_glowne,tlo_menu,wstecz;
     tlo_glowne.loadFromFile("tlo-menu.png");
     tlo_menu.loadFromFile("menu.png");
-    tlo_dane.loadFromFile("tlo-dane.png");
-
-    sf::Sprite tlo1,menuP,tloDane;
+    wstecz.loadFromFile("wstecz.png");
+    sf::Sprite tlo1,menuP,wsteczP;
     tlo1.setTexture(tlo_glowne);
-    tloDane.setTexture(tlo_dane);
-    tloDane.setPosition( (okno.getSize().x-1180)/2,(okno.getSize().y - 668)/2);
+    wsteczP.setTexture(wstecz);
+    wsteczP.setPosition(0,okno.getSize().y - 68);
     menuP.setTexture(tlo_menu);
     tlo1.setScale(okno.getSize().x/1920.0,okno.getSize().y/1080.0);
     menuP.setScale(350/594.0,295/500.0);
@@ -39,22 +38,22 @@ int main()
     int menu=0;
     sf::Text ziemiaT("ZIEMIA", font[0],24);
     sf::Text lecimyT("Lecimy w kosmos!", font[1],80);
-    sf::Text kosmosT("KOSMOS", font[0],24);
-    sf::Text daneT("DANE", font[0],24);
-    sf::Text wyjscieT("WYJSCIE", font[0],24);
-
+    sf::Text kosmosT("KOSMOS", font[0],20);
+    sf::Text daneT("DANE", font[0],20);
+    sf::Text wyjscieT("WYJSCIE", font[0],20);
+    sf::Text wsteczT("WSTECZ", font[0],20);
     lecimyT.setColor(sf::Color::White);
     ziemiaT.setColor(sf::Color::White);
     kosmosT.setColor(sf::Color::White);
     daneT.setColor(sf::Color::White);
     wyjscieT.setColor(sf::Color::White);
-
+    wsteczT.setColor(sf::Color::White);
     lecimyT.setPosition((okno.getSize().x-lecimyT.getGlobalBounds().width)/2, 20);
     ziemiaT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+30);
     kosmosT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+90);
     daneT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+150);
     wyjscieT.setPosition(menuP.getPosition().x+120,menuP.getPosition().y+210);
-
+    wsteczT.setPosition(116,okno.getSize().y-45);
     /* ZMIENNE GRUPY GRZESIA : */
     int x{390},y{455}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
@@ -99,27 +98,23 @@ int main()
     float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
     float szybkosc_sym=1;
 
-    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
+    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3;                       //    Stworzenie tekstury  tlo_tekstura
     tlo_tekstura1.loadFromFile("tlo0.png");
     tlo_tekstura2.loadFromFile("tlo1.png");
     tlo_tekstura3.loadFromFile("tlo2.png");
-    tlo_background.loadFromFile("roboczy.png");
     tlo_tekstura1.setRepeated(true);
     tlo_tekstura2.setRepeated(true);
     tlo_tekstura3.setRepeated(true);
 
 
-    sf::Sprite tlo,tlo2,tlo3,tlo_niewiem;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
+    sf::Sprite tlo,tlo2,tlo3;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
     tlo.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
     tlo2.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
     tlo3.setTextureRect(sf::IntRect(0, 0, 100000, 30000));
 
-
     tlo.setTexture(tlo_tekstura1);
     tlo2.setTexture(tlo_tekstura2);
     tlo3.setTexture(tlo_tekstura3);
-    tlo_niewiem.setTexture(tlo_background);
-    tlo_niewiem.setScale(okno.getSize().x/1000.0,okno.getSize().y/700.0);
 
     tlo.setPosition(0,-7297);
     tlo2.setPosition(0,-15297);
@@ -130,15 +125,18 @@ int main()
     rakieta.setOrigin(5,55);
     rakieta.setFillColor(sf::Color(0,0,0));
 
+        sf::RectangleShape prostokat(sf::Vector2f(0.12*okno.getSize().x-5,0.12*okno.getSize().y-5));
+        prostokat.setPosition(0.86*okno.getSize().x-3,0.02*okno.getSize().y-2);
+        prostokat.setFillColor(sf::Color(0,0,0));
+
+            sf::View minimapa;
+            minimapa.setViewport(sf::FloatRect(0.86f, 0.02, 0.12f, 0.15f));
+            minimapa.setSize(500,500);
+            minimapa.zoom(2);
             sf::View mapa; //stwoerzenie widoku mapy
-            mapa.reset(sf::FloatRect(100,10,800,600));
+            mapa.reset(sf::FloatRect(0,0,800, 600));
             mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
 
-    sf::Texture silnik_tex; //odpadajace silniki
-    silnik_tex.loadFromFile("silnik.png");
-    sf::Sprite silnik1;
-    silnik1.setTexture(silnik_tex);
-    bool zrzut1;
 
 
     /* ZMIENNE GRUPY JARKA : */
@@ -160,13 +158,13 @@ int main()
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = 10; //+ planety [3].omega * planety [3].promien_orbity;
-    FK_Rakieta.v.x = 0;
+    FK_Rakieta.v.y = 0; //+ planety [3].omega * planety [3].promien_orbity;
+    FK_Rakieta.v.x = -3080;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
-    time_frame = 1*86400;
+    time_frame = 10*86400;
     time_start = 0;
-    time_stop = 1*86400;
-    time_modifier = 5;
+    time_stop = 10*86400;
+    time_modifier = 25;
     bool simulation_start = false;
     sf::Vector2f mouse;
     sf::View gui_view;
@@ -292,11 +290,6 @@ int main()
             myszka.left = myszka2.x;
             myszka.top=myszka2.y;
             myszka.height=myszka.width=1;
-
-            sf::Text wsteczT("WSTECZ", font[0],20);
-            wsteczT.setColor(sf::Color::White);
-            wsteczT.setPosition(116,okno.getSize().y-45);
-
             sf::FloatRect wstecz = wsteczT.getGlobalBounds();
 
             sf::Text dane("Zmiana danych", font[0], 25);
@@ -305,6 +298,7 @@ int main()
                 {
                 if( zdarzenie.type == sf::Event::Closed )
                  okno.close();
+
                 if(myszka.intersects(wstecz) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                  menu=0;
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
@@ -312,8 +306,8 @@ int main()
                 }
             okno.clear(sf::Color(255,255,255));
             okno.draw(tlo1);
-            okno.draw(tloDane);
             okno.draw(dane);
+            okno.draw(wsteczP);
             okno.draw(wsteczT);
             okno.display();
         }
@@ -332,9 +326,9 @@ int main()
                     okno.close();
                 if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::W) //Wywolanie akcji klawiszem W
                     wektor=!wektor;
-                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Add)
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
                     szybkosc_sym<6?szybkosc_sym+=0.5:szybkosc_sym;
-                if(zdarzenie.type == sf::Event::KeyPressed && zdarzenie.key.code == sf::Keyboard::Subtract)
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
                     szybkosc_sym>0.5?szybkosc_sym-=0.5:szybkosc_sym;
 
             }
@@ -416,12 +410,6 @@ int main()
                     }
                     if(numer==1)
                     {
-                        if(!zrzut1)
-                        {
-                        silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
-                        zrzut1=1;
-                        }
-
                         if(paliwo[1]>=79742.90)
                             moc_silnikow[1]+=0;
                         else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
@@ -470,7 +458,7 @@ int main()
 
                     if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
                     {
-                        mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
+                        mapa.setCenter(rakieta.getPosition().x+11,rakieta.getPosition().y+56);//podązanie za rakietą
                     }
                     t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     odleglosc+=predkosc.y*t;
@@ -485,11 +473,17 @@ int main()
             okno.draw(tlo);
             okno.draw(tlo2);
             okno.draw(tlo3);
-            okno.draw(silnik1);
+
+            okno.setView(okno.getDefaultView());
+                okno.draw(prostokat);
+
+            okno.setView(minimapa);                 // minimapa
+                okno.draw(tlo);                     // to znajduje sie na minimapie
+                okno.draw(rakieta);                 // to znajduje sie na minimapie
 
             okno.setView(okno.getDefaultView());
             okno.setView(mapa);
-                okno.draw(rakieta);
+            okno.draw(rakieta);
                 if(wektor) //wyswietlenie wektorow
                 {
                     Wektory grawitacja(Fg,rakieta.getPosition().x,rakieta.getPosition().y,sf::Color::Red,false);
@@ -499,9 +493,17 @@ int main()
                     okno.draw(grawitacja.wektor);
                     okno.draw(opor_powietrza.wektor);
                 }
+           // if(czas_podrozy>= 161 && czas_podrozy<=162)
+           // {
+           //     cout << paliwo[0] << endl;
+           //     cout << odleglosc-6371000 << endl;
+           //     cout << moc_silnikow[0];
+           //     cin.get();
+           //     cin.get();
+           // }
             okno.setView(okno.getDefaultView());
-                okno.draw(tlo_niewiem);
-                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym);
+            wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer);
+
             okno.setView(mapa);
             okno.display();
         }
@@ -610,147 +612,73 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym)
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer)
 {
-    ostringstream ss;
-    ss.precision(3);                       // potrzebne do konwersji z inta/clocka na stringa
+    ostringstream ss;                       // potrzebne do konwersji z inta/clocka na stringa
             int godziny = czas_podrozy/3600;
             int minuty = (czas_podrozy-godziny*3600)/60;
             int sekundy = czas_podrozy-godziny*3600-minuty*60;
-    ss<<"Czas podr�zy: "<< godziny << "h " << minuty << "min " << sekundy << "s";
+    ss<< godziny << " h " << minuty << " min " << sekundy << " sekund";
     string czas3 = ss.str();                    // przekazanie ss do zmiennej string
-    sf::Text czas_wys(czas3, font[0], 22);
-    czas_wys.setColor((sf::Color::White));
-    czas_wys.setPosition(okno.getSize().x*0.71, okno.getSize().y*0.1);
+    sf::Text czas_wys(czas3, font[0], 20);
+    czas_wys.setColor((sf::Color::Black));
+    czas_wys.setPosition(410, 480);
     ss.str("");
-
-    ss<<"Przyspieszenie: "<<przyspieszenie*1000000<<"m/s^2";
+    ss<<"Przyspieszenie "<<przyspieszenie*1000000<<"m/s^2";
     string przyspieszenie_w = ss.str();
-    sf::Text przyspieszenie_wys(przyspieszenie_w, font[0],22);
-    przyspieszenie_wys.setColor((sf::Color::White));
-    przyspieszenie_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+40);
+    sf::Text przyspieszenie_wys(przyspieszenie_w, font[0],20);
+    przyspieszenie_wys.setColor((sf::Color::Black));
+    przyspieszenie_wys.setPosition(410,500);
     ss.str("");
-
-    ss<<"Predkosc: "<<predkosc*1000<<"m/s";
-        if(predkosc*1000 > 950)
-        {
-            ss.str("");
-            ss<<"Predkosc: "<<predkosc*1000*10/36<<"km/h";
-        }
+    ss<<"Predkosc "<<predkosc*1000<<"m/s";
     string predkosc_w = ss.str();
-    sf::Text predkosc_wys(predkosc_w, font[0],22);
-    predkosc_wys.setColor((sf::Color::White));
-    predkosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+80);
+    sf::Text predkosc_wys(predkosc_w, font[0],20);
+    predkosc_wys.setColor((sf::Color::Black));
+    predkosc_wys.setPosition(410,520);
     ss.str("");
-
-    ss<<"Wysokosc: "<<odleglosc-6371000<<"m n.p.m";
-        if(odleglosc-6371000>=1000)
-        {
-            ss.str("");
-            ss<<"Wysokosc: "<<(odleglosc-6371000)/1000<<"km n.p.m";
-        }
+    ss<<"Wysokosc nad poziomem morza "<<odleglosc-6371000<<"m";
     string wysokosc_w = ss.str();
-    sf::Text wysokosc_wys(wysokosc_w, font[0],22);
-    wysokosc_wys.setColor((sf::Color::White));
-    wysokosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+120);
-//    ss.str("");
-//    if(kinetyczna<=1000000)
-//        ss<<"Energia kinetyczna "<<kinetyczna<<"J";
-//    else
-//        ss<<"Energia kinetyczna "<<kinetyczna/1000000<<"MJ";
-//    string kinetyczna_w = ss.str();
-//    sf::Text kinetyczna_wys(kinetyczna_w, font[0],20);
-//    kinetyczna_wys.setColor((sf::Color::Black));
-//    kinetyczna_wys.setPosition(410,560);
+    sf::Text wysokosc_wys(wysokosc_w, font[0],20);
+    wysokosc_wys.setColor((sf::Color::Black));
+    wysokosc_wys.setPosition(410,540);
+    ss.str("");
+    if(kinetyczna<=1000000)
+        ss<<"Energia kinetyczna "<<kinetyczna<<"J";
+    else
+        ss<<"Energia kinetyczna "<<kinetyczna/1000000<<"MJ";
+    string kinetyczna_w = ss.str();
+    sf::Text kinetyczna_wys(kinetyczna_w, font[0],20);
+    kinetyczna_wys.setColor((sf::Color::Black));
+    kinetyczna_wys.setPosition(410,560);
+
+    ss.str("");
+    ss<<"Zbiornik " << numer+1;
     long double pelne_zbiorniki[3]={2145798.08,443235.04,107095.43};
-    ss.str("");
-    ss<<"Zbiorniki paliwa";
     string pal_w = ss.str();
-    sf::Text zbiorniki(pal_w, font[0],22);
-    zbiorniki.setColor((sf::Color::White));
-    zbiorniki.setPosition(okno.getSize().x*0.74,okno.getSize().y*0.1+200);
+    sf::Text pal_wys(pal_w, font[0],20);
+    pal_wys.setColor((sf::Color::Black));
+    pal_wys.setPosition(100,100);
 
-    ss.str("");
-    ss<<"I";
-    pal_w = ss.str();
-    sf::Text zbiornik1(pal_w, font[0],22);
-    zbiornik1.setColor((sf::Color::White));
-    zbiornik1.setPosition(okno.getSize().x*0.72+19,okno.getSize().y*0.1+240);
+    sf::RectangleShape czerwony(sf::Vector2f(20,200));
+    czerwony.setPosition(100,120);
+    czerwony.setFillColor(sf::Color::Red);
+    sf::RectangleShape zielony(sf::Vector2f(20, paliwo[numer]/pelne_zbiorniki[numer]*200));
+    zielony.setOrigin(0,0);
+    zielony.setFillColor(sf::Color::Green);
+    zielony.setPosition(120,320);
+    zielony.setRotation(180);
 
-    sf::RectangleShape czerwony1(sf::Vector2f(40,250));
-    czerwony1.setPosition(okno.getSize().x*0.72,okno.getSize().y*0.1+280);
-    czerwony1.setFillColor(sf::Color::Red);
-
-    sf::RectangleShape zielony1(sf::Vector2f(40, paliwo[0]/pelne_zbiorniki[0]*250));
-    zielony1.setOrigin(0,0);
-    zielony1.setFillColor(sf::Color::Green);
-    zielony1.setPosition(okno.getSize().x*0.72+40,okno.getSize().y*0.1+530);
-    zielony1.setRotation(180);
-
-    ss.str("");
-    ss<<"II";
-    pal_w = ss.str();
-    sf::Text zbiornik2(pal_w, font[0],22);
-    zbiornik2.setColor((sf::Color::White));
-    zbiornik2.setPosition(okno.getSize().x*0.80+17,okno.getSize().y*0.1+240);
-
-    sf::RectangleShape czerwony2(sf::Vector2f(40,250));
-    czerwony2.setPosition(okno.getSize().x*0.80,okno.getSize().y*0.1+280);
-    czerwony2.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony2(sf::Vector2f(40, paliwo[1]/pelne_zbiorniki[1]*250));
-    zielony2.setOrigin(0,0);
-    zielony2.setFillColor(sf::Color::Green);
-    zielony2.setPosition(okno.getSize().x*0.80+40,okno.getSize().y*0.1+530);
-    zielony2.setRotation(180);
-
-    ss.str("");
-    ss<<"III";
-    pal_w = ss.str();
-    sf::Text zbiornik3(pal_w, font[0],22);
-    zbiornik3.setColor((sf::Color::White));
-    zbiornik3.setPosition(okno.getSize().x*0.88+16,okno.getSize().y*0.1+240);
-
-    sf::RectangleShape czerwony3(sf::Vector2f(40,250));
-    czerwony3.setPosition(okno.getSize().x*0.88,okno.getSize().y*0.1+280);
-    czerwony3.setFillColor(sf::Color::Red);
-    sf::RectangleShape zielony3(sf::Vector2f(40, paliwo[2]/pelne_zbiorniki[2]*250));
-    zielony3.setOrigin(0,0);
-    zielony3.setFillColor(sf::Color::Green);
-    zielony3.setPosition(okno.getSize().x*0.88+40,okno.getSize().y*0.1+530);
-    zielony3.setRotation(180);
-
-    ss.str("");
-    ss<<"x"<<szybkosc_sym;
-    pal_w = ss.str();
-    sf::Text przewijanie(pal_w, font[0],22);
-    przewijanie.setColor((sf::Color::Black));
-    przewijanie.setPosition(okno.getSize().x*0.08,okno.getSize().y*0.1);
-
-    okno.draw(przewijanie);
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
     okno.draw(czas_wys);                        // wyswietlenie czasu
-//    okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
-    okno.draw(zbiorniki);
-    okno.draw(zbiornik1);
-    okno.draw(czerwony1);
-    if(paliwo[0]/pelne_zbiorniki[0]*200>0)
-    okno.draw(zielony1);
-
-    okno.draw(zbiornik2);
-    okno.draw(czerwony2);
-    if(paliwo[1]/pelne_zbiorniki[1]*200>0)
-    okno.draw(zielony2);
-
-    okno.draw(zbiornik3);
-    okno.draw(czerwony3);
-    if(paliwo[2]/pelne_zbiorniki[2]*200>0)
-    okno.draw(zielony3);
-
+    okno.draw(kinetyczna_wys);                  // wyswietlenie energii kinetycznej
+    okno.draw(pal_wys);
+    okno.draw(czerwony);
+    okno.draw(zielony);
     }
 
-    void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y)
+void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y)
 {
     float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
     ostringstream ss;

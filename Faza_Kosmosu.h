@@ -10,7 +10,7 @@ std::ofstream dx ("dx.txt");
 
 sf::Vector2f Grawitacja (double x_1, double y_1, double masa_1, double x_2, double y_2, double masa_2)
 {
-    double Fg = 6.67 * masa_1 * masa_2 / (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * pow (10, -11);
+    double Fg = 6.67 * masa_1 * masa_2 * pow (10, -11) / (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2));
     sf::Vector2f wektor_grawitacji (Fg / sqrt (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * (x_2 - x_1), Fg / sqrt (pow ((x_2 - x_1), 2) + pow ((y_2 - y_1), 2)) * (y_2 - y_1));
     return wektor_grawitacji;
 }
@@ -191,12 +191,12 @@ std::vector <Button*> buttons;
 
 void Laduj_Uklad ()
 {
-    ziemia.loadFromFile ("Ziemia.png");
-    ksiezyc.loadFromFile ("Ksiezyc.png");
+    ziemia.loadFromFile ("Planeta.png");
+    ksiezyc.loadFromFile ("Planeta.png");
     //planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
     satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 0.3 * pi, 384400000, 1737064, &planety [0]));    Czas cz;
-    cz.czas_trwania = 3600;
+    cz.czas_trwania = 360;
     cz.start = 0;
     czasy_silnika.push_back (cz);
 }
@@ -241,11 +241,6 @@ void Symulacja (int czas)
             czasy.push_back (i);
         }
     }
-}
-
-void Dane ()
-{
-
 }
 
 class Wektory
