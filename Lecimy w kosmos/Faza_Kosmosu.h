@@ -135,7 +135,7 @@ class Rakieta
             a = Fg;
             v = Fg;
             pozycja_katowa = pi / 2;
-            ciag = 225;
+            ciag = 900;
             image.loadFromFile ("Rakieta.png");
             image.setSmooth (true);
             sprite.setTexture (image);
@@ -160,7 +160,7 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (0, 42164000, 100);
+Rakieta FK_Rakieta (0, -6555074.56, 100);
 
 class Button
 {
@@ -196,7 +196,7 @@ void Laduj_Uklad ()
     //planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
     satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 0.3 * pi, 384400000, 1737064, &planety [0]));    Czas cz;
-    cz.czas_trwania = 3600;
+    cz.czas_trwania = 700;
     cz.start = 0;
     czasy_silnika.push_back (cz);
 }
