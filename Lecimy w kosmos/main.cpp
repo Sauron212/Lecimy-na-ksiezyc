@@ -129,6 +129,7 @@ int main()
     rakieta.setPosition(x,y);
     rakieta.setOrigin(5,55);
     rakieta.setFillColor(sf::Color(0,0,0));
+    rakieta.setRotation(-32.5); // obrót
 
             sf::View mapa; //stwoerzenie widoku mapy
             mapa.reset(sf::FloatRect(100,10,800,600));
