@@ -89,7 +89,6 @@ int main()
     double predkosc_dzwieku=sqrt(k*R*T);
     double Q = 1.1717;                              //gestosc powietrza
 
-
     long double moc_silnikow[4] = {34318696.99,5104334.30,901223.04,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
@@ -129,7 +128,9 @@ int main()
     rakieta.setPosition(x,y);
     rakieta.setOrigin(5,55);
     rakieta.setFillColor(sf::Color(0,0,0));
-    rakieta.setRotation(-32.5); // obr�t
+
+    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6371000+111+455;
+
 
             sf::View mapa; //stwoerzenie widoku mapy
             mapa.reset(sf::FloatRect(100,10,800,600));
@@ -405,7 +406,8 @@ int main()
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
                     }
                     t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
-                    odleglosc+=predkosc.y*t;
+                    //odleglosc+=predkosc.y*t;
+                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
                     Q-=predkosc.y*t*0.0001;
                     T-=predkosc.y*t*0.0045;
 
