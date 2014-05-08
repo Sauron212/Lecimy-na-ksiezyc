@@ -147,6 +147,7 @@ int main()
 
     sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6371000+111+455;
     double odchylenie;
+    double odchylenie1;
 
 
             sf::View mapa; //stwoerzenie widoku mapy
@@ -383,7 +384,12 @@ int main()
                         opor.x=0;
                         opor.y=0;
                     }
-                    Fg.x = 0;Fg.y = Mc*g;
+                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
+                    odchylenie = (abs(rakieta.getPosition().x-j_ziemi.x))/odleglosc;//sinus
+                    odchylenie1 = (abs(rakieta.getPosition().y-j_ziemi.y))/odleglosc;
+                    rakieta.setRotation(asin(odchylenie)*180/pi+rotacja); //wyliczenie wychylenia
+
+                    Fg.x = Mc*g*odchylenie;Fg.y = Mc*g*odchylenie1;
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
@@ -601,7 +607,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
         if(predkosc*1000 > 950)
         {
             ss.str("");
-            ss<<"Predkosc: "<<fixed<<predkosc*1000*10/36<<"km/h";
+            ss<<"Predkosc: "<<fixed<<predkosc<<"km/s";
         }
     string predkosc_w = ss.str();
     sf::Text predkosc_wys(predkosc_w, font[0],22);
