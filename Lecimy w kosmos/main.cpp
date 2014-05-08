@@ -145,6 +145,7 @@ int main()
     rakieta.setTexture(&tlo_rakieta);
 
     sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6371000+111+455;
+    double odchylenie;
 
 
             sf::View mapa; //stwoerzenie widoku mapy
@@ -424,6 +425,8 @@ int main()
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
                     }
                     odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
+                    odchylenie = (rakieta.getPosition().x-j_ziemi.x)/odleglosc;//sinus
+                    rakieta.setrotate(asin(odchylenie)); //wyliczenie wychylenia
                     Q=1.1717-0.1003*(odleglosc-6371000)/1000;
                     T-=predkosc.y*t*0.0001;
                 }
