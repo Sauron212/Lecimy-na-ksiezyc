@@ -82,6 +82,7 @@ int main()
 
     double t;
     double radiany;
+    double rotacja=0;
     float Ma;
     double k=1.41;
     double R=287;
@@ -149,7 +150,7 @@ int main()
 
 
             sf::View mapa; //stwoerzenie widoku mapy
-            mapa.reset(sf::FloatRect(100,10,4000,5000));
+            mapa.reset(sf::FloatRect(100,10,10800,10600));
             mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
 
     sf::Texture silnik_tex; //odpadajace silniki
@@ -290,6 +291,7 @@ int main()
 
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
+                g=G*Mz*pow(10,24)/(odleglosc*odleglosc);
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 // spalanie 1 silnik
                 if(czas_podrozy<=0)
@@ -313,27 +315,27 @@ int main()
 
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(czas_podrozy>=30 && czas_podrozy<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
-                        rakieta.rotate(t*0.7280000/1000);//...obrót rakiety o tyle stopni
+                        rotacja+=t*0.7280000/1000;//...obrót rakiety o tyle stopni
                     else if(czas_podrozy>=80 && czas_podrozy<135)
-                        rakieta.rotate(t*0.4696364/1000);
+                         rotacja+=t*0.4696364/1000;
                     else if(czas_podrozy>=135 && czas_podrozy<165)
-                        rakieta.rotate(t*0.2970000/1000);
+                       rotacja+=t*0.2970000/1000;
                     else if(czas_podrozy>=165 && czas_podrozy<185)
-                        rakieta.rotate(t*(-0.5285000)/1000);
+                        rotacja+=t*(-0.5285000)/1000;
                     else if(czas_podrozy>=185 && czas_podrozy<320)
-                        rakieta.rotate(t*0.0309630/1000);
+                        rotacja+=t*0.0309630/1000;
                     else if(czas_podrozy>=320 && czas_podrozy<460)
-                        rakieta.rotate(t*0.0900000/1000);
+                        rotacja+=t*0.0900000/1000;
                     else if(czas_podrozy>=460 && czas_podrozy<480)
-                        rakieta.rotate(t*(-0.1380000)/1000);
+                        rotacja+=t*(-0.1380000)/1000;
                     else if(czas_podrozy>=480 && czas_podrozy<550)
-                        rakieta.rotate(t*0.0971429/1000);
+                        rotacja+=t*0.0971429/1000;
                     else if(czas_podrozy>=550 && czas_podrozy<570)
-                        rakieta.rotate(t*(-0.2070000)/1000);
+                        rotacja+=t*(-0.2070000)/1000;
                     else if(czas_podrozy>=570 && czas_podrozy<640)
-                        rakieta.rotate(t*0.1117143/1000);
+                        rotacja+=t*0.1117143/1000;
                     else if(czas_podrozy>=640 && czas_podrozy<705)
-                        rakieta.rotate(t*0.0486154/1000);
+                        rotacja+=t*0.0486154/1000;
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(numer==0)
                     {
@@ -426,7 +428,7 @@ int main()
                     }
                     odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
                     odchylenie = (rakieta.getPosition().x-j_ziemi.x)/odleglosc;//sinus
-                    rakieta.setrotate(asin(odchylenie)); //wyliczenie wychylenia
+                    rakieta.setRotation(asin(odchylenie)*180/pi+rotacja); //wyliczenie wychylenia
                     Q=1.1717-0.1003*(odleglosc-6371000)/1000;
                     T-=predkosc.y*t*0.0001;
                 }
