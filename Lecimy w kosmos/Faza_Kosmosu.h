@@ -151,7 +151,6 @@ class Rakieta
                 {
                     Fg += sf::Vector2f (cos (pozycja_katowa) * ciag, sin (pozycja_katowa) * ciag);
                     masa -= 220.682;
-                    dx<<sqrt (v.x*v.x + v.y*v.y)<<std::endl;
                 }
             }
             for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
@@ -165,7 +164,7 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (400000000, 0, 131825.7); //-6563000
+Rakieta FK_Rakieta (-6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
 
 class Button
 {
@@ -200,7 +199,7 @@ void Laduj_Uklad ()
     ksiezyc.loadFromFile ("Ksiezyc.png");
     //planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
-    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 5.413944755f, 384400000, 1737064, &planety [0]));
+    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 5.428944755f, 384400000, 1737064, &planety [0]));
     Czas cz;
     cz.czas_trwania = 350;
     cz.start = 0;
@@ -247,7 +246,6 @@ void Symulacja (int czas)
             czasy.push_back (i);
         }
     }
-    dx.close ();
 }
 
 void Dane ()
