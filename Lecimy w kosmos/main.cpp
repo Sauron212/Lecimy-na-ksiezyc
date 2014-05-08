@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym,float temperatura);
     sf::ContextSettings settings( 0,0,8,2,0);
 void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
 
@@ -85,7 +85,7 @@ int main()
     float Ma;
     double k=1.41;
     double R=287;
-    double T=301.15;
+    float T=301.15;
     double predkosc_dzwieku=sqrt(k*R*T);
     double Q = 1.1717;                              //gestosc powietrza
 
@@ -98,42 +98,57 @@ int main()
     float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
     float szybkosc_sym=1;
 
-    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
+    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3,tlo_tekstura4,tlo_tekstura5,tlo_tekstura6,tlo_rakieta, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
     tlo_tekstura1.loadFromFile("tlo0.png");
     tlo_tekstura2.loadFromFile("tlo1.png");
     tlo_tekstura3.loadFromFile("tlo2.png");
+    tlo_tekstura4.loadFromFile("tlo3.png");
+    tlo_tekstura5.loadFromFile("tlo4.png");
+    tlo_tekstura6.loadFromFile("tlo5.png");
     tlo_background.loadFromFile("roboczy.png");
+    tlo_rakieta.loadFromFile("rakieta_cala.png");
     tlo_tekstura1.setRepeated(true);
     tlo_tekstura2.setRepeated(true);
     tlo_tekstura3.setRepeated(true);
+    tlo_tekstura4.setRepeated(true);
+    tlo_tekstura5.setRepeated(true);
+    tlo_tekstura6.setRepeated(true);
 
 
-    sf::Sprite tlo,tlo2,tlo3,tlo_niewiem;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
+    sf::Sprite tlo,tlo2,tlo3,tlo4,tlo5,tlo6,tlo_niewiem;                                 //    Ustawienie Sprite z tekstura tlo_tekstura
     tlo.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
     tlo2.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
     tlo3.setTextureRect(sf::IntRect(0, 0, 100000, 30000));
-
+    tlo4.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
+    tlo5.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
+    tlo6.setTextureRect(sf::IntRect(0, 0, 100000000, 23000000));
 
     tlo.setTexture(tlo_tekstura1);
     tlo2.setTexture(tlo_tekstura2);
     tlo3.setTexture(tlo_tekstura3);
+    tlo4.setTexture(tlo_tekstura4);
+    tlo5.setTexture(tlo_tekstura5);
+    tlo6.setTexture(tlo_tekstura6);
     tlo_niewiem.setTexture(tlo_background);
     tlo_niewiem.setScale(okno.getSize().x/1000.0,okno.getSize().y/700.0);
 
     tlo.setPosition(0,-7297);
     tlo2.setPosition(0,-15297);
     tlo3.setPosition(0,-45297);
+    tlo4.setPosition(0,-53297);
+    tlo5.setPosition(0,-61297);
+    tlo6.setPosition(0,-2300000);
 
     sf::RectangleShape rakieta(sf::Vector2f(11,111)); //  Stworzenie rakiety, wymiary, pozycja, color itp skala 1:1
     rakieta.setPosition(x,y);
     rakieta.setOrigin(5,55);
-    rakieta.setFillColor(sf::Color(0,0,0));
+    rakieta.setTexture(&tlo_rakieta);
 
     sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6371000+111+455;
 
 
             sf::View mapa; //stwoerzenie widoku mapy
-            mapa.reset(sf::FloatRect(100,10,800,600));
+            mapa.reset(sf::FloatRect(100,10,4000,5000));
             mapa.setViewport(sf::FloatRect(0, 0, 1, 1));
 
     sf::Texture silnik_tex; //odpadajace silniki
@@ -275,10 +290,8 @@ int main()
             if(czas.getElapsedTime().asMilliseconds() >= 1 && start)
             {
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
-                g=G*Mz*pow(10,24)/(odleglosc*odleglosc);                // uatkualnienie g
-                Mc = m+paliwo[0]+paliwo[1]+paliwo[2];
                 // spalanie 1 silnik
-                if(czas_podrozy<=0)// uatkualnie masy(spalanie paliwa)DOPOPRAWKI
+                if(czas_podrozy<=0)
                     paliwo[0]-=t*(6562.2/1000);
                 else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
@@ -295,11 +308,9 @@ int main()
                     paliwo[1]-=t*(728.52/1000);
                 //spalanie 3 silnik
                 else if(czas_podrozy>552 && czas_podrozy<=699)
-                    paliwo[2]-=t*(213.42/1000);
+                    paliwo[2]-=t*(213.4/1000);
 
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
-                if(czas_rotacja.getElapsedTime().asMilliseconds() >= 1) // Co sekundę...
-                {
                     if(czas_podrozy>=30 && czas_podrozy<80) // ...w wyznaczonym czasie (dodanie 6 sekund z powodu opóźnionego startu)...
                         rakieta.rotate(t*0.7280000/1000);//...obrót rakiety o tyle stopni
                     else if(czas_podrozy>=80 && czas_podrozy<135)
@@ -322,16 +333,12 @@ int main()
                         rakieta.rotate(t*0.1117143/1000);
                     else if(czas_podrozy>=640 && czas_podrozy<705)
                         rakieta.rotate(t*0.0486154/1000);
-                czas_rotacja.restart();
-                }
-                if(czas_podrozy>=168 && czas_podrozy<198)
-                    m-=235.294/1000*t;
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(numer==0)
                     {
                         if(paliwo[0]>=315239.89)
-                            moc_silnikow[0]+=45*t;
-                        else if(paliwo[0]<315239.89 && paliwo[0]>315100.89) // wylaczenie centralnego silnika
+                            moc_silnikow[0]+=42*t;
+                        else if(paliwo[0]>315100.89 && paliwo[0]<315239.89) // wylaczenie centralnego silnika
                             moc_silnikow[0]=31942035;
                         else if(paliwo[0]<315239.89 && paliwo[0]>31994.14)
                             moc_silnikow[0]+=0.000000002*t;
@@ -340,26 +347,16 @@ int main()
                             numer = 1;
                             m -= 132890.32;
                             paliwo[0]=0;
+                            silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
                         }
                     }
-                    if(numer==1)
+                    else if(numer==1)
                     {
-                        if(!zrzut1)
-                        {
-                        silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
-                        zrzut1=1;
-                        }
-
-                        if(paliwo[1]>=79742.90)
-                            moc_silnikow[1]+=0;
-                        else if(paliwo[1]<79742.90 && paliwo[1]>=43097.17 )
+                        if(paliwo[1]>=43097.17)
                             moc_silnikow[1]=4066742.13;
-                        else if(paliwo[1]<43097.17 && paliwo[1]>6510.86)
-                            {
+                        else if(paliwo[1]<43097.17)
                             moc_silnikow[1]=3050634.87;
-                            cout << paliwo[1] << endl;
-                            }
-                        else if(paliwo[1]<=6510.86 && paliwo[1]>=0)
+                        if(paliwo[1]<=6510.86 && paliwo[1]>=0)
                         {
                             numer = 2;
                             m -= 40392.40;
@@ -367,20 +364,22 @@ int main()
                             cout << "przerzucilem";
                         }
                     }
-                    if(numer==2)
-                    {
-                        if(paliwo[2]>=75695.49)
-                            moc_silnikow[2]+=0;
-
-                    }
 
                 if(czas_podrozy>=0)
                 {
 
                     Mc = m+paliwo[0]+paliwo[1]+paliwo[2];
                     radiany=(rakieta.getRotation()*pi)/180.0;
+                    if(odleglosc-6371000<90000)
+                    {
                     opor.x = Cx*(Q*pow(predkosc.x,2)/2)*pole;          // uatkualnienie oporu powietrza
                     opor.y = Cx*(Q*pow(predkosc.y,2)/2)*pole;
+                    }
+                    else
+                    {
+                        opor.x=0;
+                        opor.y=0;
+                    }
                     Fg.x = 0;Fg.y = Mc*g;
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
@@ -389,35 +388,54 @@ int main()
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
                     IprzyspieszenieI =sqrt(pow(przyspieszenie.x,2)+pow(przyspieszenie.y,2));
-                    predkosc_dzwieku=sqrt(k*R*T/0.029);
+                    predkosc_dzwieku=sqrt(k*R*T);
                     Ma = IpredkoscI*1000/predkosc_dzwieku;
                         if(Ma<0.5)
                         {
-                          Cx-=0.000002;
+                          Cx-=0.0000006*t;
                         }
                         else if(Ma>=0.5&&Ma<1.3)
                         {
-                          Cx+=0.000025;
+                          Cx+=0.000006*t;
                         }
+                        else if(Ma>=1.3 && Ma<3.5)
+                        {
+                          Cx-=0.000005*t;
+                        }
+                        else if(Ma>=3.5 && Ma<5)
+                        {
+                          Cx-=0.0000001*t;
+                        }
+                        else if(Ma>=5 && Ma<8.6)
+                        {
+                         Cx+=0.00000001*t;
+                        }
+                        else if(Ma>=8.6)
+                        {
+                            Cx = 0.26;
+                        }
+//                        if(czas_podrozy>66.5)
+//                          {cout << moc_silnikow[0] << " " << Ma<< endl;cin.get();cin.get();}
+
                     kinetyczna=0.5*m*pow(IpredkoscI,2);                                          // obliczanie Ek
                     rakieta.move(predkosc.x*t, -predkosc.y*t);
                     if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
                     {
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
                     }
-                    t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
-                    //odleglosc+=predkosc.y*t;
                     odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
-                    Q-=predkosc.y*t*0.0001;
-                    T-=predkosc.y*t*0.0045;
-
+                    Q=1.1717-0.1003*(odleglosc-6371000)/1000;
+                    T-=predkosc.y*t*0.0001;
                 }
                 czas.restart();
             }
             okno.clear(sf::Color(255,255,255));
+            okno.draw(tlo6);
             okno.draw(tlo);
             okno.draw(tlo2);
             okno.draw(tlo3);
+            okno.draw(tlo4);
+            okno.draw(tlo5);
             okno.draw(silnik1);
 
             okno.setView(okno.getDefaultView());
@@ -434,7 +452,7 @@ int main()
                 }
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
-                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym);
+                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym,T);
                     if(czas_podrozy>=710)
                     {
                         //komunikat "wejscie na orbite"
@@ -553,7 +571,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym)
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym,float temperatura)
 {
     ostringstream ss;
     ss.precision(3);                       // potrzebne do konwersji z inta/clocka na stringa
@@ -669,7 +687,16 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     przewijanie.setColor((sf::Color::Black));
     przewijanie.setPosition(okno.getSize().x*0.08,okno.getSize().y*0.1);
 
+    ss.str("");
+    ss<<temperatura-273<<"*C";
+    pal_w = ss.str();
+    sf::Text temp(pal_w, font[0],22);
+    temp.setColor((sf::Color::Black));
+    temp.setPosition(okno.getSize().x*0.65,okno.getSize().y*0.1);
+
+
     okno.draw(przewijanie);
+    okno.draw(temp);
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci
     okno.draw(przyspieszenie_wys);              // wyswietlenie przyspieszenia
