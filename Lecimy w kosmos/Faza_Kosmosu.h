@@ -135,7 +135,7 @@ class Rakieta
             a = Fg;
             v = Fg;
             pozycja_katowa = pi / 2;
-            ciag = 900;
+            ciag = 1001000;
             image.loadFromFile ("Rakieta.png");
             image.setSmooth (true);
             sprite.setTexture (image);
@@ -147,7 +147,12 @@ class Rakieta
             Fg = sf::Vector2f (0, 0);
             if (czasy_silnika.size () > current_index)
             {
-                if (czas > czasy_silnika [current_index].start && czas < czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania) Fg += sf::Vector2f (cos (pozycja_katowa) * ciag, sin (pozycja_katowa) * ciag);
+                if (czas > czasy_silnika [current_index].start && czas < czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania)
+                {
+                    Fg += sf::Vector2f (cos (pozycja_katowa) * ciag, sin (pozycja_katowa) * ciag);
+                    masa -= 220.682;
+                    dx<<sqrt (v.x*v.x + v.y*v.y)<<std::endl;
+                }
             }
             for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
             for (int i = 0; i < satelity.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, satelity [i].koordynata_x, satelity [i].koordynata_y, satelity [i].masa);
@@ -160,7 +165,7 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (-6563000, 0, 100);
+Rakieta FK_Rakieta (400000000, 0, 131825.7); //-6563000
 
 class Button
 {
@@ -197,7 +202,7 @@ void Laduj_Uklad ()
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
     satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 5.413944755f, 384400000, 1737064, &planety [0]));
     Czas cz;
-    cz.czas_trwania = 0;
+    cz.czas_trwania = 350;
     cz.start = 0;
     czasy_silnika.push_back (cz);
 }
@@ -242,6 +247,7 @@ void Symulacja (int czas)
             czasy.push_back (i);
         }
     }
+    dx.close ();
 }
 
 void Dane ()

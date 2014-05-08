@@ -164,7 +164,7 @@ int main()
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = -10943; //+ planety [3].omega * planety [3].promien_orbity;
+    FK_Rakieta.v.y = -10943; //-10943 + planety [3].omega * planety [3].promien_orbity;
     FK_Rakieta.v.x = 0;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
     time_frame = 7*86400;
