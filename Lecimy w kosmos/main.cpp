@@ -58,7 +58,7 @@ int main()
     /* ZMIENNE GRUPY GRZESIA : */
     int x{390},y{455}; // odleglosc rakeity od srodka ziemi ; x,y - wspolrzedne rakiety wzgledem okna;
 
-    long double odleglosc = 6371000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
+    long double odleglosc = 6373000; // Faza Kosmosu -> 106370001   Faza Ziemska -> 6371000
 
     bool start=false;                      // ustawienie startu rakiety na klikniecie spacja.
     bool wektor=false;                      //ustawienie wyswietlania wektorow
@@ -145,7 +145,7 @@ int main()
     rakieta.setOrigin(5,55);
     rakieta.setTexture(&tlo_rakieta);
 
-    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6371000+111+455;
+    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6373000+455;
     double odchylenie;
     double odchylenie1;
 
@@ -371,10 +371,13 @@ int main()
 
                 if(czas_podrozy>=0)
                 {
+                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
+                    odchylenie = (rakieta.getPosition().x-j_ziemi.x)/odleglosc;//sinus
 
+                    rakieta.setRotation(rotacja); //wyliczenie wychylenia
                     Mc = m+paliwo[0]+paliwo[1]+paliwo[2];
                     radiany=(rakieta.getRotation()*pi)/180.0;
-                    if(odleglosc-6371000<90000)
+                    if(odleglosc-6373000<90000)
                     {
                     opor.x = Cx*(Q*pow(predkosc.x,2)/2)*pole;          // uatkualnienie oporu powietrza
                     opor.y = Cx*(Q*pow(predkosc.y,2)/2)*pole;
@@ -384,9 +387,6 @@ int main()
                         opor.x=0;
                         opor.y=0;
                     }
-                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
-                    odchylenie = (abs(rakieta.getPosition().x-j_ziemi.x))/odleglosc;//sinus
-                    rakieta.setRotation(asin(odchylenie)*180/pi+rotacja); //wyliczenie wychylenia
 
                     Fg.x = Mc*g*sin(asin(odchylenie));Fg.y = Mc*g*cos(asin(odchylenie));
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
@@ -432,10 +432,70 @@ int main()
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
                     }
                     odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
-                    odchylenie = (rakieta.getPosition().x-j_ziemi.x)/odleglosc;//sinus
-                    rakieta.setRotation(asin(odchylenie)*180/pi+rotacja); //wyliczenie wychylenia
-                    Q=1.1717-0.1003*(odleglosc-6371000)/1000;
-                    T-=predkosc.y*t*0.0001;
+                    Q=1.1717-0.1003*(odleglosc-6373000)/1000;
+                    if(odleglosc-6373000<2000)
+                        T=301.15-(odleglosc-6373000)*12.99/2000;
+                    else if(odleglosc-6373000<6000)
+                        T=288.15-(odleglosc-6373000-2000)*10.97/2000;
+                    else if(odleglosc-6373000<8000)
+                        T=266.22-(odleglosc-6373000-6000)*13.93/2000;
+                    else if(odleglosc-6373000<10000)
+                        T=252.29-(odleglosc-6373000-8000)*13.94/2000;
+                    else if(odleglosc-6373000<14000)
+                        T=238.35-(odleglosc-6373000-10000)*13.93/2000;
+                    else if(odleglosc-6373000<16000)
+                        T=210.49-(odleglosc-6373000-14000)*7.34/2000;
+                    else if(odleglosc-6373000<18000)
+                        T=203.15+(odleglosc-6373000-16000)*4.23/2000;
+                    else if(odleglosc-6373000<20000)
+                        T=207.38+(odleglosc-6373000-18000)*4.37/2000;
+                    else if(odleglosc-6373000<30000)
+                        T=211.75+(odleglosc-6373000-20000)*4.36/2000;
+                    else if(odleglosc-6373000<34000)
+                        T=233.55+(odleglosc-6373000-30000)*4.35/2000;
+                    else if(odleglosc-6373000<36000)
+                        T=242.25+(odleglosc-6373000-34000)*4.34/2000;
+                    else if(odleglosc-6373000<38000)
+                        T=246.59+(odleglosc-6373000-36000)*4.86/2000;
+                    else if(odleglosc-6373000<42000)
+                        T=251.45+(odleglosc-6373000-38000)*4.93/2000;
+                    else if(odleglosc-6373000<44000)
+                        T=261.31+(odleglosc-6373000-42000)*3.13/2000;
+                    else if(odleglosc-6373000<46000)
+                        T=264.44+(odleglosc-6373000-44000)*2.75/2000;
+                    else if(odleglosc-6373000<48000)
+                        T=267.19+(odleglosc-6373000-46000)*1.96/2000;
+                    else if(odleglosc-6373000<50000)
+                        T=269.15;
+                    else if(odleglosc-6373000<52000)
+                        T=269.15-(odleglosc-6373000-50000)*1.81/2000;
+                    else if(odleglosc-6373000<54000)
+                        T=267.34-(odleglosc-6373000-52000)*2.36/2000;
+                    else if(odleglosc-6373000<56000)
+                        T=264.98-(odleglosc-6373000-54000)*3.48/2000;
+                    else if(odleglosc-6373000<58000)
+                        T=261.50-(odleglosc-6373000-56000)*7.46/2000;
+                    else if(odleglosc-6373000<62000)
+                        T=254.04-(odleglosc-6373000-58000)*7.45/2000;
+                    else if(odleglosc-6373000<64000)
+                        T=239.14-(odleglosc-6373000-62000)*7.44/2000;
+                    else if(odleglosc-6373000<66000)
+                        T=231.70-(odleglosc-6373000-64000)*7.43/2000;
+                    else if(odleglosc-6373000<68000)
+                        T=224.27-(odleglosc-6373000-66000)*7.44/2000;
+                    else if(odleglosc-6373000<70000)
+                        T=216.83-(odleglosc-6373000-68000)*7.42/2000;
+                    else if(odleglosc-6373000<72000)
+                        T=209.41-(odleglosc-6373000-70000)*4.91/2000;
+                    else if(odleglosc-6373000<74000)
+                        T=204.50-(odleglosc-6373000-72000)*2.92/2000;
+                    else if(odleglosc-6373000<78000)
+                        T=201.58-(odleglosc-6373000-74000)*2.93/2000;
+                    else if(odleglosc-6373000<86000)
+                        T=195.72-(odleglosc-6373000-78000)*2.92/2000;
+                    else if(odleglosc-6373000<90000)
+                        T=181.13-(odleglosc-6373000-86000)*2.91/2000;
+
                 }
                 czas.restart();
             }
@@ -614,11 +674,11 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     predkosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+80);
     ss.str("");
 
-    ss<<"Wysokosc: "<<odleglosc-6371000<<"m n.p.m";
-        if(odleglosc-6371000>=1000)
+    ss<<"Wysokosc: "<<odleglosc-6373000<<"m n.p.m";
+        if(odleglosc-6373000>=1000)
         {
             ss.str("");
-            ss<<"Wysokosc: "<<(odleglosc-6371000)/1000<<"km n.p.m";
+            ss<<"Wysokosc: "<<(odleglosc-6373000)/1000<<"km n.p.m";
         }
     string wysokosc_w = ss.str();
     sf::Text wysokosc_wys(wysokosc_w, font[0],22);
