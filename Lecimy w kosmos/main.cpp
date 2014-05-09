@@ -72,7 +72,7 @@ int main()
     const long double Mz=5.9736;          // Masa ziemi (kg), trzeba mnozyc razy 10^24
     long double g=G*Mz*pow(10,24)/(odleglosc*odleglosc);  // przyspieszenie grawitacyjne
     sf::Vector2f przyspieszenie; przyspieszenie.x=0; przyspieszenie.y=0;
-    sf::Vector2f predkosc;predkosc.x=0;predkosc.y=0;// predkosc z jaka porusza sie rakieta
+    sf::Vector2f predkosc;predkosc.x;predkosc.y=0;// predkosc z jaka porusza sie rakieta
     sf::Vector2f F;F.x = 0; F.y=0;
     sf::Vector2f Fg; Fg.x = 0; Fg.y=0;
     long double kinetyczna=0;                   // Energia kinetyczna
@@ -145,7 +145,7 @@ int main()
     rakieta.setOrigin(5,55);
     rakieta.setTexture(&tlo_rakieta);
 
-    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6373000+455;
+    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6373000+y;
     double odchylenie;
     double odchylenie1;
 
@@ -296,12 +296,12 @@ int main()
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 // spalanie 1 silnik
                 if(czas_podrozy<=0)
-                    paliwo[0]-=t*(6562.2/1000);
+                    paliwo[0]-=t*(6562.19/1000);
                 else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
                 else if(czas_podrozy>70 && czas_podrozy<=135)
                     paliwo[0]-=t*(13374.6246/1000);
-                else if(czas_podrozy>=135 && czas_podrozy<=164)
+                else if(czas_podrozy>=135 && czas_podrozy<=164&&paliwo[0]!=0)
                     paliwo[0]-=t*(10894.06/1000);
                 // spalanie 2 silnik
                 else if(czas_podrozy>=164 && czas_podrozy<=461)
@@ -338,6 +338,8 @@ int main()
                     else if(czas_podrozy>=640 && czas_podrozy<705)
                         rotacja+=t*0.0486154/1000;
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
+                    if(czas_podrozy>=164.0 && czas_podrozy<=196.0)
+                        m-=278.5625/1000*t;
                     if(numer==0)
                     {
                         if(paliwo[0]>=315239.89)
@@ -352,6 +354,7 @@ int main()
                             m -= 132890.32;
                             paliwo[0]=0;
                             silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
+                            break;
                         }
                     }
                     else if(numer==1)
@@ -388,7 +391,7 @@ int main()
                         opor.y=0;
                     }
 
-                    Fg.x = Mc*g*sin(asin(odchylenie));Fg.y = Mc*g*cos(asin(odchylenie));
+                    Fg.x = 0;Fg.y = Mc*g;
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
@@ -422,8 +425,8 @@ int main()
                         {
                             Cx = 0.26;
                         }
-//                        if(czas_podrozy>66.5)
-//                          {cout << moc_silnikow[0] << " " << Ma<< endl;cin.get();cin.get();}
+//                        if(czas_podrozy>360.5)
+//                          {cout << m << " "<< paliwo[1]+paliwo[2] << " " << rakieta.getRotation()<< endl;cin.get();cin.get();}
 
                     kinetyczna=0.5*m*pow(IpredkoscI,2);                                          // obliczanie Ek
                     rakieta.move(predkosc.x*t, -predkosc.y*t);
