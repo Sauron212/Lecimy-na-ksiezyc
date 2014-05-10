@@ -170,8 +170,8 @@ int main()
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = -6273.57; //-10943 + planety [3].omega * planety [3].promien_orbity;
-    FK_Rakieta.v.x = -2453.91;
+    FK_Rakieta.v.y = -6273.57; //-10943 + planety [3].omega * planety [3].promien_orbity; -6273.57; -2453.91;
+    FK_Rakieta.v.x = 2453.91;
     int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
     time_frame = 8*86400;
     time_start = 0;
@@ -180,7 +180,7 @@ int main()
     bool simulation_start = false;
     sf::Vector2f mouse;
     sf::View gui_view;
-    gui_view.reset (sf::FloatRect (0, 0, 800, 600));
+    gui_view.reset (sf::FloatRect (0, 0, 1000, 700));
     gui_view.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
 
     sf::Texture Ktlo_tekstura;
@@ -194,8 +194,8 @@ int main()
     Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
     bool Kstart = false;
     sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 800, 600));
-    klip.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
+    klip.reset (sf::FloatRect (0, 0, 658, 543));
+    klip.setViewport (sf::FloatRect (0.026f, 0.088f, 0.658f, 0.775f));
     sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
     Krakieta.setPosition(KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
     Krakieta.setFillColor( sf::Color::Yellow );
@@ -556,8 +556,17 @@ int main()
                     }
                     if(czas_podrozy>=720)
                     {
-                        //komunikat "Trwa zmiana widoku na widok kosmiczny czy ocs w tym stylu"
-                        //przekazywanie potrzebnych danych z tej czesci projektu do drugiej.
+                        //FK_Rakieta.koordynata_x = cos (kat - (rakieta.getPosition ().x / (rakieta.getPosition ().y + j_ziemi.y))) * (rakieta.getPosition ().y + j_ziemi.y);
+                        //FK_Rakieta.koordynata_y = sin (kat - (rakieta.getPosition ().x / (rakieta.getPosition ().y + j_ziemi.y))) * (rakieta.getPosition ().y + j_ziemi.y);
+                        //FK_Rakieta.pozycja_katowa = (rakieta.getRotation () + (kat - (rakieta.getPosition ().x / (rakieta.getPosition ().y + j_ziemi.y))) * 180 / pi - 180) * pi / 180;
+                        //FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
+                        //FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
+                        //FK_Rakieta.v.x = cos (FK_Rakieta.pozycja_katowa) * IpredkoscI * 1000;
+                        //FK_Rakieta.v.y = sin (FK_Rakieta.pozycja_katowa) * IpredkoscI * 1000;
+                        FK_Rakieta.koordynata_x = 6089920;
+                        FK_Rakieta.koordynata_y = 2944900;
+                        FK_Rakieta.v.y = -6273.57;
+                        FK_Rakieta.v.x = 2453.91;
                         menu=2;
                     }
             okno.setView(mapa);
@@ -587,43 +596,43 @@ int main()
                                 time_current_index = 0;
                                 for (int i = 0;(i < czasy.size ()) && (czasy [i] < time_start); i++) time_current_index = i - 1;
                                 for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega_obiegu * time_current;
-                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = 5.428944755f;
+                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = 3 * pi - 5.428944755f;
                                 break;
                             case sf::Keyboard::Add:
-                                klip.setSize (klip.getSize () + sf::Vector2f (-12, -9));
+                                klip.setSize (klip.getSize () + sf::Vector2f (-12, -9.9027));
                                 break;
                             case sf::Keyboard::Subtract:
-                                klip.setSize (klip.getSize () + sf::Vector2f (12, 9));
+                                klip.setSize (klip.getSize () + sf::Vector2f (12, 9.9027));
                                 break;
                             default:
                                 break;
                         }
                         break;
-                    case sf::Event::MouseButtonReleased:
-                        if (!simulation_start)
-                        {
-                            mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
-                            for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mouse.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mouse.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mouse.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
-                        }
-                        if (buttons [0]->clicked && time_frame > 86400) time_frame -= 86400;
-                        if (buttons [1]->clicked) time_frame += 86400;
-                        if (buttons [2]->clicked && time_stop > 86400) time_stop -= 86400;
-                        if (buttons [3]->clicked && time_stop < time_frame) time_stop += 86400;
-                        if (buttons [4]->clicked && time_modifier > 1) time_modifier -= 1;
-                        if (buttons [5]->clicked) time_modifier += 1;
-                        if (buttons [6]->clicked) FK_Rakieta.v.y -= 1;
-                        if (buttons [7]->clicked) FK_Rakieta.v.y += 1;
-                        if (buttons [8]->clicked)
-                        {
-                            FK_Rakieta.koordynata_x = 1.49597870 * pow (10, 11) - 42231860.82;
-                            FK_Rakieta.masa = 100;
-                            FK_Rakieta.koordynata_y = 0;
-                            FK_Rakieta.v.y = 4300.800000;
-                            FK_Rakieta.v.x = 2071.187586;
-                            time_current = 0;
-                        }
-                        for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
-                        break;
+                    //case sf::Event::MouseButtonReleased:
+                    //    if (!simulation_start)
+                    //    {
+                    //        mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
+                    //        for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mouse.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mouse.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mouse.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
+                    //    }
+                    //    if (buttons [0]->clicked && time_frame > 86400) time_frame -= 86400;
+                    //    if (buttons [1]->clicked) time_frame += 86400;
+                    //    if (buttons [2]->clicked && time_stop > 86400) time_stop -= 86400;
+                    //    if (buttons [3]->clicked && time_stop < time_frame) time_stop += 86400;
+                    //   if (buttons [4]->clicked && time_modifier > 1) time_modifier -= 1;
+                    //    if (buttons [5]->clicked) time_modifier += 1;
+                    //    if (buttons [6]->clicked) FK_Rakieta.v.y -= 1;
+                    //    if (buttons [7]->clicked) FK_Rakieta.v.y += 1;
+                    //    if (buttons [8]->clicked)
+                    //    {
+                    //        FK_Rakieta.koordynata_x = 1.49597870 * pow (10, 11) - 42231860.82;
+                    //        FK_Rakieta.masa = 100;
+                    //        FK_Rakieta.koordynata_y = 0;
+                    //        FK_Rakieta.v.y = 4300.800000;
+                    //        FK_Rakieta.v.x = 2071.187586;
+                    //        time_current = 0;
+                    //    }
+                    //    for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
+                    //    break;
                     default:
                         break;
                 }
@@ -661,7 +670,8 @@ int main()
             for (int i = 0; i < satelity.size (); i++) okno.draw (satelity [i].sprite);
             okno.draw (FK_Rakieta.sprite);
             okno.setView (gui_view);
-            for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
+            okno.draw (tlo_niewiem);
+            //for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
             wyswietlanie_danych_kosmos(time_current, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y);
             okno.display ();
         }
@@ -822,6 +832,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
 {
     float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
     ostringstream ss;
+    ss.precision (2);
             int godziny = czas_podrozy/3600;
             int minuty = (czas_podrozy-godziny*3600)/60;
             int sekundy = czas_podrozy-godziny*3600-minuty*60;
@@ -829,23 +840,23 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     string czas3 = ss.str();
     sf::Text czas_wys(czas3, font[0], 20);
     czas_wys.setColor((sf::Color::White));
-    czas_wys.setPosition(410, 510);
+    czas_wys.setPosition(710, 70);
     ss.str("");
 
-    double odleglosc_ziemia = sqrt((rakieta_x - ziemia_x) * (rakieta_x - ziemia_x) + (rakieta_y - ziemia_y) * (rakieta_y - ziemia_y));
-    ss<<"Odleglosc od ziemi: "<<fixed<<odleglosc_ziemia / 1000<<"km";
+    double odleglosc_ziemia = sqrt((rakieta_x - ziemia_x) * (rakieta_x - ziemia_x) + (rakieta_y - ziemia_y) * (rakieta_y - ziemia_y)) / 1000;
+    ss<<"Odl. od ziemi: "<<fixed<<odleglosc_ziemia<<"km";
     string odleglosc_ziemia_str = ss.str();
     sf::Text odleglosc_ziemia_txt(odleglosc_ziemia_str, font[0],20);
     odleglosc_ziemia_txt.setColor((sf::Color::White));
-    odleglosc_ziemia_txt.setPosition(410,540);
+    odleglosc_ziemia_txt.setPosition(710, 110);
     ss.str("");
 
-    double odleglosc_ksiezyc = sqrt((rakieta_x - ksiezyc_x) * (rakieta_x - ksiezyc_x) + (rakieta_y - ksiezyc_y) * (rakieta_y - ksiezyc_y));
-    ss<<"Odleglosc od ziemi: "<<fixed<<odleglosc_ksiezyc / 1000<<"km";
+    double odleglosc_ksiezyc = sqrt((rakieta_x - ksiezyc_x) * (rakieta_x - ksiezyc_x) + (rakieta_y - ksiezyc_y) * (rakieta_y - ksiezyc_y)) / 1000;
+    ss<<"Odl. od ksiezyca: "<<fixed<<odleglosc_ksiezyc<<"km";
     string odleglosc_ksiezyc_str = ss.str();
     sf::Text odleglosc_ksiezyc_txt(odleglosc_ksiezyc_str, font[0],20);
     odleglosc_ksiezyc_txt.setColor((sf::Color::White));
-    odleglosc_ksiezyc_txt.setPosition(410,570);
+    odleglosc_ksiezyc_txt.setPosition(710,150);
     ss.str("");
 
     okno.draw(odleglosc_ksiezyc_txt);

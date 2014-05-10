@@ -93,8 +93,8 @@ class Satelita
         }
         void Aktualizacja ()
         {
-            pozycja_katowa += omega_obiegu;
-            if (pozycja_katowa > 2 * pi) pozycja_katowa = 0;
+            pozycja_katowa -= omega_obiegu;
+            if (pozycja_katowa < 0) pozycja_katowa = 2 * pi;
             sprite.rotate (omega_obrotu * 180 / pi);
             koordynata_x = cos (pozycja_katowa) * promien_orbity + planeta->koordynata_x;
             koordynata_y = sin (pozycja_katowa) * promien_orbity + planeta->koordynata_y;
@@ -164,7 +164,8 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (-6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
+Rakieta FK_Rakieta (6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
+double kat = 0;
 
 class Button
 {
@@ -199,7 +200,7 @@ void Laduj_Uklad ()
     ksiezyc.loadFromFile ("Ksiezyc.png");
     //planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
-    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 5.428944755f, 384400000, 1737064, &planety [0]));
+    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 1.5 * pi - (5.428944755f - 1.5 * pi), 384400000, 1737064, &planety [0]));
     Czas cz;
     cz.czas_trwania = 350;
     cz.start = 0;
@@ -245,6 +246,7 @@ void Symulacja (int czas)
             katy.push_back (FK_Rakieta.pozycja_katowa);
             czasy.push_back (i);
         }
+        //if (sqrt (FK_Rakieta.v.x*FK_Rakieta.v.x + FK_Rakieta.v.y*FK_Rakieta.v.y >)
     }
 }
 
