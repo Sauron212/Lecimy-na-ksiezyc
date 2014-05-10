@@ -160,6 +160,11 @@ int main()
     silnik1.setTexture(silnik_tex);
     bool zrzut1;
 
+    sf::Text atmosfera;
+    atmosfera.setColor((sf::Color::Black));
+    atmosfera.setPosition(220,100);
+    atmosfera.setFont(font[0]);
+    atmosfera.setCharacterSize(25);
 
     /* ZMIENNE GRUPY JARKA : */
     Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
@@ -526,9 +531,28 @@ int main()
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
                 wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym,T);
+
+                if(odleglosc-6373000>=12000 && odleglosc-6373000<20000)
+                {
+                atmosfera.setString("Weszlismy w stratosfere");
+                okno.draw(atmosfera);
+                }
+                else if(odleglosc-6373000>=50000 && odleglosc-6373000<60000)
+                {
+                atmosfera.setColor((sf::Color::White));
+                atmosfera.setString("Weszlismy w mezosfere");
+                okno.draw(atmosfera);
+                }
+                else if(odleglosc-6373000>=80000 && odleglosc-6373000<90000)
+                {
+                atmosfera.setString("Weszlismy w termosfere");
+                okno.draw(atmosfera);
+                }
+
                     if(czas_podrozy>=710)
                     {
-                        //komunikat "wejscie na orbite"
+                        atmosfera.setString("Wejscie na orbite");
+                        okno.draw(atmosfera);
                     }
                     if(czas_podrozy>=720)
                     {
@@ -687,6 +711,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     sf::Text wysokosc_wys(wysokosc_w, font[0],22);
     wysokosc_wys.setColor((sf::Color::White));
     wysokosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+120);
+
 //    ss.str("");
 //    if(kinetyczna<=1000000)
 //        ss<<"Energia kinetyczna "<<kinetyczna<<"J";
