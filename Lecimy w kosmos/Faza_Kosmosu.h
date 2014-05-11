@@ -192,7 +192,7 @@ class Button
             image.setSmooth (true);
             sprite.setTexture (image);
             sprite.setOrigin (25, 25);
-            sprite.setScale (0.5f, 0.5f);
+            sprite.setScale (0.4f, 0.4f);
             sprite.setPosition (koordynata_x, koordynata_y);
         }
 };
@@ -219,10 +219,10 @@ void Laduj_Uklad ()
 
 void Laduj_Guziki ()
 {
-    buttons.push_back (new Button (710, 170, 25, 25, "Minus.png"));
-    buttons.push_back (new Button (900, 170, 25, 25, "Plus.png"));
-    buttons.push_back (new Button (710, 190, 25, 25, "Minus.png"));
-    buttons.push_back (new Button (900, 190, 25, 25, "Plus.png"));
+    buttons.push_back (new Button (940, 234, 20, 20, "Minus.png"));
+    buttons.push_back (new Button (965, 234, 20, 20, "Plus.png"));
+    buttons.push_back (new Button (940, 254, 20, 20, "Minus.png"));
+    buttons.push_back (new Button (965, 254, 20, 20, "Plus.png"));
 }
 
 std::vector <sf::Vector2f> punkty;

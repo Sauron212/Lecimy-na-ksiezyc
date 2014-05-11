@@ -697,7 +697,7 @@ int main()
                     case sf::Event::MouseButtonReleased:
                         mysz = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui);
                         for (int i = 0; i < buttons.size (); i++) if (((mysz.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mysz.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mysz.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mysz.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
-                        if (buttons [0]->clicked && czas_symulacji > 10000 && !start_symulacji) czas_symulacji -= 86400;
+                        if (buttons [0]->clicked && czas_symulacji > 10000 && !start_symulacji) czas_symulacji -= 10000;
                         if (buttons [1]->clicked && !start_symulacji) czas_symulacji += 10000;
                         if (buttons [2]->clicked && czas_modyfikator > 1) czas_modyfikator -= 1;
                         if (buttons [3]->clicked) czas_modyfikator += 1;;
@@ -909,15 +909,19 @@ void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podro
     string czas3 = ss.str();
     sf::Text czas_wys(czas3, font[0], 20);
     czas_wys.setColor((sf::Color::White));
-    czas_wys.setPosition(710, 70);
+    czas_wys.setPosition(710, 100);
     ss.str("");
+
+    sf::Text dane ("Dane:", font [0], 20);
+    dane.setPosition (710, 62);
+    dane.setColor (sf::Color::White);
 
     double odleglosc_ziemia = sqrt((rakieta_x - ziemia_x) * (rakieta_x - ziemia_x) + (rakieta_y - ziemia_y) * (rakieta_y - ziemia_y)) / 1000;
     ss<<"Odl. od ziemi: "<<fixed<<odleglosc_ziemia<<"km";
     string odleglosc_ziemia_str = ss.str();
     sf::Text odleglosc_ziemia_txt(odleglosc_ziemia_str, font[0],20);
     odleglosc_ziemia_txt.setColor((sf::Color::White));
-    odleglosc_ziemia_txt.setPosition(710, 90);
+    odleglosc_ziemia_txt.setPosition(710, 120);
     ss.str("");
 
     double odleglosc_ksiezyc = sqrt((rakieta_x - ksiezyc_x) * (rakieta_x - ksiezyc_x) + (rakieta_y - ksiezyc_y) * (rakieta_y - ksiezyc_y)) / 1000;
@@ -925,23 +929,29 @@ void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podro
     string odleglosc_ksiezyc_str = ss.str();
     sf::Text odleglosc_ksiezyc_txt(odleglosc_ksiezyc_str, font[0],20);
     odleglosc_ksiezyc_txt.setColor((sf::Color::White));
-    odleglosc_ksiezyc_txt.setPosition(710, 110);
+    odleglosc_ksiezyc_txt.setPosition(710, 140);
     ss.str("");
 
-    ss<<czas_symulacji<<"s";
+    sf::Text symulacja_tekst ("Symulacja:", font [0], 20);
+    symulacja_tekst.setPosition (710, 182);
+    symulacja_tekst.setColor (sf::Color::White);
+
+    ss<<"Czas: "<<czas_symulacji<<"s";
     string czas_symulacji_string = ss.str();
     sf::Text czas_symulacji_tekst (czas_symulacji_string, font [0], 20);
     czas_symulacji_tekst.setColor((sf::Color::White));
-    czas_symulacji_tekst.setPosition (745,170);
+    czas_symulacji_tekst.setPosition (710, 224);
     ss.str("");
 
-    ss<<czas_modyfikator;
+    ss<<"Szybkosc: "<<czas_modyfikator;
     string czas_modyfikator_string = ss.str();
     sf::Text czas_modyfikator_tekst (czas_modyfikator_string, font [0], 20);
     czas_modyfikator_tekst.setColor((sf::Color::White));
-    czas_modyfikator_tekst.setPosition (745,190);
+    czas_modyfikator_tekst.setPosition (710, 244);
     ss.str("");
 
+    okno.draw(dane);
+    okno.draw(symulacja_tekst);
     okno.draw(odleglosc_ksiezyc_txt);
     okno.draw(odleglosc_ziemia_txt);
     okno.draw(czas_wys);
