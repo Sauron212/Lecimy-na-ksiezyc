@@ -8,7 +8,7 @@ using namespace std;
 
 void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym,float temperatura);
     sf::ContextSettings settings( 0,0,8,2,0);
-void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator);
+void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator, double predkosc);
 
 sf::RenderWindow okno(sf::VideoMode(1000, 700), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
@@ -716,6 +716,8 @@ int main()
                 FK_Rakieta.pozycja_katowa = katy [czas_aktualny_indeks];
                 FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
                 FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
+                FK_Rakieta.v.x = predkosci [czas_aktualny_indeks] * cos (FK_Rakieta.pozycja_katowa);
+                FK_Rakieta.v.y = predkosci [czas_aktualny_indeks] * sin (FK_Rakieta.pozycja_katowa);
                 for (int i = 0; i < czas_modyfikator; i++)
                 {
                     for (int i = 0; i < planety.size (); i++)
@@ -741,7 +743,7 @@ int main()
             okno.setView (gui);
             okno.draw (tlo_niewiem);
             for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
-            wyswietlanie_danych_kosmos(czas_aktualny, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y, czas_symulacji, czas_modyfikator);
+            wyswietlanie_danych_kosmos(czas_aktualny, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y, czas_symulacji, czas_modyfikator, sqrt (pow (FK_Rakieta.v.x, 2) + pow (FK_Rakieta.v.y, 2)));
             okno.display ();
         }
     }
@@ -897,7 +899,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
 
     }
 
-void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator)
+void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator, double predkosc)
 {
     float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
     ostringstream ss;
@@ -932,22 +934,29 @@ void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podro
     odleglosc_ksiezyc_txt.setPosition(710, 140);
     ss.str("");
 
+    ss<<"Predkosc: "<<fixed<<predkosc<<"m/s";
+    string predkosc_string = ss.str();
+    sf::Text predkosc_tekst (predkosc_string, font[0],20);
+    predkosc_tekst.setColor((sf::Color::White));
+    predkosc_tekst.setPosition(710, 160);
+    ss.str("");
+
     sf::Text symulacja_tekst ("Symulacja:", font [0], 20);
-    symulacja_tekst.setPosition (710, 182);
+    symulacja_tekst.setPosition (710, 202);
     symulacja_tekst.setColor (sf::Color::White);
 
     ss<<"Czas: "<<czas_symulacji<<"s";
     string czas_symulacji_string = ss.str();
     sf::Text czas_symulacji_tekst (czas_symulacji_string, font [0], 20);
     czas_symulacji_tekst.setColor((sf::Color::White));
-    czas_symulacji_tekst.setPosition (710, 224);
+    czas_symulacji_tekst.setPosition (710, 244);
     ss.str("");
 
     ss<<"Szybkosc: "<<czas_modyfikator;
     string czas_modyfikator_string = ss.str();
     sf::Text czas_modyfikator_tekst (czas_modyfikator_string, font [0], 20);
     czas_modyfikator_tekst.setColor((sf::Color::White));
-    czas_modyfikator_tekst.setPosition (710, 244);
+    czas_modyfikator_tekst.setPosition (710, 264);
     ss.str("");
 
     okno.draw(dane);
@@ -957,4 +966,5 @@ void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podro
     okno.draw(czas_wys);
     okno.draw(czas_symulacji_tekst);
     okno.draw(czas_modyfikator_tekst);
+    okno.draw(predkosc_tekst);
 }

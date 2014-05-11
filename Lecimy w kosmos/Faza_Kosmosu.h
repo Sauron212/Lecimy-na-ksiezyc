@@ -219,15 +219,16 @@ void Laduj_Uklad ()
 
 void Laduj_Guziki ()
 {
-    buttons.push_back (new Button (940, 234, 20, 20, "Minus.png"));
-    buttons.push_back (new Button (965, 234, 20, 20, "Plus.png"));
     buttons.push_back (new Button (940, 254, 20, 20, "Minus.png"));
     buttons.push_back (new Button (965, 254, 20, 20, "Plus.png"));
+    buttons.push_back (new Button (940, 274, 20, 20, "Minus.png"));
+    buttons.push_back (new Button (965, 274, 20, 20, "Plus.png"));
 }
 
 std::vector <sf::Vector2f> punkty;
 std::vector <double> katy;
 std::vector <double> czasy;
+std::vector <double> predkosci;
 
 void Symulacja (int czas)
 {
@@ -235,9 +236,11 @@ void Symulacja (int czas)
     punkty.clear ();
     katy.clear ();
     czasy.clear ();
+    predkosci.clear ();
     punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
     katy.push_back (FK_Rakieta.pozycja_katowa);
     czasy.push_back (0);
+    predkosci.push_back (sqrt (pow (FK_Rakieta.v.x, 2) + pow (FK_Rakieta.v.y, 2)));
     for (long i = 0; i < czas && !zderzenie; i++)
     {
         for (int j = 0; j < planety.size (); j++) planety [j].Aktualizacja ();
@@ -250,6 +253,7 @@ void Symulacja (int czas)
             punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
             katy.push_back (FK_Rakieta.pozycja_katowa);
             czasy.push_back (i);
+            predkosci.push_back (sqrt (pow (FK_Rakieta.v.x, 2) + pow (FK_Rakieta.v.y, 2)));
         }
     }
 }
