@@ -8,7 +8,7 @@ using namespace std;
 
 void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym,float temperatura);
     sf::ContextSettings settings( 0,0,8,2,0);
-void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y);
+void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator);
 
 sf::RenderWindow okno(sf::VideoMode(1000, 700), "Lecimy w kosmos",sf::Style::Default,settings);
 sf::Font font[2];
@@ -167,39 +167,19 @@ int main()
     atmosfera.setCharacterSize(25);
 
     /* ZMIENNE GRUPY JARKA : */
-    Rakieta KRakieta (1.49597870 * pow (10, 11) - 6378000, 0, 100);
     Laduj_Uklad ();
     Laduj_Guziki ();
-    FK_Rakieta.v.y = -6273.57; //-10943 + planety [3].omega * planety [3].promien_orbity; -6273.57; -2453.91;
-    FK_Rakieta.v.x = 2453.91;
-    int time_frame, time_start, time_stop, time_current, time_current_index, time_modifier = 0;
-    time_frame = 8*86400;
-    time_start = 0;
-    time_stop = 8*86400;
-    time_modifier = 35;
-    bool simulation_start = false;
-    sf::Vector2f mouse;
-    sf::View gui_view;
-    gui_view.reset (sf::FloatRect (0, 0, 1000, 700));
-    gui_view.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
-
-    sf::Texture Ktlo_tekstura;
-    Ktlo_tekstura.loadFromFile("Ktlo.png");
-    sf::Sprite Ktlo;
-    Ktlo.setTexture(Ktlo_tekstura);
-    Ktlo.setPosition(KRakieta.koordynata_x / pow (10, 6) - 400, KRakieta.koordynata_y / pow (10, 6) - 300);
-    FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
-    double Ktangens = ( 2000 - 100 ) / ( 2000 - 100 );
-    double Kkatrakiety;
-    Kkatrakiety = atan ( Ktangens ) * 180 / 3.14;
-    bool Kstart = false;
-    sf::View klip;
-    klip.reset (sf::FloatRect (0, 0, 658, 543));
-    klip.setViewport (sf::FloatRect (0.026f, 0.088f, 0.658f, 0.775f));
-    sf::RectangleShape Krakieta( sf::Vector2f ( 5, 30 ) ); //  Stworzenie rakiety w Kosmosie, wymiary, pozycja, color itp
-    Krakieta.setPosition(KRakieta.koordynata_x / pow (10, 9), KRakieta.koordynata_y / pow (10, 9));
-    Krakieta.setFillColor( sf::Color::Yellow );
-    Krakieta.setRotation( Kkatrakiety + 90 );
+    int czas_symulacji, czas_aktualny, czas_aktualny_indeks, czas_modyfikator = 0;
+    czas_symulacji = 7*86400;
+    czas_modyfikator = 35;
+    bool start_symulacji = false;
+    sf::Vector2f mysz;
+    sf::View widok;
+    widok.reset (sf::FloatRect (0, 0, 658, 543));
+    widok.setViewport (sf::FloatRect (0.026f, 0.088f, 0.658f, 0.775f));
+    sf::View gui;
+    gui.reset (sf::FloatRect (0, 0, 1000, 700));
+    gui.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
     while(okno.isOpen())
     {
         while(okno.isOpen () && menu==0)
@@ -682,65 +662,61 @@ int main()
                                 okno.close ();
                                 break;
                             case sf::Keyboard::Space:
-                                Symulacja (time_frame);
+                                Symulacja (czas_symulacji);
                                 break;
                             case sf::Keyboard::Return:
-                                simulation_start = !simulation_start;
-                                time_current = time_start;
-                                time_current_index = 0;
-                                for (int i = 0;(i < czasy.size ()) && (czasy [i] < time_start); i++) time_current_index = i - 1;
-                                for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega_obiegu * time_current;
-                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = 3 * pi - 5.428944755f;
+                                start_symulacji = !start_symulacji;
+                                czas_aktualny = 0;
+                                czas_aktualny_indeks = 0;
+                                for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega_obiegu * czas_aktualny;
+                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = ustawienia.get <float> ("kosmos.ksiezyc.kat");
                                 break;
                             case sf::Keyboard::Add:
-                                klip.setSize (klip.getSize () + sf::Vector2f (-12, -9.9027));
+                                widok.setSize (widok.getSize () + sf::Vector2f (-12, -9.9027));
                                 break;
                             case sf::Keyboard::Subtract:
-                                klip.setSize (klip.getSize () + sf::Vector2f (12, 9.9027));
+                                widok.setSize (widok.getSize () + sf::Vector2f (12, 9.9027));
+                                break;
+                            case sf::Keyboard::R:
+                                ustawienia.clear ();
+                                read_xml ("kosmos.xml", ustawienia);
+                                czas_1.czas_trwania = ustawienia.get <int> ("kosmos.czas_trwania");
+                                czas_1.start = ustawienia.get <int> ("kosmos.start");
+                                czasy_silnika.push_back (czas_1);
+                                FK_Rakieta.koordynata_x = ustawienia.get <float> ("kosmos.rakieta.x");
+                                FK_Rakieta.koordynata_y = ustawienia.get <float> ("kosmos.rakieta.y");
+                                FK_Rakieta.v.x = ustawienia.get <float> ("kosmos.rakieta.v_x");
+                                FK_Rakieta.v.y = ustawienia.get <float> ("kosmos.rakieta.v_y");
+                                FK_Rakieta.masa = ustawienia.get <float> ("kosmos.rakieta.masa");
+                                FK_Rakieta.ciag = ustawienia.get <float> ("kosmos.silnik");
                                 break;
                             default:
                                 break;
                         }
                         break;
-                    //case sf::Event::MouseButtonReleased:
-                    //    if (!simulation_start)
-                    //    {
-                    //        mouse = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui_view);
-                    //        for (int i = 0; i < buttons.size (); i++) if (((mouse.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mouse.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mouse.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mouse.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
-                    //    }
-                    //    if (buttons [0]->clicked && time_frame > 86400) time_frame -= 86400;
-                    //    if (buttons [1]->clicked) time_frame += 86400;
-                    //    if (buttons [2]->clicked && time_stop > 86400) time_stop -= 86400;
-                    //    if (buttons [3]->clicked && time_stop < time_frame) time_stop += 86400;
-                    //   if (buttons [4]->clicked && time_modifier > 1) time_modifier -= 1;
-                    //    if (buttons [5]->clicked) time_modifier += 1;
-                    //    if (buttons [6]->clicked) FK_Rakieta.v.y -= 1;
-                    //    if (buttons [7]->clicked) FK_Rakieta.v.y += 1;
-                    //    if (buttons [8]->clicked)
-                    //    {
-                    //        FK_Rakieta.koordynata_x = 1.49597870 * pow (10, 11) - 42231860.82;
-                    //        FK_Rakieta.masa = 100;
-                    //        FK_Rakieta.koordynata_y = 0;
-                    //        FK_Rakieta.v.y = 4300.800000;
-                    //        FK_Rakieta.v.x = 2071.187586;
-                    //        time_current = 0;
-                    //    }
-                    //    for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
-                    //    break;
+                    case sf::Event::MouseButtonReleased:
+                        mysz = okno.mapPixelToCoords (sf::Mouse::getPosition (okno), gui);
+                        for (int i = 0; i < buttons.size (); i++) if (((mysz.x > buttons [i]->koordynata_x - buttons [i]->szerokosc / 2) && (mysz.x < buttons [i]->koordynata_x + buttons [i]->szerokosc / 2)) && ((mysz.y > buttons [i]->koordynata_y - buttons [i]->wysokosc / 2) && (mysz.y < buttons [i]->koordynata_y + buttons [i]->wysokosc / 2))) buttons [i]->clicked = true;
+                        if (buttons [0]->clicked && czas_symulacji > 10000 && !start_symulacji) czas_symulacji -= 86400;
+                        if (buttons [1]->clicked && !start_symulacji) czas_symulacji += 10000;
+                        if (buttons [2]->clicked && czas_modyfikator > 1) czas_modyfikator -= 1;
+                        if (buttons [3]->clicked) czas_modyfikator += 1;;
+                        for (int i = 0; i < buttons.size (); i++) buttons [i]->clicked = false;
+                        break;
                     default:
                         break;
                 }
             }
-            if (simulation_start)
+            if (start_symulacji)
             {
-                do if (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1) time_current_index += 1;
-                while (time_current > czasy [time_current_index] && time_current_index < czasy.size () - 1);
-                FK_Rakieta.koordynata_x = punkty [time_current_index].x;
-                FK_Rakieta.koordynata_y = punkty [time_current_index].y;
-                FK_Rakieta.pozycja_katowa = katy [time_current_index];
+                do if (czas_aktualny > czasy [czas_aktualny_indeks] && czas_aktualny_indeks < czasy.size () - 1) czas_aktualny_indeks += 1;
+                while (czas_aktualny > czasy [czas_aktualny_indeks] && czas_aktualny_indeks < czasy.size () - 1);
+                FK_Rakieta.koordynata_x = punkty [czas_aktualny_indeks].x;
+                FK_Rakieta.koordynata_y = punkty [czas_aktualny_indeks].y;
+                FK_Rakieta.pozycja_katowa = katy [czas_aktualny_indeks];
                 FK_Rakieta.sprite.setPosition (FK_Rakieta.koordynata_x / 1000000, -FK_Rakieta.koordynata_y / 1000000);
                 FK_Rakieta.sprite.setRotation (-FK_Rakieta.pozycja_katowa * 180 / pi + 90);
-                for (int i = 0; i < time_modifier; i++)
+                for (int i = 0; i < czas_modyfikator; i++)
                 {
                     for (int i = 0; i < planety.size (); i++)
                     {
@@ -753,20 +729,19 @@ int main()
                         satelity [i].sprite.setPosition (satelity [i].koordynata_x / 1000000, -satelity [i].koordynata_y / 1000000);
                     }
                 }
-                time_current += time_modifier;
-                if (time_current >= time_stop) simulation_start = false;
+                czas_aktualny += czas_modyfikator;
+                if (czas_aktualny >= czas_symulacji) start_symulacji = false;
             }
-            klip.setCenter (FK_Rakieta.koordynata_x / pow (10, 6), -FK_Rakieta.koordynata_y / pow (10, 6));
-            okno.setView (klip);
             okno.clear (sf::Color::Black);
-            okno.draw (Ktlo);
+            widok.setCenter (FK_Rakieta.koordynata_x / pow (10, 6), -FK_Rakieta.koordynata_y / pow (10, 6));
+            okno.setView (widok);
             for (int i = 0; i < planety.size (); i++) okno.draw (planety [i].sprite);
             for (int i = 0; i < satelity.size (); i++) okno.draw (satelity [i].sprite);
             okno.draw (FK_Rakieta.sprite);
-            okno.setView (gui_view);
+            okno.setView (gui);
             okno.draw (tlo_niewiem);
-            //for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
-            wyswietlanie_danych_kosmos(time_current, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y);
+            for (int i = 0; i < buttons.size (); i++) okno.draw (buttons [i]->sprite);
+            wyswietlanie_danych_kosmos(czas_aktualny, czas_podrozy, planety[0].koordynata_x, planety[0].koordynata_y, satelity[0].koordynata_x, satelity[0].koordynata_y, FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y, czas_symulacji, czas_modyfikator);
             okno.display ();
         }
     }
@@ -922,7 +897,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
 
     }
 
-    void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y)
+void wyswietlanie_danych_kosmos (float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator)
 {
     float czas_podrozy = czas_podrozy_na_ziemi + czas_podrozy_w_kosmosie;
     ostringstream ss;
@@ -942,7 +917,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     string odleglosc_ziemia_str = ss.str();
     sf::Text odleglosc_ziemia_txt(odleglosc_ziemia_str, font[0],20);
     odleglosc_ziemia_txt.setColor((sf::Color::White));
-    odleglosc_ziemia_txt.setPosition(710, 110);
+    odleglosc_ziemia_txt.setPosition(710, 90);
     ss.str("");
 
     double odleglosc_ksiezyc = sqrt((rakieta_x - ksiezyc_x) * (rakieta_x - ksiezyc_x) + (rakieta_y - ksiezyc_y) * (rakieta_y - ksiezyc_y)) / 1000;
@@ -950,11 +925,26 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     string odleglosc_ksiezyc_str = ss.str();
     sf::Text odleglosc_ksiezyc_txt(odleglosc_ksiezyc_str, font[0],20);
     odleglosc_ksiezyc_txt.setColor((sf::Color::White));
-    odleglosc_ksiezyc_txt.setPosition(710,150);
+    odleglosc_ksiezyc_txt.setPosition(710, 110);
+    ss.str("");
+
+    ss<<czas_symulacji<<"s";
+    string czas_symulacji_string = ss.str();
+    sf::Text czas_symulacji_tekst (czas_symulacji_string, font [0], 20);
+    czas_symulacji_tekst.setColor((sf::Color::White));
+    czas_symulacji_tekst.setPosition (745,170);
+    ss.str("");
+
+    ss<<czas_modyfikator;
+    string czas_modyfikator_string = ss.str();
+    sf::Text czas_modyfikator_tekst (czas_modyfikator_string, font [0], 20);
+    czas_modyfikator_tekst.setColor((sf::Color::White));
+    czas_modyfikator_tekst.setPosition (745,190);
     ss.str("");
 
     okno.draw(odleglosc_ksiezyc_txt);
     okno.draw(odleglosc_ziemia_txt);
     okno.draw(czas_wys);
-
-    }
+    okno.draw(czas_symulacji_tekst);
+    okno.draw(czas_modyfikator_tekst);
+}

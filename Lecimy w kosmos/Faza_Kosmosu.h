@@ -2,6 +2,8 @@
 #define FAZA_KOSMOSU_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
+#include <property_tree/ptree.hpp>
+#include <property_tree/xml_parser.hpp>
 #include <cmath>
 #include <fstream>
 
@@ -134,8 +136,8 @@ class Rakieta
             Fg = sf::Vector2f (0, 0);
             a = Fg;
             v = Fg;
-            pozycja_katowa = pi / 2;
-            ciag = 1001000;
+            pozycja_katowa = 0;
+            ciag = 0;
             image.loadFromFile ("Rakieta.png");
             image.setSmooth (true);
             sprite.setTexture (image);
@@ -164,8 +166,10 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
+Rakieta FK_Rakieta (0, 0, 0); //-6563000   -7017530    31206900    131825.7
 double kat = 0;
+boost::property_tree::ptree ustawienia;
+Czas czas_1;
 
 class Button
 {
@@ -188,6 +192,7 @@ class Button
             image.setSmooth (true);
             sprite.setTexture (image);
             sprite.setOrigin (25, 25);
+            sprite.setScale (0.5f, 0.5f);
             sprite.setPosition (koordynata_x, koordynata_y);
         }
 };
@@ -196,28 +201,28 @@ std::vector <Button*> buttons;
 
 void Laduj_Uklad ()
 {
+    read_xml ("kosmos.xml", ustawienia);
     ziemia.loadFromFile ("Ziemia.png");
     ksiezyc.loadFromFile ("Ksiezyc.png");
-    //planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 3.12064870257, 1.49597870 * pow (10, 11), 6378000));
-    planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 3.12064870257, 0, 6378000));
-    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 1.5 * pi - (5.428944755f - 1.5 * pi), 384400000, 1737064, &planety [0]));
-    Czas cz;
-    cz.czas_trwania = 350;
-    cz.start = 0;
-    czasy_silnika.push_back (cz);
+    planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 0, 0, 6378000));
+    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, ustawienia.get <float> ("kosmos.ksiezyc.kat"), 384400000, 1737064, &planety [0]));
+    czas_1.czas_trwania = ustawienia.get <int> ("kosmos.czas_trwania");
+    czas_1.start = ustawienia.get <int> ("kosmos.start");
+    czasy_silnika.push_back (czas_1);
+    FK_Rakieta.koordynata_x = ustawienia.get <float> ("kosmos.rakieta.x");
+    FK_Rakieta.koordynata_y = ustawienia.get <float> ("kosmos.rakieta.y");
+    FK_Rakieta.v.x = ustawienia.get <float> ("kosmos.rakieta.v_x");
+    FK_Rakieta.v.y = ustawienia.get <float> ("kosmos.rakieta.v_y");
+    FK_Rakieta.masa = ustawienia.get <float> ("kosmos.rakieta.masa");
+    FK_Rakieta.ciag = ustawienia.get <float> ("kosmos.silnik");
 }
 
 void Laduj_Guziki ()
 {
-    buttons.push_back (new Button (50, 50, 50, 50, "Minus.png"));
-    buttons.push_back (new Button (150, 50, 50, 50, "Plus.png"));
-    buttons.push_back (new Button (50, 150, 50, 50, "Minus.png"));
-    buttons.push_back (new Button (150, 150, 50, 50, "Plus.png"));
-    buttons.push_back (new Button (50, 250, 50, 50, "Minus.png"));
-    buttons.push_back (new Button (150, 250, 50, 50, "Plus.png"));
-    buttons.push_back (new Button (50, 300, 50, 50, "Plus.png"));
-    buttons.push_back (new Button (50, 350, 50, 50, "Plus.png"));
-    buttons.push_back (new Button (50, 400, 50, 50, "Plus.png"));
+    buttons.push_back (new Button (710, 170, 25, 25, "Minus.png"));
+    buttons.push_back (new Button (900, 170, 25, 25, "Plus.png"));
+    buttons.push_back (new Button (710, 190, 25, 25, "Minus.png"));
+    buttons.push_back (new Button (900, 190, 25, 25, "Plus.png"));
 }
 
 std::vector <sf::Vector2f> punkty;
@@ -237,7 +242,7 @@ void Symulacja (int czas)
     {
         for (int j = 0; j < planety.size (); j++) planety [j].Aktualizacja ();
         for (int j = 0; j < satelity.size (); j++) satelity [j].Aktualizacja ();
-        if (sqrt (pow (FK_Rakieta.koordynata_x - planety [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [0].koordynata_y, 2)) < planety [0].promien_planety) zderzenie = true;
+        if (sqrt (pow (FK_Rakieta.koordynata_x - planety [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [0].koordynata_y, 2)) < planety [0].promien_planety || sqrt (pow (FK_Rakieta.koordynata_x - satelity [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - satelity [0].koordynata_y, 2)) < satelity [0].promien_satelity) zderzenie = true;
         if (i > czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania && current_index < czasy_silnika.size ()) current_index += 1;
         FK_Rakieta.Aktualizacja (i);
         if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
@@ -246,7 +251,6 @@ void Symulacja (int czas)
             katy.push_back (FK_Rakieta.pozycja_katowa);
             czasy.push_back (i);
         }
-        //if (sqrt (FK_Rakieta.v.x*FK_Rakieta.v.x + FK_Rakieta.v.y*FK_Rakieta.v.y >)
     }
 }
 

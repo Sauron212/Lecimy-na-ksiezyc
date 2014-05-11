@@ -1,0 +1,17 @@
+<kosmos>
+	<rakieta>
+		<x>6089920</x>
+		<y>2944900</y>
+		<v_x>2453.91</v_x>
+		<v_y>-6273.57</v_y>
+		<masa>131825.7</masa>
+	</rakieta>
+	<ziemia>
+	</ziemia>
+	<ksiezyc>
+		<kat>3.995833205769379715</kat>
+	</ksiezyc>
+	<silnik>1001000</silnik>
+	<start>0</start>
+	<czas_trwania>350</czas_trwania>
+</kosmos>
