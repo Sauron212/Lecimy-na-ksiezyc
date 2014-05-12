@@ -2,8 +2,8 @@
 #define FAZA_KOSMOSU_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
-#include <property_tree/ptree.hpp>
-#include <property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include <cmath>
 #include <fstream>
 
