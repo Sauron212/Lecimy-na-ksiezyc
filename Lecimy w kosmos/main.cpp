@@ -180,6 +180,7 @@ int main()
     sf::View gui;
     gui.reset (sf::FloatRect (0, 0, 1000, 700));
     gui.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
+    double o = satelity [0].pozycja_katowa;
     while(okno.isOpen())
     {
         while(okno.isOpen () && menu==0)
@@ -669,7 +670,7 @@ int main()
                                 czas_aktualny = 0;
                                 czas_aktualny_indeks = 0;
                                 for (int i = 0; i < planety.size (); i++) planety [i].pozycja_katowa = planety [i].omega_obiegu * czas_aktualny;
-                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = ustawienia.get <float> ("kosmos.ksiezyc.kat");
+                                for (int i = 0; i < satelity.size (); i++) satelity [i].pozycja_katowa = o;
                                 break;
                             case sf::Keyboard::Add:
                                 widok.setSize (widok.getSize () + sf::Vector2f (-12, -9.9027));
@@ -678,17 +679,27 @@ int main()
                                 widok.setSize (widok.getSize () + sf::Vector2f (12, 9.9027));
                                 break;
                             case sf::Keyboard::R:
-                                ustawienia.clear ();
-                                read_xml ("kosmos.xml", ustawienia);
-                                czas_1.czas_trwania = ustawienia.get <int> ("kosmos.czas_trwania");
-                                czas_1.start = ustawienia.get <int> ("kosmos.start");
+                                std::cout<<string (100, '\n');
+                                std::cout<<"WprowadŸ x rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.koordynata_x;
+                                std::cout<<"WprowadŸ y rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.koordynata_y;
+                                std::cout<<"WprowadŸ x predkosci rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.v.x;
+                                std::cout<<"WprowadŸ y predkosci rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.v.y;
+                                std::cout<<"WprowadŸ mase rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.masa;
+                                std::cout<<"WprowadŸ ciag silnika rakiety."<<std::endl;
+                                std::cin>>FK_Rakieta.ciag;
+                                std::cout<<"WprowadŸ czas dzialania silnika rakiety."<<std::endl;
+                                std::cin>>czas_1.czas_trwania;
+                                std::cout<<"WprowadŸ czas zaplonu silnika rakiety."<<std::endl;
+                                std::cin>>czas_1.start;
                                 czasy_silnika.push_back (czas_1);
-                                FK_Rakieta.koordynata_x = ustawienia.get <float> ("kosmos.rakieta.x");
-                                FK_Rakieta.koordynata_y = ustawienia.get <float> ("kosmos.rakieta.y");
-                                FK_Rakieta.v.x = ustawienia.get <float> ("kosmos.rakieta.v_x");
-                                FK_Rakieta.v.y = ustawienia.get <float> ("kosmos.rakieta.v_y");
-                                FK_Rakieta.masa = ustawienia.get <float> ("kosmos.rakieta.masa");
-                                FK_Rakieta.ciag = ustawienia.get <float> ("kosmos.silnik");
+                                std::cout<<"WprowadŸ pozycje katowa ksiezyca."<<std::endl;
+                                std::cin>>satelity [0].pozycja_katowa;
+                                o = satelity [0].pozycja_katowa;
                                 break;
                             default:
                                 break;

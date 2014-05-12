@@ -2,8 +2,6 @@
 #define FAZA_KOSMOSU_H_INCLUDED
 
 #include <SFML/Graphics.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
 #include <cmath>
 #include <fstream>
 
@@ -114,6 +112,7 @@ struct Czas
 
 std::vector <Czas> czasy_silnika;
 int current_index = 0;
+Czas czas_1;
 
 class Rakieta
 {
@@ -135,9 +134,9 @@ class Rakieta
             masa = c_masa;
             Fg = sf::Vector2f (0, 0);
             a = Fg;
-            v = Fg;
+            v = sf::Vector2f (2453.91, -6273.57);
             pozycja_katowa = 0;
-            ciag = 0;
+            ciag = 1001000;
             image.loadFromFile ("Rakieta.png");
             image.setSmooth (true);
             sprite.setTexture (image);
@@ -166,10 +165,8 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (0, 0, 0); //-6563000   -7017530    31206900    131825.7
+Rakieta FK_Rakieta (6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
 double kat = 0;
-boost::property_tree::ptree ustawienia;
-Czas czas_1;
 
 class Button
 {
@@ -201,20 +198,13 @@ std::vector <Button*> buttons;
 
 void Laduj_Uklad ()
 {
-    read_xml ("kosmos.xml", ustawienia);
     ziemia.loadFromFile ("Ziemia.png");
     ksiezyc.loadFromFile ("Ksiezyc.png");
     planety.push_back (Planeta (5.9721 * pow (10, 24), 31558149.7635, 24 * 3600, 0, 0, 6378000));
-    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, ustawienia.get <float> ("kosmos.ksiezyc.kat"), 384400000, 1737064, &planety [0]));
-    czas_1.czas_trwania = ustawienia.get <int> ("kosmos.czas_trwania");
-    czas_1.start = ustawienia.get <int> ("kosmos.start");
+    satelity.push_back (Satelita (7.347673 * pow (10, 22), 2360591.5104, 2360591.5104, 3.995833205769379715, 384400000, 1737064, &planety [0]));
+    czas_1.czas_trwania = 350;
+    czas_1.start = 0;
     czasy_silnika.push_back (czas_1);
-    FK_Rakieta.koordynata_x = ustawienia.get <float> ("kosmos.rakieta.x");
-    FK_Rakieta.koordynata_y = ustawienia.get <float> ("kosmos.rakieta.y");
-    FK_Rakieta.v.x = ustawienia.get <float> ("kosmos.rakieta.v_x");
-    FK_Rakieta.v.y = ustawienia.get <float> ("kosmos.rakieta.v_y");
-    FK_Rakieta.masa = ustawienia.get <float> ("kosmos.rakieta.masa");
-    FK_Rakieta.ciag = ustawienia.get <float> ("kosmos.silnik");
 }
 
 void Laduj_Guziki ()
