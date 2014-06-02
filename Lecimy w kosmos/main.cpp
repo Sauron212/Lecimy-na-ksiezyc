@@ -6,7 +6,7 @@
 using namespace sf;
 using namespace std;
 
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym,float temperatura);
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3],int numer,float szybkosc_sym,float temperatura,double promien);
     sf::ContextSettings settings( 0,0,8,2,0);
 void wyswietlanie_danych_kosmos(float czas_podrozy_w_kosmosie, float czas_podrozy_na_ziemi, double ziemia_x, double ziemia_y, double ksiezyc_x, double ksiezyc_y, double rakieta_x, double rakieta_y, int czas_symulacji, int czas_modyfikator, double predkosc);
 
@@ -15,6 +15,7 @@ sf::Font font[2];
 
 int main()
 {
+    ios_base::sync_with_stdio(0);
     bool fullscreen = false; // jak chcecie miec w fullscreenie to zmiencie na true
     if(fullscreen)
         okno.create(VideoMode::getDesktopMode(), "Lecimy w kosmos",sf::Style::Fullscreen,settings);
@@ -92,6 +93,7 @@ int main()
 
     long double moc_silnikow[4] = {34318696.99,5104334.30,901223.04,0};     // Sila silnikow pierwszego stopnia w N
     int numer = 0;
+    double pi=3.14159265359;
     sf::Vector2f opor; opor.x=0; opor.y=0;     // opor powietrza
 
     sf::Event zdarzenie;
@@ -99,13 +101,15 @@ int main()
     float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
     float szybkosc_sym=1;
 
-    sf::Texture tlo_tekstura1,tlo_tekstura2,tlo_tekstura3,tlo_tekstura4,tlo_tekstura5,tlo_tekstura6,tlo_rakieta, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
-    tlo_tekstura1.loadFromFile("tlo0.png");
-    tlo_tekstura2.loadFromFile("tlo1.png");
+    sf::Texture ogien1_tek,ogien2_tek,tlo_tekstura1,tlo_tekstura2,tlo_tekstura3,tlo_tekstura4,tlo_tekstura5,tlo_tekstura6,tlo_rakieta, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
+    tlo_tekstura1.loadFromFile("tlo00.png");
+    tlo_tekstura2.loadFromFile("tlo11.png");
     tlo_tekstura3.loadFromFile("tlo2.png");
     tlo_tekstura4.loadFromFile("tlo3.png");
     tlo_tekstura5.loadFromFile("tlo4.png");
     tlo_tekstura6.loadFromFile("tlo5.png");
+    ogien1_tek.loadFromFile("ogien1.png");
+    ogien2_tek.loadFromFile("ogien2.png");
     tlo_background.loadFromFile("roboczy.png");
     tlo_rakieta.loadFromFile("rakieta_cala.png");
     tlo_tekstura1.setRepeated(true);
@@ -122,7 +126,7 @@ int main()
     tlo3.setTextureRect(sf::IntRect(0, 0, 100000, 30000));
     tlo4.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
     tlo5.setTextureRect(sf::IntRect(0, 0, 100000, 8000));
-    tlo6.setTextureRect(sf::IntRect(0, 0, 100000000, 23000000));
+    tlo6.setTextureRect(sf::IntRect(0, 0,100000000, 23000000));
 
     tlo.setTexture(tlo_tekstura1);
     tlo2.setTexture(tlo_tekstura2);
@@ -145,10 +149,30 @@ int main()
     rakieta.setOrigin(5,55);
     rakieta.setTexture(&tlo_rakieta);
 
-    sf::Vector2f j_ziemi; j_ziemi.x=x; j_ziemi.y=6373000+y;
+    sf::RectangleShape ogien1(sf::Vector2f(15,30));
+    sf::RectangleShape ogien2(sf::Vector2f(11,30));
+    ogien1.setTexture(&ogien1_tek);
+    ogien2.setTexture(&ogien2_tek);
+    ogien1.setPosition(0,0);
+    ogien2.setPosition(100,100);
+
+
     double odchylenie;
     double odchylenie1;
 
+    int A=6378200;
+    int B=6356900;
+    double predkoscPN;
+    double predkoscWgore;
+    double jadro[2];jadro[0]=0;jadro[1]=0;
+    float polozenie[2];
+    float KatZiemi = 28.75*pi/180;
+                    polozenie[0]=A*cos(KatZiemi);
+                    polozenie[1]=B*sin(KatZiemi);
+                    odleglosc = sqrt(polozenie[0]*polozenie[0]+polozenie[1]*polozenie[1]);
+    long double Promien = sqrt(pow(A*cos(KatZiemi),2)+pow(B*sin(KatZiemi),2));
+
+    sf::Vector2f j_ziemi; j_ziemi.x=x-sin(28.45*pi/180)*Promien; j_ziemi.y=y+cos(28.45*pi/180)*Promien;
 
             sf::View mapa; //stwoerzenie widoku mapy
             mapa.reset(sf::FloatRect(100,10,800,600));
@@ -259,6 +283,7 @@ int main()
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                 {
                  start=true;
+                 ogien1.setPosition(rakieta.getPosition().x-7,rakieta.getPosition().y+54);
                  czas.restart();
                 }
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
@@ -281,8 +306,8 @@ int main()
                 g=G*Mz*pow(10,24)/(odleglosc*odleglosc);
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                 // spalanie 1 silnik
-                if(czas_podrozy<=0)
-                    paliwo[0]-=t*(6562.19/1000);
+                if(czas_podrozy<0)
+                    paliwo[0]-=t*(6562.2/1000);
                 else if(czas_podrozy>=0 && czas_podrozy<=70)
                     paliwo[0]-=t*(13225.7/1000);
                 else if(czas_podrozy>70 && czas_podrozy<=135)
@@ -308,28 +333,29 @@ int main()
                     else if(czas_podrozy>=135 && czas_podrozy<165)
                        rotacja+=t*0.2970000/1000;
                     else if(czas_podrozy>=165 && czas_podrozy<185)
-                        rotacja+=t*(-0.5285000)/1000;
+                        rotacja+=-t*0.5285000/1000;
                     else if(czas_podrozy>=185 && czas_podrozy<320)
                         rotacja+=t*0.0309630/1000;
                     else if(czas_podrozy>=320 && czas_podrozy<460)
                         rotacja+=t*0.0900000/1000;
                     else if(czas_podrozy>=460 && czas_podrozy<480)
-                        rotacja+=t*(-0.1380000)/1000;
+                        rotacja+=-t*0.138000/1000;
                     else if(czas_podrozy>=480 && czas_podrozy<550)
                         rotacja+=t*0.0971429/1000;
                     else if(czas_podrozy>=550 && czas_podrozy<570)
-                        rotacja+=t*(-0.2070000)/1000;
+                        rotacja+=-t*0.2070000/1000;
                     else if(czas_podrozy>=570 && czas_podrozy<640)
                         rotacja+=t*0.1117143/1000;
                     else if(czas_podrozy>=640 && czas_podrozy<705)
                         rotacja+=t*0.0486154/1000;
+
                 t = szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     if(czas_podrozy>=164.0 && czas_podrozy<=196.0)
                         m-=278.5625/1000*t;
                     if(numer==0)
                     {
                         if(paliwo[0]>=315239.89)
-                            moc_silnikow[0]+=42*t;
+                            moc_silnikow[0]+=40.5*t;
                         else if(paliwo[0]>315100.89 && paliwo[0]<315239.89) // wylaczenie centralnego silnika
                             moc_silnikow[0]=31942035;
                         else if(paliwo[0]<315239.89 && paliwo[0]>31994.14)
@@ -339,6 +365,8 @@ int main()
                             numer = 1;
                             m -= 132890.32;
                             paliwo[0]=0;
+                            ogien1.setTexture(&ogien2_tek);
+                           // rakieta.setTexture(&rakieta_cala2);
                             silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
                             break;
                         }
@@ -358,9 +386,9 @@ int main()
                         }
                     }
 
-                if(czas_podrozy>=0)
+                if(czas_podrozy>=0.63)
                 {
-                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
+                    //odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x))+25.5;
                     odchylenie = (rakieta.getPosition().x-j_ziemi.x)/odleglosc;//sinus
 
                     rakieta.setRotation(rotacja); //wyliczenie wychylenia
@@ -368,8 +396,165 @@ int main()
                     radiany=(rakieta.getRotation()*pi)/180.0;
                     if(odleglosc-6373000<90000)
                     {
-                    opor.x = Cx*(Q*pow(predkosc.x,2)/2)*pole;          // uatkualnienie oporu powietrza
-                    opor.y = Cx*(Q*pow(predkosc.y,2)/2)*pole;
+                        if(odleglosc-6373000<2000)
+                        {
+                            T=301.15-(odleglosc-6373000)*12.99/2000;
+                            Q=1.1717-(odleglosc-6373000)*0.20067/2000;
+                        }
+                        else if(odleglosc-6373000<6000)
+                        {
+                            T=288.15-(odleglosc-6373000-2000)*10.97/2000;
+                            Q=0.97103-(odleglosc-6373000-2000)*0.164185/2000;
+                        }
+
+                        else if(odleglosc-6373000<8000)
+                        {
+                            T=266.22-(odleglosc-6373000-6000)*13.93/2000;
+                            Q=0.64266-(odleglosc-6373000-6000)*0.12126/2000;
+                        }
+                        else if(odleglosc-6373000<10000)
+                        {
+                            T=252.29-(odleglosc-6373000-8000)*13.94/2000;
+                            Q=0.52140-(odleglosc-6373000-8000)*0.10313/2000;
+                        }
+                        else if(odleglosc-6373000<14000)
+                        {
+                            T=238.35-(odleglosc-6373000-10000)*13.93/2000;
+                            Q=0.41827-(odleglosc-6373000-10000)*0.08002/2000;
+                        }
+                        else if(odleglosc-6373000<16000)
+                        {
+                            T=210.49-(odleglosc-6373000-14000)*7.34/2000;
+                            Q=0.25823-(odleglosc-6373000-14000)*0.06609/2000;
+                        }
+
+                        else if(odleglosc-6373000<18000)
+                        {
+                            T=203.15+(odleglosc-6373000-16000)*4.23/2000;
+                            Q=0.19214-(odleglosc-6373000-16000)*0.05693/2000;
+                        }
+                        else if(odleglosc-6373000<20000)
+                        {
+                            T=207.38+(odleglosc-6373000-18000)*4.37/2000;
+                            Q=0.13521-(odleglosc-6373000-18000)*0.05693/2000;
+                        }
+                        else if(odleglosc-6373000<30000)
+                        {
+                            T=211.75+(odleglosc-6373000-20000)*4.36/2000;
+                            Q=0.095807-(odleglosc-6373000-20000)*0.0153676/2000;
+                        }
+                        else if(odleglosc-6373000<34000)
+                        {
+                            T=233.55+(odleglosc-6373000-30000)*4.35/2000;
+                            Q=0.018969-(odleglosc-6373000-30000)*0.004303/2000;//DALEJ!
+                        }
+                        else if(odleglosc-6373000<36000)
+                        {
+                            T=242.25+(odleglosc-6373000-34000)*4.34/2000;
+                            Q=0.010363-(odleglosc-6373000-34000)*0.0026382/2000;
+                        }
+                        else if(odleglosc-6373000<38000)
+                        {
+                            T=246.59+(odleglosc-6373000-36000)*4.86/2000;
+                            Q=0.0077248-(odleglosc-6373000-36000)*0.0019469/2000;
+                        }
+                        else if(odleglosc-6373000<42000)
+                        {
+                            T=251.45+(odleglosc-6373000-38000)*4.93/2000;
+                            Q=0.0057779-(odleglosc-6373000-38000)*0.0012456/2000;
+                        }
+                        else if(odleglosc-6373000<44000)
+                        {
+                            T=261.31+(odleglosc-6373000-42000)*3.13/2000;
+                            Q=0.0032867-(odleglosc-6373000-42000)*0.0007723/2000;
+                        }
+                        else if(odleglosc-6373000<46000)
+                        {
+                            T=264.44+(odleglosc-6373000-44000)*2.75/2000;
+                            Q=0.0025144-(odleglosc-6373000-44000)*0.0005823/2000;
+                        }
+                        else if(odleglosc-6373000<48000)
+                        {
+                            T=267.19+(odleglosc-6373000-46000)*1.96/2000;
+                            Q=0.0019321-(odleglosc-6373000-46000)*0.000439/2000;
+                        }
+                        else if(odleglosc-6373000<50000)
+                        {
+                            T=269.15;
+                            Q=0.0014931-(odleglosc-6373000-48000)*0.0003299/2000;
+                        }
+                        else if(odleglosc-6373000<52000)
+                        {
+                            T=269.15-(odleglosc-6373000-50000)*1.81/2000;
+                            Q=0.0011632-(odleglosc-6373000-50000)*0.00025123/2000;
+                        }
+                        else if(odleglosc-6373000<54000)
+                        {
+                            T=267.34-(odleglosc-6373000-52000)*2.36/2000;
+                            Q=0.00091197-(odleglosc-6373000-52000)*0.00019693/2000;
+                        }
+                        else if(odleglosc-6373000<56000)
+                        {
+                            T=264.98-(odleglosc-6373000-54000)*3.48/2000;
+                            Q=0.00071504-(odleglosc-6373000-54000)*0.000134565/2000;
+                        }
+                        else if(odleglosc-6373000<58000)
+                        {
+                            T=261.50-(odleglosc-6373000-56000)*7.46/2000;
+                            Q=0.00056185-(odleglosc-6373000-56000)*0.00007094/2000;
+                        }
+                        else if(odleglosc-6373000<62000)
+                        {
+                            T=254.04-(odleglosc-6373000-58000)*7.45/2000;
+                            Q=0.00044591-(odleglosc-6373000-58000)*0.000085385/2000;
+                        }
+                        else if(odleglosc-6373000<64000)
+                        {
+                            T=239.14-(odleglosc-6373000-62000)*7.44/2000;
+                            Q=0.00027514-(odleglosc-6373000-62000)*0.00006141/2000;
+                        }
+                        else if(odleglosc-6373000<66000)
+                        {
+                            T=231.70-(odleglosc-6373000-64000)*7.43/2000;
+                            Q=0.00021373-(odleglosc-6373000-64000)*0.00004904/2000;
+                        }
+                        else if(odleglosc-6373000<68000)
+                        {
+                            T=224.27-(odleglosc-6373000-66000)*7.44/2000;
+                            Q=0.00016469-(odleglosc-6373000-66000)*0.00003889/2000;
+                        }
+                        else if(odleglosc-6373000<70000)
+                        {
+                            T=216.83-(odleglosc-6373000-68000)*7.42/2000;
+                            Q=0.00012581-(odleglosc-6373000-68000)*0.000030576/2000;
+                        }
+                        else if(odleglosc-6373000<72000)
+                        {
+                            T=209.41-(odleglosc-6373000-70000)*4.91/2000;
+                            Q=0.000095234-(odleglosc-6373000-70000)*0.000024656/2000;
+                        }
+                        else if(odleglosc-6373000<74000)
+                        {
+                            T=204.50-(odleglosc-6373000-72000)*2.92/2000;
+                            Q=0.000070578-(odleglosc-6373000-72000)*0.000019021/2000;
+                        }
+                        else if(odleglosc-6373000<78000)
+                        {
+                            T=201.58-(odleglosc-6373000-74000)*2.93/2000;
+                            Q=0.000051557-(odleglosc-6373000-74000)*0.0000122045/2000;
+                        }
+                        else if(odleglosc-6373000<86000)
+                        {
+                            T=195.72-(odleglosc-6373000-78000)*2.92/2000;
+                            Q=0.000027148-(odleglosc-6373000-78000)*0.00000442522/2000;
+                        }
+                        else if(odleglosc-6373000<90000)
+                        {
+                            T=181.13-(odleglosc-6373000-86000)*2.91/2000;
+                            Q=0.0000050219-(odleglosc-6373000-86000)*0.000001494/2000;
+                        }
+                        opor.x = Cx*(Q*pow(predkosc.x,2)/2)*pole;          // uatkualnienie oporu powietrza
+                        opor.y = Cx*(Q*pow(predkosc.y,2)/2)*pole;
                     }
                     else
                     {
@@ -377,7 +562,7 @@ int main()
                         opor.y=0;
                     }
 
-                    Fg.x = 0;Fg.y = Mc*g;
+                    Fg.x =0;Fg.y = Mc*g;
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
@@ -411,174 +596,32 @@ int main()
                         {
                             Cx = 0.26;
                         }
-//                        if(czas_podrozy>360.5)
-//                          {cout << m << " "<< paliwo[1]+paliwo[2] << " " << rakieta.getRotation()<< endl;cin.get();cin.get();}
+                       //if(czas_podrozy>1.3)
+                       //{cout << paliwo[1]+paliwo[0]+paliwo[2] << " "<< Cx << " "<<Ma<<" " << moc_silnikow[0]<<endl;cin.get();cin.get();}
 
                     kinetyczna=0.5*m*pow(IpredkoscI,2);                                          // obliczanie Ek
+                    ogien1.setRotation(rakieta.getRotation());
+                    ogien1.setPosition(rakieta.getPosition().x-7-sin(radiany)*56,rakieta.getPosition().y+cos(radiany)*52);
                     rakieta.move(predkosc.x*t, -predkosc.y*t);
-                    if(rakieta.getPosition().y<244 )   // ustawienie rakiety na srodku ekranu
+                    ogien1.setPosition(rakieta.getPosition().x-7-sin(radiany)*56,rakieta.getPosition().y+cos(radiany)*52);
+
+                    if(rakieta.getPosition().y<244 || czas_podrozy>60 )   // ustawienie rakiety na srodku ekranu
                     {
                         mapa.setCenter(rakieta.getPosition().x+110,rakieta.getPosition().y+66);//podązanie za rakietą
                     }
-                    odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x));
-                    if(odleglosc-6373000<2000)
-                    {
-                        T=301.15-(odleglosc-6373000)*12.99/2000;
-                        Q=1.1717-(odleglosc-6373000)*0.20067/2000;
-                    }
-                    else if(odleglosc-6373000<6000)
-                    {
-                        T=288.15-(odleglosc-6373000-2000)*10.97/2000;
-                        Q=0.97103-(odleglosc-6373000-2000)*0.164185/2000;
-                    }
-
-                    else if(odleglosc-6373000<8000)
-                    {
-                        T=266.22-(odleglosc-6373000-6000)*13.93/2000;
-                        Q=0.64266-(odleglosc-6373000-6000)*0.12126/2000;
-                    }
-                    else if(odleglosc-6373000<10000)
-                    {
-                        T=252.29-(odleglosc-6373000-8000)*13.94/2000;
-                        Q=0.52140-(odleglosc-6373000-8000)*0.10313/2000;
-                    }
-                    else if(odleglosc-6373000<14000)
-                    {
-                        T=238.35-(odleglosc-6373000-10000)*13.93/2000;
-                        Q=0.41827-(odleglosc-6373000-10000)*0.08002/2000;
-                    }
-                    else if(odleglosc-6373000<16000)
-                    {
-                        T=210.49-(odleglosc-6373000-14000)*7.34/2000;
-                        Q=0.25823-(odleglosc-6373000-14000)*0.06609/2000;
-                    }
-
-                    else if(odleglosc-6373000<18000)
-                    {
-                        T=203.15+(odleglosc-6373000-16000)*4.23/2000;
-                        Q=0.19214-(odleglosc-6373000-16000)*0.05693/2000;
-                    }
-                    else if(odleglosc-6373000<20000)
-                    {
-                        T=207.38+(odleglosc-6373000-18000)*4.37/2000;
-                        Q=0.13521-(odleglosc-6373000-18000)*0.05693/2000;
-                    }
-                    else if(odleglosc-6373000<30000)
-                    {
-                        T=211.75+(odleglosc-6373000-20000)*4.36/2000;
-                        Q=0.095807-(odleglosc-6373000-20000)*0.0153676/2000;
-                    }
-                    else if(odleglosc-6373000<34000)
-                    {
-                        T=233.55+(odleglosc-6373000-30000)*4.35/2000;
-                        Q=0.018969-(odleglosc-6373000-30000)*0.004303/2000;//DALEJ!
-                    }
-                    else if(odleglosc-6373000<36000)
-                    {
-                        T=242.25+(odleglosc-6373000-34000)*4.34/2000;
-                        Q=0.010363-(odleglosc-6373000-34000)*0.0026382/2000;
-                    }
-                    else if(odleglosc-6373000<38000)
-                    {
-                        T=246.59+(odleglosc-6373000-36000)*4.86/2000;
-                        Q=0.0077248-(odleglosc-6373000-36000)*0.0019469/2000;
-                    }
-                    else if(odleglosc-6373000<42000)
-                    {
-                        T=251.45+(odleglosc-6373000-38000)*4.93/2000;
-                        Q=0.0057779-(odleglosc-6373000-38000)*0.0012456/2000;
-                    }
-                    else if(odleglosc-6373000<44000)
-                    {
-                        T=261.31+(odleglosc-6373000-42000)*3.13/2000;
-                        Q=0.0032867-(odleglosc-6373000-42000)*0.0007723/2000;
-                    }
-                    else if(odleglosc-6373000<46000)
-                    {
-                        T=264.44+(odleglosc-6373000-44000)*2.75/2000;
-                        Q=0.0025144-(odleglosc-6373000-44000)*0.0005823/2000;
-                    }
-                    else if(odleglosc-6373000<48000)
-                    {
-                        T=267.19+(odleglosc-6373000-46000)*1.96/2000;
-                        Q=0.0019321-(odleglosc-6373000-46000)*0.000439/2000;
-                    }
-                    else if(odleglosc-6373000<50000)
-                    {
-                        T=269.15;
-                        Q=0.0014931-(odleglosc-6373000-48000)*0.0003299/2000;
-                    }
-                    else if(odleglosc-6373000<52000)
-                    {
-                        T=269.15-(odleglosc-6373000-50000)*1.81/2000;
-                        Q=0.0011632-(odleglosc-6373000-50000)*0.00025123/2000;
-                    }
-                    else if(odleglosc-6373000<54000)
-                    {
-                        T=267.34-(odleglosc-6373000-52000)*2.36/2000;
-                        Q=0.00091197-(odleglosc-6373000-52000)*0.00019693/2000;
-                    }
-                    else if(odleglosc-6373000<56000)
-                    {
-                        T=264.98-(odleglosc-6373000-54000)*3.48/2000;
-                        Q=0.00071504-(odleglosc-6373000-54000)*0.000134565/2000;
-                    }
-                    else if(odleglosc-6373000<58000)
-                    {
-                        T=261.50-(odleglosc-6373000-56000)*7.46/2000;
-                        Q=0.00056185-(odleglosc-6373000-56000)*0.00007094/2000;
-                    }
-                    else if(odleglosc-6373000<62000)
-                    {
-                        T=254.04-(odleglosc-6373000-58000)*7.45/2000;
-                        Q=0.00044591-(odleglosc-6373000-58000)*0.000085385/2000;
-                    }
-                    else if(odleglosc-6373000<64000)
-                    {
-                        T=239.14-(odleglosc-6373000-62000)*7.44/2000;
-                        Q=0.00027514-(odleglosc-6373000-62000)*0.00006141/2000;
-                    }
-                    else if(odleglosc-6373000<66000)
-                    {
-                        T=231.70-(odleglosc-6373000-64000)*7.43/2000;
-                        Q=0.00021373-(odleglosc-6373000-64000)*0.00004904/2000;
-                    }
-                    else if(odleglosc-6373000<68000)
-                    {
-                        T=224.27-(odleglosc-6373000-66000)*7.44/2000;
-                        Q=0.00016469-(odleglosc-6373000-66000)*0.00003889/2000;
-                    }
-                    else if(odleglosc-6373000<70000)
-                    {
-                        T=216.83-(odleglosc-6373000-68000)*7.42/2000;
-                        Q=0.00012581-(odleglosc-6373000-68000)*0.000030576/2000;
-                    }
-                    else if(odleglosc-6373000<72000)
-                    {
-                        T=209.41-(odleglosc-6373000-70000)*4.91/2000;
-                        Q=0.000095234-(odleglosc-6373000-70000)*0.000024656/2000;
-                    }
-                    else if(odleglosc-6373000<74000)
-                    {
-                        T=204.50-(odleglosc-6373000-72000)*2.92/2000;
-                        Q=0.000070578-(odleglosc-6373000-72000)*0.000019021/2000;
-                    }
-                    else if(odleglosc-6373000<78000)
-                    {
-                        T=201.58-(odleglosc-6373000-74000)*2.93/2000;
-                        Q=0.000051557-(odleglosc-6373000-74000)*0.0000122045/2000;
-                    }
-                    else if(odleglosc-6373000<86000)
-                    {
-                        T=195.72-(odleglosc-6373000-78000)*2.92/2000;
-                        Q=0.000027148-(odleglosc-6373000-78000)*0.00000442522/2000;
-                    }
-                    else if(odleglosc-6373000<90000)
-                    {
-                        T=181.13-(odleglosc-6373000-86000)*2.91/2000;
-                        Q=0.0000050219-(odleglosc-6373000-86000)*0.000001494/2000;
-                    }
-
+                   //  odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x))+25.5;
+                    // Ziemia jajo
+                    predkoscPN = cos(72*pi/180)*predkosc.x;
+                    predkoscWgore = predkosc.y;
+                    polozenie[0]+=predkoscWgore*t; polozenie[1]+=predkoscPN*t;
+                    odleglosc = sqrt(pow(polozenie[0],2)+pow(polozenie[1],2));
+                    Promien = sqrt(pow(A*cos(KatZiemi),2)+pow(B*sin(KatZiemi),2));
+                    KatZiemi = asin(polozenie[1]/odleglosc);
+//                    cout.precision(15);
+//                    cout << odleglosc<< " " << Promien << endl;
+//                    cout << (odleglosc-Promien)*cos(KatZiemi);
+//                    cin.get();
+//                    cin.get();
                 }
                 czas.restart();
             }
@@ -590,6 +633,8 @@ int main()
             okno.draw(tlo4);
             okno.draw(tlo5);
             okno.draw(silnik1);
+            okno.draw(ogien1);
+            okno.draw(ogien2);
 
             okno.setView(okno.getDefaultView());
             okno.setView(mapa);
@@ -605,20 +650,20 @@ int main()
                 }
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
-                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym,T);
+                wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym,T,Promien);
 
-                if(odleglosc-6373000>=12000 && odleglosc-6373000<20000)
+                if(odleglosc-Promien>=12000 && odleglosc-Promien<20000)
                 {
                 atmosfera.setString("Weszlismy w stratosfere");
                 okno.draw(atmosfera);
                 }
-                else if(odleglosc-6373000>=50000 && odleglosc-6373000<60000)
+                else if(odleglosc-Promien>=50000 && odleglosc-Promien<60000)
                 {
                 atmosfera.setColor((sf::Color::White));
                 atmosfera.setString("Weszlismy w mezosfere");
                 okno.draw(atmosfera);
                 }
-                else if(odleglosc-6373000>=80000 && odleglosc-6373000<90000)
+                else if(odleglosc-Promien>=80000 && odleglosc-Promien<90000)
                 {
                 atmosfera.setString("Weszlismy w termosfere");
                 okno.draw(atmosfera);
@@ -760,7 +805,7 @@ int main()
     }
     return 0;
 }
-void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym,float temperatura)
+void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym,float temperatura,double promien)
 {
     ostringstream ss;
     ss.precision(3);                       // potrzebne do konwersji z inta/clocka na stringa
@@ -793,11 +838,11 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     predkosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+80);
     ss.str("");
 
-    ss<<"Wysokosc: "<<odleglosc-6373000<<"m n.p.m";
-        if(odleglosc-6373000>=1000)
+    ss<<"Wysokosc: "<<odleglosc-promien<<"m n.p.m";
+        if(odleglosc-promien>=1000)
         {
             ss.str("");
-            ss<<"Wysokosc: "<<(odleglosc-6373000)/1000<<"km n.p.m";
+            ss<<"Wysokosc: "<<(odleglosc-promien)/1000<<"km n.p.m";
         }
     string wysokosc_w = ss.str();
     sf::Text wysokosc_wys(wysokosc_w, font[0],22);
