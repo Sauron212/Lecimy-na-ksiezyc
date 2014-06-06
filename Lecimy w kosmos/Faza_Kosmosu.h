@@ -123,10 +123,18 @@ class Rakieta
         double pozycja_katowa;
         double ciag;
         sf::Vector2f Fg;
+        sf::Vector2f F1;
+        sf::Vector2f F2;
         sf::Vector2f a;
         sf::Vector2f v;
         sf::Texture image;
         sf::Sprite sprite;
+        bool ruch_obrotowy;
+        double alfa_1;
+        double alfa_2;
+        double O;
+        double E;
+        double I;
         Rakieta (double c_x, double c_y, double c_masa)
         {
             koordynata_x = c_x;
@@ -135,37 +143,54 @@ class Rakieta
             Fg = sf::Vector2f (0, 0);
             a = Fg;
             v = sf::Vector2f (2453.91, -6273.57);
-            pozycja_katowa = 0;
+            //v = sf::Vector2f (0, -3080.975);
+            pozycja_katowa = 0 * pi / 2;
             ciag = 1001000;
-            image.loadFromFile ("Rakieta.png");
+            image.loadFromFile ("4.png");
             image.setSmooth (true);
             sprite.setTexture (image);
-            sprite.setOrigin (187.5, 150);
-            sprite.setScale (0.02, 0.02);
+            sprite.setOrigin (50, 150);
+            sprite.setScale (0.025, 0.025);
+            ruch_obrotowy = true;
+            I = c_masa * 24 * 2;
+            O = 0;
         }
         void Aktualizacja (int czas)
         {
-            Fg = sf::Vector2f (0, 0);
+            Fg = Grawitacja (koordynata_x, koordynata_y, masa, planety [0].koordynata_x, planety [0].koordynata_y, planety [0].masa) + Grawitacja (koordynata_x, koordynata_y, masa, satelity [0].koordynata_x, satelity [0].koordynata_y, satelity [0].masa);
             if (czasy_silnika.size () > current_index)
             {
                 if (czas > czasy_silnika [current_index].start && czas < czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania)
                 {
                     Fg += sf::Vector2f (cos (pozycja_katowa) * ciag, sin (pozycja_katowa) * ciag);
                     masa -= 220.682;
+                    I = 1/12 * masa * 24 * 24;
                 }
             }
-            for (int i = 0; i < planety.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, planety [i].koordynata_x, planety [i].koordynata_y, planety [i].masa);
-            for (int i = 0; i < satelity.size (); i++) Fg += Grawitacja (koordynata_x, koordynata_y, masa, satelity [i].koordynata_x, satelity [i].koordynata_y, satelity [i].masa);
             a = sf::Vector2f (Fg.x / masa, Fg.y / masa);
-            v += sf::Vector2f (a.x, a.y);
+            v += a;
             koordynata_x += v.x;
             koordynata_y += v.y;
-            pozycja_katowa = atan2 (v.y, v.x);
+            if (ruch_obrotowy) pozycja_katowa = atan2 (v.y, v.x);
+            else
+            {
+                F1 = Grawitacja (koordynata_x + cos (pozycja_katowa) * 12, koordynata_y + sin (pozycja_katowa) * 12, masa / 2, planety [0].koordynata_x, planety [0].koordynata_y, planety [0].masa) +
+                Grawitacja (koordynata_x + cos (pozycja_katowa) * 12, koordynata_y + sin (pozycja_katowa) * 12, masa / 2, satelity [0].koordynata_x, satelity [0].koordynata_y, satelity [0].masa);
+                F2 = Grawitacja (koordynata_x - cos (pozycja_katowa) * 12, koordynata_y - sin (pozycja_katowa) * 12, masa / 2, planety [0].koordynata_x, planety [0].koordynata_y, planety [0].masa) +
+                Grawitacja (koordynata_x - cos (pozycja_katowa) * 12, koordynata_y - sin (pozycja_katowa) * 12, masa / 2, satelity [0].koordynata_x, satelity [0].koordynata_y, satelity [0].masa);
+                alfa_1 = pi - pozycja_katowa + atan2 (F1.y, F1.x);
+                alfa_2 = pi - pozycja_katowa + atan2 (F2.y, F2.x);
+                E = 6 * (sin (alfa_1) * sqrt (F1.x * F1.x + F1.y * F1.y) - sin (alfa_2) * sqrt (F2.x * F2.x + F2.y * F2.y)) / I;
+                pozycja_katowa += O;
+                O += E;
+                double h = pozycja_katowa / (2 * pi);
+            }
             if (pozycja_katowa < 0) pozycja_katowa += 2 * pi;
         }
 };
 
 Rakieta FK_Rakieta (6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
+//Rakieta FK_Rakieta (42160000, 0, 131825.7);
 double kat = 0;
 
 class Button
@@ -238,7 +263,7 @@ void Symulacja (int czas)
         if (sqrt (pow (FK_Rakieta.koordynata_x - planety [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - planety [0].koordynata_y, 2)) < planety [0].promien_planety || sqrt (pow (FK_Rakieta.koordynata_x - satelity [0].koordynata_x, 2) + pow ( FK_Rakieta.koordynata_y - satelity [0].koordynata_y, 2)) < satelity [0].promien_satelity) zderzenie = true;
         if (i > czasy_silnika [current_index].start + czasy_silnika [current_index].czas_trwania && current_index < czasy_silnika.size ()) current_index += 1;
         FK_Rakieta.Aktualizacja (i);
-        if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 1000000000000)
+        if (pow ((FK_Rakieta.koordynata_x - punkty [punkty.size () - 1].x), 2) + pow ((FK_Rakieta.koordynata_y - punkty [punkty.size () - 1].y), 2) > 10000000000)
         {
             punkty.push_back (sf::Vector2f (FK_Rakieta.koordynata_x, FK_Rakieta.koordynata_y));
             katy.push_back (FK_Rakieta.pozycja_katowa);
