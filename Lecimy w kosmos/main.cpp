@@ -389,7 +389,9 @@ int main()
                             m -= 40392.40;
                             paliwo[1]=0;
                             rakieta.setTexture(&tlo_rakieta2);
-                            cout << "przerzucilem";
+                            //silnik1.setTexture();
+                            silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
+                            predkosc_silnika.x = predkosc.x; predkosc_silnika.y=predkosc.y;
                         }
                     }
 
@@ -584,6 +586,8 @@ int main()
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
                     przyspieszenie.y = (F.y-Fg.y-opor.y)/(Mc*1000000);
+                    if(czas_podrozy > 480)
+                        przyspieszenie.y = (F.y+Fr.y-Fg.y-opor.y)/(Mc*1000000);
                     t =  szybkosc_sym*czas.getElapsedTime().asMicroseconds()/1000.0;
                     predkosc.x += przyspieszenie.x*t; predkosc.y += przyspieszenie.y*t;
                     IpredkoscI = sqrt(pow(predkosc.x,2)+pow(predkosc.y,2));
@@ -648,13 +652,13 @@ int main()
                     else if(czas_podrozy<480)
                         predkoscPN = cos(77*pi/180)*predkosc.x;
                     else if(czas_podrozy<540)
-                        predkoscPN = cos(74*pi/180)*predkosc.x;
+                        predkoscPN = cos(76.5*pi/180)*predkosc.x;
                     else if(czas_podrozy<600)
-                        predkoscPN = cos(77*pi/180)*predkosc.x;
+                        predkoscPN = cos(76*pi/180)*predkosc.x;
                     else if(czas_podrozy<660)
-                        predkoscPN = cos((83.82+0.2*(czas_podrozy-600))*pi/180)*predkosc.x;
+                        predkoscPN = cos(78*pi/180)*predkosc.x;
                     else if(czas_podrozy<720)
-                        predkoscPN = cos((86.36+0.2*(czas_podrozy-660))*pi/180)*predkosc.x;
+                        predkoscPN = cos(72*pi/180)*predkosc.x;
                     predkoscWgore = predkosc.y;
                     polozenie[0]+=predkoscWgore*t*sin(KatZiemi); polozenie[1]+=predkoscPN*t+cos(KatZiemi)*predkoscWgore*t;
                     odleglosc = sqrt(pow(polozenie[0],2)+pow(polozenie[1],2));
