@@ -101,7 +101,7 @@ int main()
     float czas_podrozy=-7; // nie wiem czemu -7 ale jak jest -6 to pokazuje -5 -,-
     float szybkosc_sym=1;
 
-    sf::Texture ogien1_tek,ogien2_tek,tlo_tekstura1,tlo_tekstura2,tlo_tekstura3,tlo_tekstura4,tlo_tekstura5,tlo_tekstura6,tlo_rakieta, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
+    sf::Texture ogien1_tek,ogien2_tek,tlo_tekstura1,tlo_tekstura2,tlo_tekstura3,tlo_tekstura4,tlo_tekstura5,tlo_tekstura6,tlo_rakieta,tlo_rakieta1,tlo_rakieta2, tlo_background;                       //    Stworzenie tekstury  tlo_tekstura
     tlo_tekstura1.loadFromFile("tlo00.png");
     tlo_tekstura2.loadFromFile("tlo11.png");
     tlo_tekstura3.loadFromFile("tlo2.png");
@@ -112,6 +112,8 @@ int main()
     ogien2_tek.loadFromFile("ogien2.png");
     tlo_background.loadFromFile("roboczy.png");
     tlo_rakieta.loadFromFile("rakieta_cala.png");
+    tlo_rakieta1.loadFromFile("rakieta_cala2.png");
+    tlo_rakieta2.loadFromFile("rakieta_cala3.png");
     tlo_tekstura1.setRepeated(true);
     tlo_tekstura2.setRepeated(true);
     tlo_tekstura3.setRepeated(true);
@@ -149,12 +151,9 @@ int main()
     rakieta.setOrigin(5,55);
     rakieta.setTexture(&tlo_rakieta);
 
-    sf::RectangleShape ogien1(sf::Vector2f(15,30));
-    sf::RectangleShape ogien2(sf::Vector2f(11,30));
-    ogien1.setTexture(&ogien1_tek);
-    ogien2.setTexture(&ogien2_tek);
-    ogien1.setPosition(0,0);
-    ogien2.setPosition(100,100);
+    sf::RectangleShape ogien(sf::Vector2f(15,30));
+    ogien.setTexture(&ogien1_tek);
+    ogien.setPosition(0,0);
 
 
     double odchylenie;
@@ -165,8 +164,8 @@ int main()
     double predkoscPN;
     double predkoscWgore;
     double jadro[2];jadro[0]=0;jadro[1]=0;
-    float polozenie[2];
-    float KatZiemi = 28.75*pi/180;
+    long double polozenie[2];
+    long double KatZiemi = 28.45*pi/180;
                     polozenie[0]=A*cos(KatZiemi);
                     polozenie[1]=B*sin(KatZiemi);
                     odleglosc = sqrt(polozenie[0]*polozenie[0]+polozenie[1]*polozenie[1]);
@@ -182,6 +181,7 @@ int main()
     silnik_tex.loadFromFile("silnik.png");
     sf::Sprite silnik1;
     silnik1.setTexture(silnik_tex);
+    sf::Vector2f predkosc_silnika;
     bool zrzut1;
 
     sf::Text atmosfera;
@@ -283,7 +283,7 @@ int main()
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                 {
                  start=true;
-                 ogien1.setPosition(rakieta.getPosition().x-7,rakieta.getPosition().y+54);
+                 ogien.setPosition(rakieta.getPosition().x-7,rakieta.getPosition().y+54);
                  czas.restart();
                 }
                 if(sf::Keyboard::isKeyPressed (sf::Keyboard::Escape))
@@ -365,15 +365,21 @@ int main()
                             numer = 1;
                             m -= 132890.32;
                             paliwo[0]=0;
-                            ogien1.setTexture(&ogien2_tek);
-                           // rakieta.setTexture(&rakieta_cala2);
+                            ogien.setTexture(&ogien2_tek);
+                            rakieta.setTexture(&tlo_rakieta1);
+                            rakieta.setOrigin(5,35);
                             silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
+                            predkosc_silnika.x = predkosc.x; predkosc_silnika.y=predkosc.y;
                             break;
                         }
                     }
                     else if(numer==1)
                     {
-                        if(paliwo[1]>=43097.17)
+                        predkosc_silnika.x=predkosc_silnika.x;
+                        predkosc_silnika.y=predkosc_silnika.y-g;
+                        silnik1.move(predkosc_silnika.x,-predkosc_silnika.y);
+
+                        if(paliwo[1]<=79742.90&&paliwo[1]>=43097.17)
                             moc_silnikow[1]=4066742.13;
                         else if(paliwo[1]<43097.17)
                             moc_silnikow[1]=3050634.87;
@@ -382,6 +388,7 @@ int main()
                             numer = 2;
                             m -= 40392.40;
                             paliwo[1]=0;
+                            rakieta.setTexture(&tlo_rakieta2);
                             cout << "przerzucilem";
                         }
                     }
@@ -561,7 +568,18 @@ int main()
                         opor.x=0;
                         opor.y=0;
                     }
+                    sf::Vector2f predkoscX;
 
+                    predkoscX.x = predkosc.x*sin(72.058*pi/180);
+                    predkoscX.y = predkosc.x*cos(72.058*pi/180);
+                    if(czas_podrozy>90)
+                    {
+                       predkoscX.y = predkosc.x*cos((72.058+0.1368*(czas_podrozy-90))*pi/180);
+                       predkoscX.x = predkosc.x*sin((72.058+0.1368*(czas_podrozy-90))*pi/180);
+                    }
+                    double w=sqrt((predkoscX.x*1000+409)*(predkoscX.x*1000+409)+predkoscX.y*1000*predkoscX.y*1000);
+                    sf::Vector2f Fr;
+                    Fr.y = Mc*w*w/odleglosc;
                     Fg.x =0;Fg.y = Mc*g;
                     F.x = moc_silnikow[numer]*sin(radiany) ; F.y = moc_silnikow[numer]*cos(radiany);
                     przyspieszenie.x = (F.x-Fg.x-opor.x)/(Mc*1000000);
@@ -596,14 +614,14 @@ int main()
                         {
                             Cx = 0.26;
                         }
-                       //if(czas_podrozy>1.3)
-                       //{cout << paliwo[1]+paliwo[0]+paliwo[2] << " "<< Cx << " "<<Ma<<" " << moc_silnikow[0]<<endl;cin.get();cin.get();}
+                    //   if(czas_podrozy>240.3)
+                     //  {cout << paliwo[1]+paliwo[0]+paliwo[2] << " "<< odleglosc<<" "<<Promien<< " "<<Ma<<" " << moc_silnikow[1]<<" "<<KatZiemi<<" "<<rakieta.getRotation()<< " " <<predkosc.x<<" " <<predkosc.y<<endl;cin.get();cin.get();}
 
                     kinetyczna=0.5*m*pow(IpredkoscI,2);                                          // obliczanie Ek
-                    ogien1.setRotation(rakieta.getRotation());
-                    ogien1.setPosition(rakieta.getPosition().x-7-sin(radiany)*56,rakieta.getPosition().y+cos(radiany)*52);
+                    ogien.setRotation(rakieta.getRotation());
+                    ogien.setPosition(rakieta.getPosition().x-7-sin(radiany)*rakieta.getSize().y/2,rakieta.getPosition().y+cos(radiany)*rakieta.getSize().y/2);
                     rakieta.move(predkosc.x*t, -predkosc.y*t);
-                    ogien1.setPosition(rakieta.getPosition().x-7-sin(radiany)*56,rakieta.getPosition().y+cos(radiany)*52);
+                    ogien.setPosition(rakieta.getPosition().x-7-sin(radiany)*rakieta.getSize().y/2,rakieta.getPosition().y+cos(radiany)*rakieta.getSize().y/2);
 
                     if(rakieta.getPosition().y<244 || czas_podrozy>60 )   // ustawienie rakiety na srodku ekranu
                     {
@@ -611,11 +629,36 @@ int main()
                     }
                    //  odleglosc=sqrt( (rakieta.getPosition().y-j_ziemi.y)*(rakieta.getPosition().y-j_ziemi.y)+(rakieta.getPosition().x-j_ziemi.x)*(rakieta.getPosition().x-j_ziemi.x))+25.5;
                     // Ziemia jajo
-                    predkoscPN = cos(72*pi/180)*predkosc.x;
+
+                    int k = czas_podrozy;
+                    if(czas_podrozy>90 && czas_podrozy<120)
+                         predkoscPN = cos((72.058+0.5*(czas_podrozy-90))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<180)
+                        predkoscPN = cos((72.15+0.4*(czas_podrozy-120))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<240)
+                        predkoscPN = cos((72.73+0.3*(czas_podrozy-180))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<300)
+                        predkoscPN = cos((73.65+0.3*(czas_podrozy-240))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<360)
+                        predkoscPN = cos((74.72+0.23*(czas_podrozy-304))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<420)
+                    {//75.99+0.2*(czas_podrozy-360)
+                        predkoscPN = cos(80*pi/180)*predkosc.x;
+                    }
+                    else if(czas_podrozy<480)
+                        predkoscPN = cos(77*pi/180)*predkosc.x;
+                    else if(czas_podrozy<540)
+                        predkoscPN = cos(74*pi/180)*predkosc.x;
+                    else if(czas_podrozy<600)
+                        predkoscPN = cos(77*pi/180)*predkosc.x;
+                    else if(czas_podrozy<660)
+                        predkoscPN = cos((83.82+0.2*(czas_podrozy-600))*pi/180)*predkosc.x;
+                    else if(czas_podrozy<720)
+                        predkoscPN = cos((86.36+0.2*(czas_podrozy-660))*pi/180)*predkosc.x;
                     predkoscWgore = predkosc.y;
-                    polozenie[0]+=predkoscWgore*t; polozenie[1]+=predkoscPN*t;
+                    polozenie[0]+=predkoscWgore*t*sin(KatZiemi); polozenie[1]+=predkoscPN*t+cos(KatZiemi)*predkoscWgore*t;
                     odleglosc = sqrt(pow(polozenie[0],2)+pow(polozenie[1],2));
-                    Promien = sqrt(pow(A*cos(KatZiemi),2)+pow(B*sin(KatZiemi),2));
+                    Promien = sqrt(pow(A*cos(KatZiemi),2)+pow(B*sin(KatZiemi),2))-25;
                     KatZiemi = asin(polozenie[1]/odleglosc);
 //                    cout.precision(15);
 //                    cout << odleglosc<< " " << Promien << endl;
@@ -633,8 +676,7 @@ int main()
             okno.draw(tlo4);
             okno.draw(tlo5);
             okno.draw(silnik1);
-            okno.draw(ogien1);
-            okno.draw(ogien2);
+            okno.draw(ogien);
 
             okno.setView(okno.getDefaultView());
             okno.setView(mapa);
@@ -651,19 +693,24 @@ int main()
             okno.setView(okno.getDefaultView());
                 okno.draw(tlo_niewiem);
                 wyswietlanie_danych(czas_podrozy,IprzyspieszenieI,IpredkoscI,odleglosc,kinetyczna,paliwo,numer,szybkosc_sym,T,Promien);
+                if(Ma>=0.97 && Ma<1.03)
+                {
+                atmosfera.setString("Osi¹gnieto Mach 1");
+                okno.draw(atmosfera);
+                }
 
-                if(odleglosc-Promien>=12000 && odleglosc-Promien<20000)
+                if(odleglosc-Promien>=12000 && odleglosc-Promien<15000)
                 {
                 atmosfera.setString("Weszlismy w stratosfere");
                 okno.draw(atmosfera);
                 }
-                else if(odleglosc-Promien>=50000 && odleglosc-Promien<60000)
+                else if(odleglosc-Promien>=50000 && odleglosc-Promien<55000)
                 {
                 atmosfera.setColor((sf::Color::White));
                 atmosfera.setString("Weszlismy w mezosfere");
                 okno.draw(atmosfera);
                 }
-                else if(odleglosc-Promien>=80000 && odleglosc-Promien<90000)
+                else if(odleglosc-Promien>=80000 && odleglosc-Promien<85000)
                 {
                 atmosfera.setString("Weszlismy w termosfere");
                 okno.draw(atmosfera);

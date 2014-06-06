@@ -8,7 +8,10 @@
 	</File>
 	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="27352" topLine="353" />
+			<Cursor1 position="31943" topLine="470" />
 		</Cursor>
+		<Folding>
+			<Collapse line="405" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>
