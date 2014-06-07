@@ -179,8 +179,9 @@ int main()
 
     sf::Texture silnik_tex; //odpadajace silniki
     silnik_tex.loadFromFile("silnik.png");
-    sf::Sprite silnik1;
-    silnik1.setTexture(silnik_tex);
+    sf::RectangleShape silnik1;
+    silnik1.setTexture(&silnik_tex);
+    silnik1.setSize(sf::Vector2f(11,30));
     sf::Vector2f predkosc_silnika;
     bool zrzut1;
 
@@ -204,6 +205,7 @@ int main()
     sf::View gui;
     gui.reset (sf::FloatRect (0, 0, 1000, 700));
     gui.setViewport (sf::FloatRect (0.0f, 0.0f, 1.0f, 1.0f));
+    bool kkk = true;
     double o = satelity [0].pozycja_katowa;
     while(okno.isOpen())
     {
@@ -367,6 +369,7 @@ int main()
                             paliwo[0]=0;
                             ogien.setTexture(&ogien2_tek);
                             rakieta.setTexture(&tlo_rakieta1);
+                            //rakieta.setSize(11,90);
                             rakieta.setOrigin(5,35);
                             silnik1.setPosition(rakieta.getPosition().x,rakieta.getPosition().y);
                             predkosc_silnika.x = predkosc.x; predkosc_silnika.y=predkosc.y;
@@ -649,16 +652,16 @@ int main()
                     {//75.99+0.2*(czas_podrozy-360)
                         predkoscPN = cos(80*pi/180)*predkosc.x;
                     }
-                    else if(czas_podrozy<480)
-                        predkoscPN = cos(77*pi/180)*predkosc.x;
-                    else if(czas_podrozy<540)
-                        predkoscPN = cos(76.5*pi/180)*predkosc.x;
-                    else if(czas_podrozy<600)
-                        predkoscPN = cos(76*pi/180)*predkosc.x;
-                    else if(czas_podrozy<660)
-                        predkoscPN = cos(78*pi/180)*predkosc.x;
-                    else if(czas_podrozy<720)
-                        predkoscPN = cos(72*pi/180)*predkosc.x;
+                    else if(czas_podrozy<480)//181
+                        predkoscPN = cos(76.9*pi/180)*predkosc.x;
+                    else if(czas_podrozy<540)//186
+                        predkoscPN = cos(76.94*pi/180)*predkosc.x;
+                    else if(czas_podrozy<600)//189
+                        predkoscPN = cos(78.3*pi/180)*predkosc.x;
+                    else if(czas_podrozy<660)//191
+                        predkoscPN = cos(78.9*pi/180)*predkosc.x;
+                    else if(czas_podrozy<720)//191
+                        predkoscPN = cos(79.9*pi/180)*predkosc.x;
                     predkoscWgore = predkosc.y;
                     polozenie[0]+=predkoscWgore*t*sin(KatZiemi); polozenie[1]+=predkoscPN*t+cos(KatZiemi)*predkoscWgore*t;
                     odleglosc = sqrt(pow(polozenie[0],2)+pow(polozenie[1],2));
@@ -797,6 +800,18 @@ int main()
                                 std::cin>>satelity [0].pozycja_katowa;
                                 o = satelity [0].pozycja_katowa;
                                 break;
+                            case sf::Keyboard::Z:
+                                    FK_Rakieta.RRakieta (6089920, 2944900, 131825.7, true);
+                                    kkk = !kkk;
+                                    czasy_silnika [0].czas_trwania = 350;
+                                break;
+                            case sf::Keyboard::K:
+                                    FK_Rakieta.RRakieta (42160000, 0, 131825.7, false);
+                                    czasy_silnika [0].czas_trwania = 0;
+                                break;
+                            case sf::Keyboard::O:
+                                FK_Rakieta.ruch_obrotowy = !FK_Rakieta.ruch_obrotowy;
+                                break;
                             default:
                                 break;
                         }
@@ -858,6 +873,7 @@ int main()
 }
 void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long double predkosc, long double odleglosc, long double kinetyczna, long double paliwo[3], int numer,float szybkosc_sym,float temperatura,double promien)
 {
+     string pal_w;
     ostringstream ss;
     ss.precision(3);                       // potrzebne do konwersji z inta/clocka na stringa
             int godziny = czas_podrozy/3600;
@@ -899,6 +915,18 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     sf::Text wysokosc_wys(wysokosc_w, font[0],22);
     wysokosc_wys.setColor((sf::Color::White));
     wysokosc_wys.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+120);
+    ss.precision(2);
+    ss.str("");
+        ss<<"Temperatura: "<<temperatura-273.18<<"*C";
+        if(odleglosc-promien>=90000)
+        {
+            ss.str("");
+            ss<<"Temperatura: brak informacji";
+        }
+    pal_w = ss.str();
+    sf::Text temp(pal_w, font[0],22);
+    temp.setColor((sf::Color::White));
+    temp.setPosition(okno.getSize().x*0.71,okno.getSize().y*0.1+150);
 
 //    ss.str("");
 //    if(kinetyczna<=1000000)
@@ -912,7 +940,7 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     long double pelne_zbiorniki[3]={2145798.08,443235.04,107095.43};
     ss.str("");
     ss<<"Zbiorniki paliwa";
-    string pal_w = ss.str();
+    pal_w = ss.str();
     sf::Text zbiorniki(pal_w, font[0],22);
     zbiorniki.setColor((sf::Color::White));
     zbiorniki.setPosition(okno.getSize().x*0.74,okno.getSize().y*0.1+200);
@@ -966,22 +994,8 @@ void wyswietlanie_danych(float czas_podrozy, long double przyspieszenie, long do
     zielony3.setPosition(okno.getSize().x*0.88+40,okno.getSize().y*0.1+530);
     zielony3.setRotation(180);
 
-    ss.str("");
-    ss<<"x"<<szybkosc_sym;
-    pal_w = ss.str();
-    sf::Text przewijanie(pal_w, font[0],22);
-    przewijanie.setColor((sf::Color::Black));
-    przewijanie.setPosition(okno.getSize().x*0.08,okno.getSize().y*0.1);
-
-    ss.str("");
-    ss<<temperatura-273<<"*C";
-    pal_w = ss.str();
-    sf::Text temp(pal_w, font[0],22);
-    temp.setColor((sf::Color::Black));
-    temp.setPosition(okno.getSize().x*0.65,okno.getSize().y*0.1);
 
 
-    okno.draw(przewijanie);
     okno.draw(temp);
     okno.draw(wysokosc_wys);                    // wyswietlenie wysokosci
     okno.draw(predkosc_wys);                    // wyswietlenie predkosci

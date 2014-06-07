@@ -135,16 +135,39 @@ class Rakieta
         double O;
         double E;
         double I;
-        Rakieta (double c_x, double c_y, double c_masa)
+        bool ox;
+        Rakieta (double c_x, double c_y, double c_masa, bool kkk)
         {
-            koordynata_x = c_x;
-            koordynata_y = c_y;
+            ox = kkk;
+                koordynata_x = c_x;
+                koordynata_y = c_y;
             masa = c_masa;
             Fg = sf::Vector2f (0, 0);
             a = Fg;
-            v = sf::Vector2f (2453.91, -6273.57);
-            //v = sf::Vector2f (0, -3080.975);
+            if (kkk) v = sf::Vector2f (2453.91, -6273.57);
+            else v = sf::Vector2f (0, -3080.975);
             pozycja_katowa = 0 * pi / 2;
+            ciag = 1001000;
+            image.loadFromFile ("4.png");
+            image.setSmooth (true);
+            sprite.setTexture (image);
+            sprite.setOrigin (50, 150);
+            sprite.setScale (0.025, 0.025);
+            ruch_obrotowy = true;
+            I = c_masa * 24 * 2;
+            O = 0;
+        }
+        void RRakieta (double c_x, double c_y, double c_masa, bool kkk)
+        {
+            ox = kkk;
+                koordynata_x = c_x;
+                koordynata_y = c_y;
+            masa = c_masa;
+            Fg = sf::Vector2f (0, 0);
+            a = Fg;
+            if (kkk) v = sf::Vector2f (2453.91, -6273.57);
+            else v = sf::Vector2f (0, -3080.975);
+            pozycja_katowa =  atan2 (v.y, v.x);
             ciag = 1001000;
             image.loadFromFile ("4.png");
             image.setSmooth (true);
@@ -189,7 +212,7 @@ class Rakieta
         }
 };
 
-Rakieta FK_Rakieta (6089920, 2944900, 131825.7); //-6563000   -7017530    31206900    131825.7
+Rakieta FK_Rakieta (6089920, 2944900, 131825.7, true); //-6563000   -7017530    31206900    131825.7
 //Rakieta FK_Rakieta (42160000, 0, 131825.7);
 double kat = 0;
 
